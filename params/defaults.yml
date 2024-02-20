@@ -1,0 +1,28 @@
+IN:
+  "/fsimb/groups/imb-bioinfocf/personal/huetherp/alphafold/data/run26/run26*.fasta"
+OUT:
+  "/fsimb/groups/imb-bioinfocf/personal/huetherp/alphafold/runs/run-nf"
+
+ALPHAFOLD:
+  enabled:
+    true
+  run:
+    "run26"
+  db:
+    "/mnt/storage/alphafold/v232"
+  preset:
+    "multimer"
+
+MSA:
+  enabled:
+    true
+
+PYMOL:
+  enabled:
+    true
+
+COMMS:
+  enabled:
+    true
+  port:
+    8899

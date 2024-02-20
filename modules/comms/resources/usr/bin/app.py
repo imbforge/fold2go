@@ -1,0 +1,92 @@
+import os
+import signal
+import pandas
+import py3Dmol
+
+from pathlib import Path
+from shiny import reactive, req
+from shiny.express import input, render, ui
+
+# get environment and store vars
+njobs = int(os.getenv('SHINY_APP_NJOBS'))
+metrics = Path(f"{os.getenv('SHINY_APP_DATA')}/metrics")
+predictions = Path(f"{os.getenv('SHINY_APP_DATA')}/predictions")
+header = {
+    'project_name':str,
+    'prediction_name':str,
+    'chainA_length':int,
+    'chainB_length':int,
+    'model_id':str,
+    'model_confidence':float,
+    'chainA_intf_avg_plddt':float,
+    'chainB_intf_avg_plddt':float,
+    'intf_avg_plddt':float,
+    'pDockQ':float,
+    'iPAE':float,
+    'num_chainA_intf_res':int,
+    'num_chainB_intf_res':int,
+    'num_res_res_contact':int,
+    'num_atom_atom_contact':int
+}
+
+# list files of completed predictions
+def _list_files() -> list:
+    return list(metrics.glob("*.template_indep_metrics.tsv"))
+
+# construct data frame from list of files
+def _build_frame(metrics) -> pandas.DataFrame:
+    if len(metrics) > 0:
+        data = []
+        for f in metrics:
+            data.append(pandas.read_csv(f, sep='\t', usecols=header))
+        return pandas.concat(data)
+    else: # as long as no predictions are available, just return the header
+        return pandas.DataFrame(columns=header)
+
+with ui.layout_columns(col_widths=(12, 12)):
+    with ui.card():
+        @render.data_frame
+        @reactive.poll(_list_files, 1)
+        def render_frame():
+            done = _list_files()
+
+            progress = ui.Progress(min=0, max=njobs)
+            progress.set(len(done), message=f"{len(done)} of {njobs} predictions complete")
+
+            if not done:
+                msg = ui.modal(
+                    title="Alphafold predictions have just started, please check back later...",
+                    footer=ui.HTML('<div class="spinner-border"></div>')
+                )
+                ui.modal_show(msg)
+            else:
+                ui.modal_remove()
+
+            return render.DataGrid(_build_frame(done), row_selection_mode="single")
+
+        @render.download(label="Download", filename="template_indep_info.csv")
+        def download_metrics():
+            yield _build_frame(_list_files()).to_csv(index=False)
+
+    # second card displays model structure based on selection in first card
+    with ui.card():
+        @render.ui
+        def render_pdb():
+            df = _build_frame(_list_files()) #TODO: cache this somehow
+            idx = list(req(input.render_frame_selected_rows()))[0]
+            row = df.iloc[idx].to_dict()
+            with open(f'{predictions}/{row.get('prediction_name')}/{row.get('model_id')}.pdb') as pdb:
+                model = "".join([i for i in pdb])
+            view = py3Dmol.view(width=1200, height=800)
+            view.addModelsAsFrames(model)
+            view.setStyle({'model': -1}, {'cartoon': {'color': 'spectrum'}})
+            view.zoomTo()
+            return ui.HTML(view._make_html())
+
+    # third card provides button to terminate shiny server process
+    with ui.card():
+        ui.input_action_button("exit", "Exit", class_="btn-danger")
+        @reactive.effect
+        @reactive.event(input.exit)
+        def _():
+           return os.kill(os.getpid(), signal.SIGUSR1)
