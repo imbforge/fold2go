@@ -31,7 +31,7 @@ header = {
 
 # list files of completed predictions
 def _list_files() -> list:
-    return list(metrics.glob("*_template_indep_metrics.tsv"))
+    return list(metrics.glob("*.template_indep_metrics.tsv"))
 
 # construct data frame from list of files, check for changes every 60s
 @reactive.poll(_list_files, 60)
@@ -78,7 +78,7 @@ with ui.layout_columns(col_widths=(12, 12)):
         def render_pdb():
             idx = list(req(input.render_frame_selected_rows()))[0]
             row = _build_frame().iloc[idx].to_dict()
-            with open(f'{predictions}/{row.get('model_id')}.pdb') as pdb:
+            with open(f'{predictions}/{row.get('prediction_name')}/{row.get('model_id')}.pdb') as pdb:
                 model = "".join([i for i in pdb])
             view = py3Dmol.view(width=1200, height=800)
             view.addModelsAsFrames(model)
