@@ -36,7 +36,7 @@ def _list_files() -> list:
 # construct data frame from list of files, check for changes every 60s
 @reactive.poll(_list_files, 60)
 def _build_frame() -> pandas.DataFrame:
-    if metrics := _list_files():
+    if (metrics := _list_files()):
         data = []
         for f in metrics:
             data.append(pandas.read_csv(f, sep='\t', usecols=header))
@@ -50,20 +50,20 @@ with ui.layout_columns(col_widths=(12, 12)):
     with ui.card():
         @render.data_frame
         def render_frame():
-            done = _list_files()
 
             progress = ui.Progress(min=0, max=njobs)
-            progress.set(len(done), message=f"{len(done)} of {njobs} predictions complete")
 
-            if not done:
+            if not (done := len(_list_files())):
+                progress.set(None, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
                 msg = ui.modal(
-                    "Predictions should become available soon ...",
-                    title="AlphaFold is running",
-                    size='s',
+                    f"This could take a while, please check back later to see some results",
+                    title=f"AlphaFold is running {njobs} predictions",
+                    size='m',
                     footer=ui.HTML('<div class="spinner-border"></div>')
                 )
                 ui.modal_show(msg)
             else:
+                progress.set(done, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
                 ui.modal_remove()
 
             return render.DataGrid(_build_frame(), row_selection_mode="single")
