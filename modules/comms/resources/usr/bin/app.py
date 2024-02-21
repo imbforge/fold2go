@@ -31,11 +31,12 @@ header = {
 
 # list files of completed predictions
 def _list_files() -> list:
-    return list(metrics.glob("*.template_indep_metrics.tsv"))
+    return list(metrics.glob("*_template_indep_metrics.tsv"))
 
-# construct data frame from list of files
-def _build_frame(metrics) -> pandas.DataFrame:
-    if len(metrics) > 0:
+# construct data frame from list of files, check for changes every 60s
+@reactive.poll(_list_files, 60)
+def _build_frame() -> pandas.DataFrame:
+    if metrics := _list_files():
         data = []
         for f in metrics:
             data.append(pandas.read_csv(f, sep='\t', usecols=header))
@@ -44,9 +45,10 @@ def _build_frame(metrics) -> pandas.DataFrame:
         return pandas.DataFrame(columns=header)
 
 with ui.layout_columns(col_widths=(12, 12)):
+
+    # first card shows dataframe with calculated metrics and selectable rows
     with ui.card():
         @render.data_frame
-        @reactive.poll(_list_files, 1)
         def render_frame():
             done = _list_files()
 
@@ -55,31 +57,32 @@ with ui.layout_columns(col_widths=(12, 12)):
 
             if not done:
                 msg = ui.modal(
-                    title="Alphafold predictions have just started, please check back later...",
+                    "Predictions should become available soon ...",
+                    title="AlphaFold is running",
+                    size='s',
                     footer=ui.HTML('<div class="spinner-border"></div>')
                 )
                 ui.modal_show(msg)
             else:
                 ui.modal_remove()
 
-            return render.DataGrid(_build_frame(done), row_selection_mode="single")
+            return render.DataGrid(_build_frame(), row_selection_mode="single")
 
         @render.download(label="Download", filename="template_indep_info.csv")
         def download_metrics():
-            yield _build_frame(_list_files()).to_csv(index=False)
+            yield _build_frame().to_csv(index=False)
 
     # second card displays model structure based on selection in first card
     with ui.card():
         @render.ui
         def render_pdb():
-            df = _build_frame(_list_files()) #TODO: cache this somehow
             idx = list(req(input.render_frame_selected_rows()))[0]
-            row = df.iloc[idx].to_dict()
-            with open(f'{predictions}/{row.get('prediction_name')}/{row.get('model_id')}.pdb') as pdb:
+            row = _build_frame().iloc[idx].to_dict()
+            with open(f'{predictions}/{row.get('model_id')}.pdb') as pdb:
                 model = "".join([i for i in pdb])
             view = py3Dmol.view(width=1200, height=800)
             view.addModelsAsFrames(model)
-            view.setStyle({'model': -1}, {'cartoon': {'color': 'spectrum'}})
+            view.setStyle({'model': -1}, {"cartoon": {'color': 'spectrum'}})
             view.zoomTo()
             return ui.HTML(view._make_html())
 
