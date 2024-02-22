@@ -6,10 +6,10 @@ process ALPHAFOLD {
         params.ALPHAFOLD.enabled
 
     input:
-        tuple val(meta), path(fasta, stageAs: "chains.fasta"), path(chain_A, stageAs: "chains/msas/A/*"), path(chain_B, stageAs: "chains/msas/B/*")
+        tuple val(meta), path(chain_A, stageAs: "chains/msas/A/*"), path(chain_B, stageAs: "chains/msas/B/*"), path(fasta, stageAs: "chains.fasta")
 
     output:
-        tuple val(meta), path("*.fasta", includeInputs: true), path("chains/*.{pkl,pdb,json}"), emit: prediction
+        tuple val(meta), path("chains/*.{pkl,pdb,json}"), emit: prediction
 
     script:
         """
@@ -33,24 +33,29 @@ process ALPHAFOLD {
 }
 
 process MSA {
-    tag "${fasta}"
+    tag "${record.id}"
 
     when:
         params.MSA.enabled
 
     input:
-        path(fasta)
+        tuple val(meta), val(record)
         each(database)
 
     output:
-        tuple val(fasta.baseName), path("*.{a3m,sto}"), emit: msa
+        tuple val(record.id), path("*.{a3m,sto}"), emit: msa
 
     script:
         """
+        cat << EOF > ${record.id}.fasta
+        >chain_${meta.find { it.value == record.id }.key}
+        ${record.sequence}
+        EOF
+
         python ${moduleDir}/resources/usr/bin/run_msa.py \\
             --cores=${task.cpus} \\
             --database=${database} \\
-            --fasta_path=${fasta} \\
+            --fasta_path=${record.id}.fasta \\
             --database_root_path=${params.ALPHAFOLD.db}
         """
 }

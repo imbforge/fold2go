@@ -1,4 +1,5 @@
-# pixi environments
+jupyter*
+.ipynb_*
 .pixi
 .nextflow*
 work/

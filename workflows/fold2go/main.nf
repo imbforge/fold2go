@@ -6,40 +6,37 @@ workflow FOLD2GO {
 
     Channel
         .fromPath(params.IN)
-        .map { fasta -> def (chainA, chainB) = fasta.baseName.minus("${params.ALPHAFOLD.run}_").tokenize("."); [ ['A': chainA, 'B': chainB], fasta ] }
-        .tap { fasta }
-        .splitFasta(record: [id: true, sequence: true])
-        .unique{ chains, fasta -> fasta.sequence }
-        .collectFile(cache: true, storeDir: "${params.OUT}/chains"){ chains, fasta -> ["${fasta.id}.fasta", [">chain_${chains.find{ it.value == fasta.id }.key}",fasta.sequence].join("\n")] }
-        .set { chains }
-
-        MSA(
-            chains,
-            ['uniref90', 'mgnify', 'uniprot', 'bfd']
-        )
-
-        MSA.out.msa
-            .groupTuple(by:0, size: 4)
-            .combine(fasta)
-            .branch { id, fasta, chains, msa ->
-                A: id == chains.A
-                    return [chains*.value.join("."), fasta, msa]
-                B: id == chains.B
-                    return [chains*.value.join("."), fasta, msa]
-            }
-            .set{ msa }
- 
-        ALPHAFOLD(
-            msa.A.combine(msa.B, by:[0,2])
-        )
- 
-        PYMOL(
-            ALPHAFOLD.out.prediction
-        )
+        .map { fasta -> def (chainA, chainB) = fasta.baseName.minus("${params.ALPHAFOLD.run}_").tokenize("."); [ [ 'A': chainA, 'B': chainB ], fasta ] }
+        .set { fasta }
 
         COMMS(
-            chains.count(),
+            fasta.count(),
             file("${params.OUT}/${workflow.runName}", type: 'dir')
         )
 
+        MSA(
+            fasta.splitFasta(record: [id: true, sequence: true]).unique{ fasta, record -> record },
+            ['uniref90', 'mgnify', 'uniprot', 'bfd']
+        )
+        
+        MSA.out.msa
+            .groupTuple(by:0, size:4)
+            .combine(fasta)
+            .branch { chain, msa, meta, fasta ->
+                A: chain == meta.A
+                    return [meta, msa]
+                B: chain == meta.B
+                    return [meta, msa]
+            }
+            .set { msa }
+
+        ALPHAFOLD(
+            msa.A.join(msa.B).join(fasta)
+        )
+        
+        PYMOL(
+            ALPHAFOLD.out.prediction.combine(fasta, by:0)
+        )
+
+        PYMOL.out.metrics.collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)
 }
