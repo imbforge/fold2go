@@ -5,19 +5,17 @@ process PYMOL {
         params.PYMOL.enabled
 
     input:
-        tuple val(meta), path(fasta), path(prediction, stageAs: "prediction/*")
+        tuple val(meta), path(prediction, stageAs: "chains/*"), path(fasta, stageAs: "chains.fasta")
 
     output:
         path("template_indep_info.tsv"), emit: metrics
 
     script:
         """
-        mv prediction ${meta}
-        mv ${fasta} ${meta}.fasta
-
         python ${moduleDir}/resources/usr/bin/calculate_template_independent_metrics.py \\
             -path_to_prediction ./ \\
             -project_name ${workflow.runName} \\
+            -prediction_name ${meta*.value.join('.')} \\
             -skip_write_out_contacts
         """
 }

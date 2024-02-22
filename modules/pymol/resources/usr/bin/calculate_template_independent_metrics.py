@@ -12,7 +12,7 @@ import mdtraj as md
 
 class Prediction_folder:
     """Class that stores prediction folder information"""
-    def __init__(self,prediction_folder,num_model=5,project_name=None):
+    def __init__(self,prediction_folder,num_model=5,prediction_name=None,project_name=None):
         """Initialize an instance of Prediction
 
         Args:
@@ -21,7 +21,7 @@ class Prediction_folder:
         self.prediction_folder = prediction_folder
         self.num_model = num_model
         self.path_to_prediction_folder = os.path.split(self.prediction_folder)[0]
-        self.prediction_name = os.path.split(self.prediction_folder)[1]
+        self.prediction_name = os.path.split(self.prediction_folder)[1] if prediction_name is None else prediction_name
         self.rank_to_model = {}
         self.model_confidences = {}
         self.fasta_sequence_dict = {'A':'','B':''}
@@ -523,6 +523,7 @@ def main():
     parser.add_argument('-run_ids', type=str, help='Run IDs for metrics calculation', dest='run_ids')
     parser.add_argument('-path_to_run', type=str, help='Either provide a path to a folder where multiple runs of AlphaFold predictions are contained and specify the run_ids to be processed or use -path_to_prediction to specify a folder that you want to process, include "/" at the end', dest='path_to_run')
     parser.add_argument('-path_to_prediction', type=str, help='Path to the prediction folder "/" at the end', dest='path_to_prediction')
+    parser.add_argument('-prediction_name', type=str, help='Optional name of the prediction, otherwise inferred from the directory name', dest='prediction_name')
     parser.add_argument('-project_name', type=str, help='Optional name for the project', dest='project_name')
     parser.add_argument('-skip_write_out_contacts', action='store_true', help='Exclude writing out atom-atom contacts found in predicted models', dest='skip_write_out_contacts')
     args = parser.parse_args()
@@ -530,6 +531,7 @@ def main():
     path_to_run = vars(args)['path_to_run']
     path_to_prediction = vars(args)['path_to_prediction']
     project_name = vars(args)['project_name']
+    prediction_name = vars(args)['prediction_name']
     skip_contacts = vars(args)['skip_write_out_contacts']
 
     # a list to contains already processed files
@@ -549,7 +551,7 @@ def main():
                 continue
             file_abs = os.path.join(path_to_prediction,file)
             if os.path.isdir(file_abs):
-                folder = Prediction_folder(file_abs,num_model=5,project_name=project_name)
+                folder = Prediction_folder(file_abs,num_model=5,project_name=project_name,prediction_name=prediction_name)
                 folder.process_all_models()
                 folder.write_out_calculated_metrics()
                 if skip_contacts:
