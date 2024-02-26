@@ -1,0 +1,124 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://gitlab.rlp.net/imbforge/fold2go/-/raw/main/nextflow_schema.json",
+    "title": "fold2go",
+    "description": "Configure pipeline parameters",
+    "type": "object",
+    "defs": {
+        "pipeline_options": {
+            "title": "Pipeline options",
+            "type": "object",
+            "description": "Define fold2go pipeline parameters.",
+            "properties": {
+                "IN": {
+                    "type": "string",
+                    "format": "path",
+                    "pattern": ".(fasta|fa)$",
+                    "description": "Path to input fasta file(s) (specify glob pattern for multiple files)",
+                    "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.fasta",
+                    "errorMessage": "File glob must match '*.fasta' or '*.fa'"
+                },
+                "OUT": {
+                    "type": "string",
+                    "format": "path",
+                    "default": "./results",
+                    "description": "Path to output directory",
+                    "hidden": true
+                },
+                "DATABASE": {
+                    "type": "string",
+                    "format": "path",
+                    "description": "Path to AlphaFold database",
+                    "default": "/mnt/storage/alphafold/v232",
+                    "hidden": true
+                },
+                "MODEL_PRESET": {
+                    "type": "string",
+                    "description": "AlphaFold model preset",
+                    "default": "multimer",
+                    "enum": ["multimer"]
+                },
+                "RUN_ID": {
+                    "type": "string",
+                    "description": "Run ID",
+                    "default": "run26"
+                }
+            }
+        },
+        "alphafold_options": {
+            "type": "object",
+            "properties": {
+                "title": "ALPHAFOLD",
+                "type": "object",
+                "description": "Parameter options for AlphaFold.",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Enable ALPHAFOLD process",
+                        "default": true,
+                        "hidden": true
+                    }
+                }
+            }
+        },
+        "msa_options": {
+            "type": "object",
+            "properties": {
+                "title": "MSA",
+                "type": "object",
+                "description": "Parameter options for multiple sequence alignment.",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Enable MSA process",
+                        "default": true,
+                        "hidden": true
+                    }
+                }
+            }
+        },
+        "pymol_options": {
+            "type": "object",
+            "properties": {
+                "title": "PYMOL",
+                "type": "object",
+                "description": "Parameter options for pymol metrics.",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Enable PYMOL process",
+                        "default": true,
+                        "hidden": true
+                    }
+                }
+            }
+        },
+        "comms_options": {
+            "type": "object",
+            "properties": {
+                "title": "COMMS",
+                "type": "object",
+                "description": "Parameter options for shiny app.",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Enable COMMS process",
+                        "default": false,
+                        "hidden": true
+                    },
+                    "port": {
+                        "type": "integer",
+                        "description": "HTTP port to run on",
+                        "default": 9988,
+                        "hidden": true
+                    }
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/defs/pipeline_options"
+        }
+    ]
+}
