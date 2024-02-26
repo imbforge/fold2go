@@ -1,11 +1,15 @@
+import json
 import os
 import signal
 import pandas
 import py3Dmol
+import pickle
+import plotly.express as px
 
 from pathlib import Path
 from shiny import reactive, req
 from shiny.express import input, render, ui
+from shinywidgets import render_plotly
 
 # get environment and store vars
 njobs = int(os.getenv('SHINY_APP_NJOBS'))
@@ -44,9 +48,9 @@ def _build_frame() -> pandas.DataFrame:
     else: # as long as no predictions are available, just return the header
         return pandas.DataFrame(columns=header)
 
-with ui.layout_columns(col_widths=(12, 12)):
+with ui.layout_columns(col_widths=(12, 6, 6)):
 
-    # first card shows dataframe with calculated metrics and selectable rows
+    # display dataframe with calculated metrics and selectable rows
     with ui.card():
         @render.data_frame
         def render_frame():
@@ -72,21 +76,34 @@ with ui.layout_columns(col_widths=(12, 12)):
         def download_metrics():
             yield _build_frame().to_csv(index=False)
 
-    # second card displays model structure based on selection in first card
+    # render model structure based on selection in first card
     with ui.card():
         @render.ui
         def render_pdb():
             idx = list(req(input.render_frame_selected_rows()))[0]
             row = _build_frame().iloc[idx].to_dict()
             with open(f'{predictions}/{row.get('prediction_name')}/{row.get('model_id')}.pdb') as pdb:
-                model = "".join([i for i in pdb])
-            view = py3Dmol.view(width=1200, height=800)
+                model = "".join([res for res in pdb])
+            view = py3Dmol.view(width=600, height=400)
             view.addModelsAsFrames(model)
             view.setStyle({'model': -1}, {"cartoon": {'color': 'spectrum'}})
             view.zoomTo()
             return ui.HTML(view._make_html())
 
-    # third card provides button to terminate shiny server process
+    # plot predicted aligned error based on selection in first card
+    with ui.card():
+        @render_plotly
+        def render_pae():
+            idx = list(req(input.render_frame_selected_rows()))[0]
+            row = _build_frame().iloc[idx].to_dict()
+            with open(f'{predictions}/{row.get('prediction_name')}/ranking_debug.json') as fin:
+                model = json.load(fin)['order'][int(row.get('model_id').split('_')[-1])]
+            print(f'{model}')
+            with open(f'{predictions}/{row.get('prediction_name')}/result_{model}.pkl', 'rb') as pkl:
+                pae = pickle.load(pkl)['predicted_aligned_error']
+            return px.imshow(pae, labels={'color': 'PAE'})
+
+    # display button to terminate shiny server process
     with ui.card():
         ui.input_action_button("exit", "Exit", class_="btn-danger")
         @reactive.effect
