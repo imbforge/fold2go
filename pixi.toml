@@ -1,0 +1,16 @@
+[project]
+name = "fold2go"
+version = "0.1.0"
+description = "Nextflow wrapper for alphafold2"
+authors = ["Patrick Hüther <huether@imb-mainz.de>"]
+channels = ["conda-forge", "bioconda"]
+platforms = ["linux-64"]
+
+[tasks]
+setup = "pip install -r .jupyter/requirements.txt"
+imb-alphafold = { cmd = "jupyterhub --config .jupyter/jupyterhub_config.py", depends_on = ["setup"] }
+
+[dependencies]
+jupyterhub = ">=4.0.2,<4.1"
+nextflow = ">=23.10.1,<23.11"
+pip = ">=24.0,<25"

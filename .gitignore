@@ -1,7 +1,9 @@
-./jupyter*
-.ipynb_*
-*.ipynb
-.pixi
+.ipynb_checkpoints
 .nextflow*
-work/
+.pixi
+*.dbm.*
+*.ipynb
+*.sqlite
+jupyterhub_cookie_secret
 results/
+work/
