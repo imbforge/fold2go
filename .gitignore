@@ -1,6 +1,7 @@
-jupyter*
+./jupyter*
 .ipynb_*
+*.ipynb
 .pixi
 .nextflow*
 work/
-
+results/

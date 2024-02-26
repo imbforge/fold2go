@@ -2,16 +2,16 @@ IN:
   "/fsimb/groups/imb-bioinfocf/personal/huetherp/alphafold/data/run26/run26*.fasta"
 OUT:
   "/fsimb/groups/imb-bioinfocf/personal/huetherp/alphafold/runs/run-nf"
+DATABASE:
+  "/mnt/storage/alphafold/v232"
+MODEL_PRESET:
+  "multimer"
+RUN_ID:
+  "run26"
 
 ALPHAFOLD:
   enabled:
     true
-  run:
-    "run26"
-  db:
-    "/mnt/storage/alphafold/v232"
-  preset:
-    "multimer"
 
 MSA:
   enabled:
