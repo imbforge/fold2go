@@ -6,7 +6,7 @@ workflow FOLD2GO {
 
     Channel
         .fromPath(params.IN)
-        .map { fasta -> def (chainA, chainB) = fasta.baseName.minus("${params.ALPHAFOLD.run}_").tokenize("."); [ [ 'A': chainA, 'B': chainB ], fasta ] }
+        .map { fasta -> def (chainA, chainB) = fasta.baseName.minus("${params.RUN_ID}_").tokenize("."); [ [ 'A': chainA, 'B': chainB ], fasta ] }
         .set { fasta }
 
         COMMS(
@@ -38,5 +38,15 @@ workflow FOLD2GO {
             ALPHAFOLD.out.prediction.combine(fasta, by:0)
         )
 
-        PYMOL.out.metrics.collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)
+        PYMOL.out.metrics
+            .collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)
+            .subscribe onComplete: {
+                sendMail(
+                    from: "alphafold@imb-mainz.de",
+                    to: "${params.EMAIL}",
+                    subject: "AlphaFold (${params.RUN_ID} - ${workflow.runName})",
+                    text: "Predictions are complete!",
+                    attach: "${params.OUT}/${workflow.runName}/template_indep_info.tsv"
+                )
+            }
 }

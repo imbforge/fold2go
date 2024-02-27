@@ -1,5 +1,5 @@
 IN:
-  "/fsimb/groups/imb-bioinfocf/personal/huetherp/alphafold/data/run26/run26*.fasta"
+  "/fsimb/common/cicd/test-data/alphafold/chains/*.fasta"
 OUT:
   "/fsimb/groups/imb-bioinfocf/personal/huetherp/alphafold/runs/run-nf"
 DATABASE:
@@ -8,6 +8,8 @@ MODEL_PRESET:
   "multimer"
 RUN_ID:
   "run26"
+EMAIL:
+  "huether@imb-mainz.de"
 
 ALPHAFOLD:
   enabled:

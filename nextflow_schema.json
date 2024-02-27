@@ -42,6 +42,11 @@
                     "type": "string",
                     "description": "Run ID",
                     "default": "run26"
+                },
+                "EMAIL": {
+                    "type": "string",
+                    "description": "Email address to send notifications",
+                    "default": "huether@imb-mainz.de"
                 }
             }
         },
