@@ -46,10 +46,18 @@ Until Jupyterhub is deployed properly at IMB, this repository contains configura
 
 This assumes you are connected to `hpcgpu.imb.uni-mainz.de` via `ssh`.
 
-#### 0) We will use [pixi](https://pixi.sh) to resolve dependencies, it needs to be installed first
+#### Prerequisites
+
+We will use [pixi](https://pixi.sh) to resolve dependencies, it needs to be installed first:
 
 ```bash
 curl -fsSL https://pixi.sh/install.sh | bash
+```
+
+The pipeline itself needs access to the gitlab container registry, for that create a [personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#create-a-personal-access-token) and use it to authenticate via singularity:
+
+```bash 
+singularity remote login -u $LOGNAME docker://registry.gitlab.rlp.net
 ```
 
 #### 1) Clone the repository to your home directory:
