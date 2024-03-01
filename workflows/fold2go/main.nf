@@ -6,7 +6,10 @@ workflow FOLD2GO {
 
     Channel
         .fromPath(params.IN)
-        .map { fasta -> def (chainA, chainB) = fasta.baseName.minus("${params.RUN_ID}_").tokenize("."); [ [ 'A': chainA, 'B': chainB ], fasta ] }
+        .map { fasta -> [ fasta, fasta ] }
+        .splitFasta(record: [id: true], elem: 1)
+        .groupTuple(by: 0)
+        .map { fasta, record -> [ [ 'A'..'B', record.id ].transpose().collectEntries(), fasta] }
         .set { fasta }
 
         COMMS(
@@ -15,7 +18,7 @@ workflow FOLD2GO {
         )
 
         MSA(
-            fasta.splitFasta(record: [id: true, sequence: true]).unique{ fasta, record -> record },
+            fasta.splitFasta(record: [id: true, sequence: true]).unique { fasta, record -> record },
             ['uniref90', 'mgnify', 'uniprot', 'bfd']
         )
         
@@ -44,7 +47,7 @@ workflow FOLD2GO {
                 sendMail(
                     from: "alphafold@imb-mainz.de",
                     to: "${params.EMAIL}",
-                    subject: "AlphaFold (${params.RUN_ID} - ${workflow.runName})",
+                    subject: "AlphaFold (${workflow.runName})",
                     text: "Predictions are complete!",
                     attach: "${params.OUT}/${workflow.runName}/template_indep_info.tsv"
                 )
