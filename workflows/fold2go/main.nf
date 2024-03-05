@@ -18,7 +18,7 @@ workflow FOLD2GO {
         )
 
         MSA(
-            fasta.splitFasta(record: [id: true, seqString: true]).unique { fasta, record -> record }.view(),
+            fasta.splitFasta(record: [id: true, seqString: true]).unique { fasta, record -> record },
             ['uniref90', 'mgnify', 'uniprot', 'bfd']
         )
         
