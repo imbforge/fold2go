@@ -49,7 +49,7 @@ process MSA {
         """
         cat << EOF > ${record.id}.fasta
         >chain_${meta.find { it.value == record.id }.key}
-        ${record.sequence}
+        ${record.seqString}
         EOF
 
         python ${moduleDir}/resources/usr/bin/run_msa.py \\
