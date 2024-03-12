@@ -86,7 +86,7 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
                 model = "".join([res for res in pdb])
             view = py3Dmol.view(width=600, height=400)
             view.addModelsAsFrames(model)
-            view.setStyle({'model': -1}, {"cartoon": {'color': 'spectrum'}})
+            view.setStyle({'model': -1}, {'cartoon': {'colorscheme': {'prop':'b', 'gradient':'rwb', 'min':50, 'max':90}}})
             view.zoomTo()
             return ui.HTML(view._make_html())
 
