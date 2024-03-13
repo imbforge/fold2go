@@ -20,6 +20,7 @@ process ALPHAFOLD {
             --use_gpu_relax=false \\
             --max_template_date=2020-05-14 \\
             --model_preset=${params.MODEL_PRESET} \\
+            --num_multimer_predictions_per_model=${params.PREDICTIONS_PER_MODEL} \\
             --data_dir=${params.DATABASE} \\
             --bfd_database_path=${params.DATABASE}/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt \\
             --mgnify_database_path=${params.DATABASE}/mgnify/mgy_clusters_2022_05.fa \\
