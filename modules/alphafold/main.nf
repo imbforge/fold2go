@@ -34,7 +34,7 @@ process ALPHAFOLD {
 }
 
 process MSA {
-    tag "${record.id}"
+    tag "${record.id}:${database}"
 
     when:
         params.MSA.enabled

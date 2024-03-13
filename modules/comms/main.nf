@@ -7,6 +7,7 @@ process COMMS {
     input:
         env(SHINY_APP_NJOBS)
         env(SHINY_APP_DATA)
+        env(SHINY_APP_LAUNCH_DIR)
 
     script:
         """

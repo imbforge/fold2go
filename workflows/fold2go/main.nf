@@ -14,7 +14,8 @@ workflow FOLD2GO {
 
         COMMS(
             fasta.count(),
-            file("${params.OUT}/${workflow.runName}", type: 'dir')
+            file("${params.OUT}/${workflow.runName}", type: 'dir'),
+            workflow.launchDir
         )
 
         MSA(

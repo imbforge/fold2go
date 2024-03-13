@@ -11,10 +11,11 @@ from shiny import reactive, req
 from shiny.express import input, render, ui
 from shinywidgets import render_plotly
 
-# get environment and initialize vars
+# get environment and store vars
 njobs = int(os.getenv('SHINY_APP_NJOBS'))
-metrics = Path(f"{os.getenv('SHINY_APP_DATA')}/metrics")
-predictions = Path(f"{os.getenv('SHINY_APP_DATA')}/predictions")
+metrics = Path(f'{os.getenv("SHINY_APP_DATA")}/metrics')
+predictions = Path(f'{os.getenv("SHINY_APP_DATA")}/predictions')
+log = Path(f'{os.getenv("SHINY_APP_LAUNCH_DIR")}/.nextflow.log')
 
 # initialize dataframe schema
 header = {
@@ -68,6 +69,17 @@ def _get_prediction() -> dict:
     idx = list(req(input.render_frame_selected_rows()))[0]
     return df().iloc[idx].to_dict()
 
+# read log file every 30s to check pipeline progress
+# TODO: replace this with an http endpoint and use nf-weblog
+@reactive.file_reader(log, interval_secs=30)
+def _render_log() -> ui.HTML:
+    processes = []
+    with open(log) as txt:
+        for line in txt:
+            if 'process >' in line:
+                processes.append(line.split(" - ")[-1])
+    return ui.markdown(f'```{"\n".join(processes)}```')
+
 # display sidebar for (general) app settings
 with ui.sidebar(position='left', open='closed'):
     ui.input_select('style', 'Surface style', {style:style for style in styles}, selected='cartoon')
@@ -83,13 +95,14 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
 
             if not (done := len(_list_files())):
                 progress.set(None, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
-                msg = ui.modal(
-                    f"This could take a while, please check back later to see some results",
-                    title=f"AlphaFold is running {njobs} predictions",
-                    size='m',
-                    footer=ui.HTML('<div class="spinner-border"></div>')
+                ui.modal_show(
+                    ui.modal(
+                        _render_log(),
+                        title=ui.div("AlphaFold is running, please check back later to see some results"),
+                        size='xl',
+                        footer=ui.HTML('<div class="spinner-border"></div>')
+                    )
                 )
-                ui.modal_show(msg)
             else:
                 progress.set(done, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
                 ui.modal_remove()
