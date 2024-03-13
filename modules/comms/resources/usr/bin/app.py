@@ -11,10 +11,12 @@ from shiny import reactive, req
 from shiny.express import input, render, ui
 from shinywidgets import render_plotly
 
-# get environment and store vars
+# get environment and initialize vars
 njobs = int(os.getenv('SHINY_APP_NJOBS'))
 metrics = Path(f"{os.getenv('SHINY_APP_DATA')}/metrics")
 predictions = Path(f"{os.getenv('SHINY_APP_DATA')}/predictions")
+
+# initialize dataframe schema
 header = {
     'project_name':str,
     'prediction_name':str,
@@ -33,23 +35,45 @@ header = {
     'num_atom_atom_contact':int
 }
 
+# initialize surface styles for 3Dmol
+styles = ['cartoon', 'stick', 'sphere']
+
+# initialize color maps to select from
+cmaps = {
+    'viridis': px.colors.sequential.Viridis,
+    'aggrnyl': px.colors.sequential.Aggrnyl,
+    'portland': px.colors.diverging.Portland,
+    'spectral': px.colors.diverging.Spectral_r
+}
+
+# initialize reactive value to hold metrics dataframe
+df = reactive.value(pandas.DataFrame(columns=header))
+
 # list files of completed predictions
 def _list_files() -> list:
     return list(metrics.glob("*.template_indep_metrics.tsv"))
 
 # construct data frame from list of files, check for changes every 60s
+@reactive.effect
 @reactive.poll(_list_files, 60)
-def _build_frame() -> pandas.DataFrame:
+def _update_frame() -> bool:
     if (metrics := _list_files()):
         data = []
         for f in metrics:
             data.append(pandas.read_csv(f, sep='\t', usecols=header))
-        return pandas.concat(data)
-    else: # as long as no predictions are available, just return the header
-        return pandas.DataFrame(columns=header)
+        return df.set(pandas.concat(data))
+
+# get rowdata for a selected prediction from dataframe
+def _get_prediction() -> dict:
+    idx = list(req(input.render_frame_selected_rows()))[0]
+    return df().iloc[idx].to_dict()
+
+# display sidebar for (general) app settings
+with ui.sidebar(position='left', open='closed'):
+    ui.input_select('style', 'Surface style', {style:style for style in styles}, selected='cartoon')
+    ui.input_select('cmap', 'Color scheme', {cmap:cmap for cmap in cmaps.keys()}, selected='viridis')
 
 with ui.layout_columns(col_widths=(12, 6, 6)):
-
     # display dataframe with calculated metrics and selectable rows
     with ui.card():
         @render.data_frame
@@ -70,23 +94,22 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
                 progress.set(done, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
                 ui.modal_remove()
 
-            return render.DataGrid(_build_frame(), row_selection_mode="single")
+            return render.DataGrid(df(), row_selection_mode="single")
 
         @render.download(label="Download", filename="template_indep_info.csv")
         def download_metrics():
-            yield _build_frame().to_csv(index=False)
+            yield df().to_csv(index=False)
 
     # render model structure based on selection in first card
     with ui.card():
         @render.ui
         def render_pdb():
-            idx = list(req(input.render_frame_selected_rows()))[0]
-            row = _build_frame().iloc[idx].to_dict()
-            with open(f'{predictions}/{row.get('prediction_name')}/{row.get('model_id')}.pdb') as pdb:
+            prediction = _get_prediction()
+            with open(f'{predictions}/{prediction.get('prediction_name')}/{prediction.get('model_id')}.pdb') as pdb:
                 model = "".join([res for res in pdb])
-            view = py3Dmol.view(width=600, height=400)
+            view = py3Dmol.view(width=800, height=600)
             view.addModelsAsFrames(model)
-            view.setStyle({'model': -1}, {'cartoon': {'colorscheme': {'prop':'b', 'gradient':'rwb', 'min':50, 'max':90}}})
+            view.setStyle({'model': -1}, {input.style(): {'colorscheme': {'prop':'b', 'gradient':'linear', 'colors':list(reversed(cmaps.get(input.cmap()))), 'min':50, 'max':90}}})
             view.zoomTo()
             return ui.HTML(view._make_html())
 
@@ -94,14 +117,12 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
     with ui.card():
         @render_plotly
         def render_pae():
-            idx = list(req(input.render_frame_selected_rows()))[0]
-            row = _build_frame().iloc[idx].to_dict()
-            with open(f'{predictions}/{row.get('prediction_name')}/ranking_debug.json') as fin:
-                model = json.load(fin)['order'][int(row.get('model_id').split('_')[-1])]
-            print(f'{model}')
-            with open(f'{predictions}/{row.get('prediction_name')}/result_{model}.pkl', 'rb') as pkl:
+            prediction = _get_prediction()
+            with open(f'{predictions}/{prediction.get('prediction_name')}/ranking_debug.json') as fin:
+                model = json.load(fin)['order'][int(prediction.get('model_id').split('_')[-1])]
+            with open(f'{predictions}/{prediction.get('prediction_name')}/result_{model}.pkl', 'rb') as pkl:
                 pae = pickle.load(pkl)['predicted_aligned_error']
-            return px.imshow(pae, labels={'color': 'PAE'})
+            return px.imshow(pae, labels={'color': 'PAE'}, color_continuous_scale=cmaps.get(input.cmap()))
 
     # display button to terminate shiny server process
     with ui.card():
