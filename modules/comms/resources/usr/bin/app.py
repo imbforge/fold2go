@@ -72,22 +72,21 @@ def _get_prediction() -> dict:
 # parse log file to retrieve pipeline progress
 # TODO: replace this with an http endpoint and use nf-weblog
 def _parse_log() -> list:
-    tags = ui.TagList()
-    
+    tags = []
     with open(log) as txt:
         for line in txt:
             if 'INFO  nextflow' in line:
-                tags.append(ui.tags.code(line.split(' - ')[-1]), ui.tags.br())
-    return list(tags)
+                tags.append(line.split(' - ')[-1])
+    return tags
 
 # check for new log messages every 60s
 @reactive.poll(_parse_log, interval_secs=60)
 def _render_modal() -> ui.Tag:
     return ui.modal(
-        _parse_log(),
-        title=ui.div("AlphaFold is running, please check back later to see some results..."),
+        ui.tags.pre(_parse_log()),
+        title=ui.HTML('<a href="https://gitlab.rlp.net/imbforge/fold2go">imbforge/fold2go</a> is currently running, please check back later to see some results...'),
         size='xl',
-        footer=[ui.div(class_='spinner-border')]
+        footer=ui.div(class_='spinner-border')
     )
 
 # display sidebar for (general) app settings
