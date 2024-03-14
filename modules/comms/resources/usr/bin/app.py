@@ -69,16 +69,26 @@ def _get_prediction() -> dict:
     idx = list(req(input.render_frame_selected_rows()))[0]
     return df().iloc[idx].to_dict()
 
-# read log file every 30s to check pipeline progress
+# parse log file to retrieve pipeline progress
 # TODO: replace this with an http endpoint and use nf-weblog
-@reactive.file_reader(log, interval_secs=30)
-def _render_log() -> ui.HTML:
-    processes = []
+def _parse_log() -> list:
+    tags = ui.TagList()
+    
     with open(log) as txt:
         for line in txt:
-            if 'process >' in line:
-                processes.append(line.split(" - ")[-1])
-    return ui.markdown(f'```{"\n".join(processes)}```')
+            if 'INFO  nextflow' in line:
+                tags.append(ui.tags.code(line.split(' - ')[-1]), ui.tags.br())
+    return list(tags)
+
+# check for new log messages every 60s
+@reactive.poll(_parse_log, interval_secs=60)
+def _render_modal() -> ui.Tag:
+    return ui.modal(
+        _parse_log(),
+        title=ui.div("AlphaFold is running, please check back later to see some results..."),
+        size='xl',
+        footer=[ui.div(class_='spinner-border')]
+    )
 
 # display sidebar for (general) app settings
 with ui.sidebar(position='left', open='closed'):
@@ -90,22 +100,12 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
     with ui.card():
         @render.data_frame
         def render_frame():
-
-            progress = ui.Progress(min=0, max=njobs)
-
             if not (done := len(_list_files())):
-                progress.set(None, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
-                ui.modal_show(
-                    ui.modal(
-                        _render_log(),
-                        title=ui.div("AlphaFold is running, please check back later to see some results"),
-                        size='xl',
-                        footer=ui.HTML('<div class="spinner-border"></div>')
-                    )
-                )
+                ui.modal_show(_render_modal())
             else:
-                progress.set(done, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
                 ui.modal_remove()
+                progress = ui.Progress(min=0, max=njobs)
+                progress.set(done, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
 
             return render.DataGrid(df(), row_selection_mode="single")
 
