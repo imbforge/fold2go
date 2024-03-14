@@ -39,9 +39,9 @@
                     "enum": ["multimer"]
                 },
                 "PREDICTIONS_PER_MODEL": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "Number of multimer predictions per model",
-                    "default": 5
+                    "default": "5"
                 },
                 "EMAIL": {
                     "type": "string",
