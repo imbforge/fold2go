@@ -1,2 +1,2 @@
 jupyterhub-firstuseauthenticator
-nextflowspawner @ git+https://github.com/phue/nextflowspawner@v0.1.0
+nextflowspawner @ git+https://github.com/phue/nextflowspawner@v0.2.0
