@@ -1,46 +1,50 @@
-include { ALPHAFOLD; MSA } from '../../modules/alphafold'
-include { PYMOL          } from '../../modules/pymol'
-include { COMMS          } from '../../modules/comms'
+switch ( params.MODEL_PRESET ) {
+    case { it.startsWith('monomer') }:
+        include { MONOMER as ALPHAFOLD } from '../../modules/alphafold'
+        databases = ['uniref90', 'mgnify', 'bfd']
+        break
+    case "multimer":
+        include { MULTIMER as ALPHAFOLD } from '../../modules/alphafold'
+        databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
+        break
+}
+
+include { MSA   } from '../../modules/alphafold'
+include { PYMOL } from '../../modules/pymol'
+include { COMMS } from '../../modules/comms'
 
 workflow FOLD2GO {
 
     Channel
-        .fromPath(params.IN)
+        .fromPath( params.IN )
         .map { fasta -> [ fasta, fasta ] }
-        .splitFasta(record: [id: true], elem: 1)
-        .groupTuple(by: 0)
-        .map { fasta, record -> [ [ 'A'..'B', record.id ].transpose().collectEntries(), fasta] }
+        .splitFasta ( record: [ id: true ], elem: 1 )
+        .groupTuple ( by: 0 )
+        .map { fasta, record -> [ [ ('A'..'H'), record.id ].transpose().collectEntries(), fasta ] }
         .set { fasta }
 
         COMMS(
             fasta.count(),
-            file("${params.OUT}/${workflow.runName}", type: 'dir'),
+            params.OUT,
+            workflow.runName,
             workflow.launchDir
         )
 
         MSA(
-            fasta.splitFasta(record: [id: true, seqString: true]).unique { fasta, record -> record },
-            ['uniref90', 'mgnify', 'uniprot', 'bfd']
+            fasta.splitFasta( record: [ id: true, seqString: true ] ).unique { fasta, record -> record },
+            databases
         )
-        
-        MSA.out.msa
-            .groupTuple(by:0, size:4)
-            .combine(fasta)
-            .branch { chain, msa, meta, fasta ->
-                A: chain == meta.A
-                    return [meta, msa]
-                B: chain == meta.B
-                    return [meta, msa]
-            }
+
+        fasta
+            .combine ( MSA.out.msa )
+            .filter { meta, fasta, record, msa -> (record in meta*.value) }
             .set { msa }
 
         ALPHAFOLD(
-            msa.A.join(msa.B).join(fasta)
-        )
-        
-        PYMOL(
-            ALPHAFOLD.out.prediction.combine(fasta, by:0)
-        )
+            params.MODEL_PRESET == 'multimer'
+                ? msa.groupTuple ( by: [0,1] ).map { meta, fasta, record, msa -> [ meta, fasta ] + ('A'..'H').collect { chain -> msa.findAll { it.parent.name == chain } } }
+                : msa.groupTuple ( by: [0,1] ).map { meta, fasta, record, msa -> [ meta, fasta, msa ] }
+        ) | PYMOL
 
         PYMOL.out.metrics
             .collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)

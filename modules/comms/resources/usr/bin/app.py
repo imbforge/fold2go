@@ -13,8 +13,8 @@ from shinywidgets import render_plotly
 
 # get environment and store vars
 njobs = int(os.getenv('SHINY_APP_NJOBS'))
-metrics = Path(f'{os.getenv("SHINY_APP_DATA")}/metrics')
-predictions = Path(f'{os.getenv("SHINY_APP_DATA")}/predictions')
+metrics = Path(f'{os.getenv("SHINY_APP_DATA")}/{os.getenv("SHINY_APP_RUN_NAME")}/metrics')
+predictions = Path(f'{os.getenv("SHINY_APP_DATA")}/{os.getenv("SHINY_APP_RUN_NAME")}/predictions')
 log = Path(f'{os.getenv("SHINY_APP_LAUNCH_DIR")}/.nextflow.log')
 
 # initialize dataframe schema

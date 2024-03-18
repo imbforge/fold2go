@@ -2,7 +2,7 @@ process PYMOL {
     tag "${meta}"
  
     when:
-        params.PYMOL.enabled
+        (params.PYMOL.enabled && meta.size() == 2)
 
     input:
         tuple val(meta), path(prediction, stageAs: "chains/*"), path(fasta, stageAs: "chains.fasta")
@@ -13,9 +13,9 @@ process PYMOL {
     script:
         """
         python ${moduleDir}/resources/usr/bin/calculate_template_independent_metrics.py \\
-            -path_to_prediction ./ \\
-            -project_name ${workflow.runName} \\
-            -prediction_name ${meta*.value.join('.')} \\
+            -path_to_prediction='./' \\
+            -project_name='${workflow.runName}' \\
+            -prediction_name='${meta*.value.join('.')}' \\
             -skip_write_out_contacts
         """
 }
