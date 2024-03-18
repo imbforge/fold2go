@@ -7,7 +7,7 @@ DATABASE:
 MODEL_PRESET:
   "multimer"
 PREDICTIONS_PER_MODEL:
-  5
+  1
 EMAIL:
   "huether@imb-mainz.de"
 
