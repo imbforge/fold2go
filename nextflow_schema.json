@@ -36,7 +36,12 @@
                     "type": "string",
                     "description": "AlphaFold model preset",
                     "default": "multimer",
-                    "enum": ["multimer"]
+                    "enum": [
+                        "multimer",
+                        "monomer",
+                        "monomer_casp14",
+                        "monomer_ptm"
+                    ]
                 },
                 "PREDICTIONS_PER_MODEL": {
                     "type": "integer",
