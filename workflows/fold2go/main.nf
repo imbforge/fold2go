@@ -37,14 +37,13 @@ workflow FOLD2GO {
 
         fasta
             .combine ( MSA.out.msa )
-            .filter { meta, fasta, record, msa -> (record in meta*.value) }
+            .filter { meta, fasta, record, msa -> ( record in meta*.value ) }
+            .map { meta, fasta, record, msa -> [ groupKey( meta, meta.size() * databases.size() ), fasta, msa ] }
+            .groupTuple()
+            .map { meta, fasta, msa -> [ meta, fasta.unique() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == chain } } : [ msa ] ) }
             .set { msa }
 
-        ALPHAFOLD(
-            params.MODEL_PRESET == 'multimer'
-                ? msa.groupTuple ( by: [0,1] ).map { meta, fasta, record, msa -> [ meta, fasta ] + ('A'..'H').collect { chain -> msa.findAll { it.parent.name == chain } } }
-                : msa.groupTuple ( by: [0,1] ).map { meta, fasta, record, msa -> [ meta, fasta, msa ] }
-        ) | PYMOL
+        ALPHAFOLD(msa) | PYMOL
 
         PYMOL.out.metrics
             .collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)
