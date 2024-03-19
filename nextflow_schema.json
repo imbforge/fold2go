@@ -21,7 +21,7 @@
                 "OUT": {
                     "type": "string",
                     "format": "path",
-                    "default": "./results",
+                    "default": "${projectDir}/results",
                     "description": "Path to output directory",
                     "hidden": true
                 },
