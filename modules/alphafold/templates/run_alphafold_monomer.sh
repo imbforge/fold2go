@@ -3,8 +3,8 @@
 python /app/alphafold/run_alphafold.py \
     --fasta_paths=${fasta} \
     --output_dir=. \
-    --use_precomputed_msas=true \\
-    --use_gpu_relax=false \\
+    --use_precomputed_msas=true \
+    --use_gpu_relax=false \
     --max_template_date=2020-05-14 \
     --model_preset=${params.MODEL_PRESET} \
     --data_dir=${params.DATABASE} \
