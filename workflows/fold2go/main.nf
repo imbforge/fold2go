@@ -40,7 +40,7 @@ workflow FOLD2GO {
             .filter { meta, fasta, record, msa -> ( record in meta*.value ) }
             .map { meta, fasta, record, msa -> [ groupKey( meta, meta.size() * databases.size() ), fasta, msa ] }
             .groupTuple()
-            .map { meta.getGroupTarget(), fasta, msa -> [ meta, fasta.unique() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == chain } } : [ msa ] ) }
+            .map { meta, fasta, msa -> [ meta.getGroupTarget(), fasta.unique() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == chain } } : [ msa ] ) }
             .set { msa }
 
         ALPHAFOLD(msa) | PYMOL
