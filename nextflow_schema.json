@@ -32,6 +32,13 @@
                     "default": "/mnt/storage/alphafold/v232",
                     "hidden": true
                 },
+                "NUM_CHAINS": {
+                    "type": "integer",
+                    "description": "Number of protein chains in complex",
+                    "default": 2,
+                    "minimum": 2,
+                    "maximum": 2
+                },
                 "MODEL_PRESET": {
                     "type": "string",
                     "description": "AlphaFold model preset",
@@ -41,7 +48,8 @@
                         "monomer",
                         "monomer_casp14",
                         "monomer_ptm"
-                    ]
+                    ],
+                    "hidden": true
                 },
                 "PREDICTIONS_PER_MODEL": {
                     "type": "integer",
