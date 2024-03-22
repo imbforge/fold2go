@@ -15,5 +15,5 @@ python /app/alphafold/run_alphafold.py \
     --obsolete_pdbs_path=${params.DATABASE}/pdb_mmcif/obsolete.dat \
     --template_mmcif_dir=${params.DATABASE}/pdb_mmcif/mmcif_files \
     --uniprot_database_path=${params.DATABASE}/uniprot/uniprot.fasta \
-    --uniref30_database_path=${params.DATABASE}/uniref30/UniRef30_2021_03 \
+    --uniref30_database_path=${params.DATABASE}/uniref30/UniRef30_2023_02 \
     --uniref90_database_path=${params.DATABASE}/uniref90/uniref90.fasta

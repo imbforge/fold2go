@@ -32,7 +32,7 @@ match args.database:
         database_path=f'{args.database_root_path}/uniprot/uniprot.fasta'
         msa_runner, msa_out_path, max_sto_sequences, msa_format = jackhmmer.Jackhmmer(binary_path=shutil.which('jackhmmer'), database_path=str(database_path)), f'{args.out_path}/uniprot_hits.sto', None, 'sto'
     case "bfd":
-        databases=[f'{args.database_root_path}/uniref30/UniRef30_2021_03', f'{args.database_root_path}/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt']
+        databases=[f'{args.database_root_path}/uniref30/UniRef30_2023_02', f'{args.database_root_path}/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt']
         msa_runner, msa_out_path, max_sto_sequences, msa_format = hhblits.HHBlits(binary_path=shutil.which('hhblits'), databases=databases), f'{args.out_path}/bfd_uniref_hits.a3m', None, 'a3m'
     case _:
         parser.error(f"{args.database} is not a valid choice")
