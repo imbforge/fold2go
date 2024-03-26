@@ -9,6 +9,7 @@ process PYMOL {
 
     output:
         path("template_indep_info.tsv"), emit: metrics
+        path("*_contacts.pse"), optional: true, emit: contacts
 
     script:
         """
