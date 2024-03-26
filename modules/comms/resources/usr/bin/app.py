@@ -15,26 +15,7 @@ from shinywidgets import render_plotly
 njobs = int(os.getenv('SHINY_APP_NJOBS'))
 metrics = Path(f'{os.getenv("SHINY_APP_DATA")}/{os.getenv("SHINY_APP_RUN_NAME")}/metrics')
 predictions = Path(f'{os.getenv("SHINY_APP_DATA")}/{os.getenv("SHINY_APP_RUN_NAME")}/predictions')
-log = Path(f'{os.getenv("SHINY_APP_LAUNCH_DIR")}/.nextflow.log')
-
-# initialize dataframe schema
-header = {
-    'project_name':str,
-    'prediction_name':str,
-    'chainA_length':int,
-    'chainB_length':int,
-    'model_id':str,
-    'model_confidence':float,
-    'chainA_intf_avg_plddt':float,
-    'chainB_intf_avg_plddt':float,
-    'intf_avg_plddt':float,
-    'pDockQ':float,
-    'iPAE':float,
-    'num_chainA_intf_res':int,
-    'num_chainB_intf_res':int,
-    'num_res_res_contact':int,
-    'num_atom_atom_contact':int
-}
+logfile = Path(f'{os.getenv("SHINY_APP_LAUNCH_DIR")}/.nextflow.log')
 
 # initialize surface styles for 3Dmol
 styles = ['cartoon', 'stick', 'sphere']
@@ -48,7 +29,7 @@ cmaps = {
 }
 
 # initialize reactive value to hold metrics dataframe
-df = reactive.value(pandas.DataFrame(columns=header))
+df = reactive.value()
 
 # list files of completed predictions
 def _list_files() -> list:
@@ -61,7 +42,7 @@ def _update_frame() -> bool:
     if (metrics := _list_files()):
         data = []
         for f in metrics:
-            data.append(pandas.read_csv(f, sep='\t', usecols=header))
+            data.append(pandas.read_csv(f, sep='\t'))
         return df.set(pandas.concat(data))
 
 # get rowdata for a selected prediction from dataframe
@@ -72,12 +53,12 @@ def _get_prediction() -> dict:
 # parse log file to retrieve pipeline progress
 # TODO: replace this with an http endpoint and use nf-weblog
 def _parse_log() -> list:
-    tags = []
-    with open(log) as txt:
+    log = []
+    with open(logfile) as txt:
         for line in txt:
             if 'INFO  nextflow' in line:
-                tags.append(line.split(' - ')[-1])
-    return tags
+                log.append(line.split(' - ')[-1])
+    return log
 
 # check for new log messages every 60s
 @reactive.poll(_parse_log, interval_secs=60)
@@ -117,7 +98,7 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
         @render.ui
         def render_pdb():
             prediction = _get_prediction()
-            with open(f'{predictions}/{prediction.get('prediction_name')}/{prediction.get('model_id')}.pdb') as pdb:
+            with open(f'{predictions}/{prediction.get('prediction_name')}/{prediction.get('model_rank')}.pdb') as pdb:
                 model = "".join([res for res in pdb])
             view = py3Dmol.view(width=800, height=600)
             view.addModelsAsFrames(model)
@@ -130,10 +111,8 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
         @render_plotly
         def render_pae():
             prediction = _get_prediction()
-            with open(f'{predictions}/{prediction.get('prediction_name')}/ranking_debug.json') as fin:
-                model = json.load(fin)['order'][int(prediction.get('model_id').split('_')[-1])]
-            with open(f'{predictions}/{prediction.get('prediction_name')}/result_{model}.pkl', 'rb') as pkl:
-                pae = pickle.load(pkl)['predicted_aligned_error']
+            with open(f'{predictions}/{prediction.get('prediction_name')}/pae_{prediction.get('model_id')}.json') as fin:
+                pae = json.load(fin)[0].get('predicted_aligned_error')
             return px.imshow(pae, labels={'color': 'PAE'}, color_continuous_scale=cmaps.get(input.cmap()))
 
     # display button to terminate shiny server process
