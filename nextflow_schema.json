@@ -46,7 +46,7 @@
                 "PREDICTIONS_PER_MODEL": {
                     "type": "integer",
                     "description": "Number of multimer predictions per model",
-                    "default": 5
+                    "default": 1
                 },
                 "EMAIL": {
                     "type": "string",
