@@ -1,7 +1,7 @@
 IN:
   "/fsimb/common/cicd/test-data/alphafold/chains/*.fasta"
 OUT:
-  "/fsimb/groups/imb-bioinfocf/personal/huetherp/alphafold/runs/run-nf"
+  "${projectDir}/results"
 DATABASE:
   "/mnt/storage/alphafold/v232"
 MODEL_PRESET:
