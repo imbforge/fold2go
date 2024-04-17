@@ -11,6 +11,6 @@ setup = "pip install -r .jupyter/requirements.txt"
 imb-alphafold = { cmd = "jupyterhub --config .jupyter/jupyterhub_config.py", depends_on = ["setup"] }
 
 [dependencies]
-jupyterhub = ">=4.1.4,<4.2"
+jupyterhub = ">=4.1.5,<4.2"
 nextflow = ">=23.10.1,<23.11"
 pip = ">=24.0,<25"

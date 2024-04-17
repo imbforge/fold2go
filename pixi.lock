@@ -47,8 +47,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/jsonschema-4.21.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jsonschema-specifications-2023.12.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyter_telemetry-0.1.0-pyhd8ed1ab_1.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterhub-4.1.4-pyh31011fe_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterhub-base-4.1.4-pyh31011fe_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterhub-4.1.5-pyh31011fe_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterhub-base-4.1.5-pyh31011fe_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/keyutils-1.6.1-h166bdaf_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/krb5-1.21.2-h659d440_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/lcms2-2.16-hb7c19ff_0.conda
@@ -816,34 +816,34 @@ packages:
   timestamp: 1605173908654
 - kind: conda
   name: jupyterhub
-  version: 4.1.4
+  version: 4.1.5
   build: pyh31011fe_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/jupyterhub-4.1.4-pyh31011fe_0.conda
-  sha256: 9c8fa044b2d66801a9c6b6c9c6bfd6deb6bece7a01d82c1bf55ac00701dd6234
-  md5: 75eee670e9f3a8dce758b6824609f389
+  url: https://conda.anaconda.org/conda-forge/noarch/jupyterhub-4.1.5-pyh31011fe_0.conda
+  sha256: 6096a134db377202e9f6cf8360b4592dc76912106cc3855f2df5e560145f10a1
+  md5: d48be9b58376a00be925fc2e9a236f5d
   depends:
   - __unix
   - configurable-http-proxy >=4
-  - jupyterhub-base 4.1.4 pyh31011fe_0
+  - jupyterhub-base 4.1.5 pyh31011fe_0
   - nodejs >=12
   - psutil
   - pycurl
   - python >=3.7
   license: BSD-3-Clause
   license_family: BSD
-  size: 7963
-  timestamp: 1711798144901
+  size: 7933
+  timestamp: 1712275028082
 - kind: conda
   name: jupyterhub-base
-  version: 4.1.4
+  version: 4.1.5
   build: pyh31011fe_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/jupyterhub-base-4.1.4-pyh31011fe_0.conda
-  sha256: 28436f184553f63a1f793ca1c2b6196287955378755ab49ea31245a1191fc007
-  md5: d65db9892ad9b0f05bef6109a2cb7f31
+  url: https://conda.anaconda.org/conda-forge/noarch/jupyterhub-base-4.1.5-pyh31011fe_0.conda
+  sha256: 569013036fdb43e09d74bd4db69fe42e00228477b8bfcda9cad0fac2030b36ef
+  md5: bf0429cd00ccda12d5f801a39dcf6f02
   depends:
   - __unix
   - alembic >=1.4
@@ -866,8 +866,8 @@ packages:
   - psutil >=5.6.5
   license: BSD-3-Clause
   license_family: BSD
-  size: 1586568
-  timestamp: 1711798120697
+  size: 1589195
+  timestamp: 1712275004875
 - kind: conda
   name: keyutils
   version: 1.6.1
