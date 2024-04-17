@@ -45,11 +45,6 @@ def _update_frame() -> bool:
             data.append(pandas.read_csv(f, sep='\t'))
         return df.set(pandas.concat(data))
 
-# get rowdata for a selected prediction from dataframe
-def _get_prediction() -> dict:
-    idx = list(req(input.render_frame_selected_rows()))[0]
-    return df().iloc[idx].to_dict()
-
 # parse log file to retrieve pipeline progress
 # TODO: replace this with an http endpoint and use nf-weblog
 def _parse_log() -> list:
@@ -87,7 +82,7 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
                 progress = ui.Progress(min=0, max=njobs)
                 progress.set(done, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
 
-            return render.DataGrid(df(), row_selection_mode="single")
+            return render.DataGrid(df(), selection_mode='row')
 
         @render.download(label="Download", filename="template_indep_info.csv")
         def download_metrics():
@@ -97,7 +92,7 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
     with ui.card():
         @render.ui
         def render_pdb():
-            prediction = _get_prediction()
+            prediction = req(render_frame.data_view(selected=True).to_dict(orient='records')).pop()
             with open(f'{predictions}/{prediction.get('prediction_name')}/{prediction.get('model_rank')}.pdb') as pdb:
                 model = "".join([res for res in pdb])
             view = py3Dmol.view(width=800, height=600)
@@ -110,7 +105,7 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
     with ui.card():
         @render_plotly
         def render_pae():
-            prediction = _get_prediction()
+            prediction = req(render_frame.data_view(selected=True).to_dict(orient='records')).pop()
             with open(f'{predictions}/{prediction.get('prediction_name')}/pae_{prediction.get('model_id')}.json') as fin:
                 pae = json.load(fin)[0].get('predicted_aligned_error')
             return px.imshow(pae, labels={'color': 'PAE'}, color_continuous_scale=cmaps.get(input.cmap()))
