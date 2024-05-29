@@ -14,3 +14,4 @@ imb-alphafold = { cmd = "jupyterhub --config .jupyter/jupyterhub_config.py", dep
 jupyterhub = ">=5.0.0,<5.1"
 nextflow = ">=24.4.1,<24.5"
 pip = ">=24.0,<25"
+python-ldap = ">=3.4.3,<3.5"
