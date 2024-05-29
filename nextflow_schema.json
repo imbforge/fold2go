@@ -14,7 +14,7 @@
                     "type": "string",
                     "format": "path",
                     "pattern": ".(fasta|fa)$",
-                    "description": "Path to input fasta file(s) (specify glob pattern for multiple files)",
+                    "description": "Path to input fasta file(s)",
                     "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.fasta",
                     "errorMessage": "File glob must match '*.fasta' or '*.fa'"
                 },
@@ -50,8 +50,10 @@
                 },
                 "EMAIL": {
                     "type": "string",
-                    "description": "Email address to send notifications",
-                    "default": "huether@imb-mainz.de"
+		            "format": "email",
+                    "description": "Email address for notifications",
+                    "default": "huether@imb-mainz.de",
+                    "hidden": true
                 }
             }
         },
