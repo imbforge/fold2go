@@ -58,7 +58,7 @@ workflow FOLD2GO {
                     Dear ${workflow.userName},
 
                     AlphaFold predictions are complete, please find a table with useful metrics attached.
-                    All results of this run have been stored at ${params.OUT}/${workflow.runName}.
+                    Results of this run have all been stored at ${params.OUT}/${workflow.runName}.
 
                     ---
                     Deet-doot-dot, I am a bot.
