@@ -48,12 +48,21 @@ workflow FOLD2GO {
         PYMOL.out.metrics
             .collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)
             .subscribe onComplete: {
-                sendMail(
-                    from: "alphafold@imb-mainz.de",
-                    to: "${params.EMAIL}",
-                    subject: "AlphaFold (${workflow.runName})",
-                    text: "Predictions are complete!",
-                    attach: "${params.OUT}/${workflow.runName}/template_indep_info.tsv"
-                )
+                sendMail{
+                    to "${params.EMAIL}"
+                    from "alphafold@imb-mainz.de"
+                    subject "AlphaFold (${workflow.runName})"
+                    attach "${params.OUT}/${workflow.runName}/template_indep_info.tsv"
+
+                    """
+                    Dear ${workflow.userName},
+
+                    AlphaFold predictions are complete, please find a table with useful metrics attached.
+                    All results of this run have been stored at ${params.OUT}/${workflow.runName}.
+
+                    ---
+                    Deet-doot-dot, I am a bot.
+                    """.stripIndent()
+                }
             }
 }
