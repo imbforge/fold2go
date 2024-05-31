@@ -90,6 +90,8 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
 
     # render model structure based on selection in first card
     with ui.card():
+        with ui.card_header():
+            ui.span("Model structure")
         @render.ui
         def render_pdb():
             prediction = req(render_frame.data_view(selected=True).to_dict(orient='records')).pop()
@@ -103,6 +105,8 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
 
     # plot predicted aligned error based on selection in first card
     with ui.card():
+        with ui.card_header():
+            ui.span("Predicted aligned error")
         @render_plotly
         def render_pae():
             prediction = req(render_frame.data_view(selected=True).to_dict(orient='records')).pop()
