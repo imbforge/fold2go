@@ -75,7 +75,7 @@ pixi run imb-alphafold
 
 #### 3) Once you see something like `JupyterHub is now running at http://:42420` in your terminal output, the server should be up and running.
 
-Open your browser and go to `https://hpcgpu.imb.uni-mainz.de:42420`, if that doesn't work try forwarding the port to your local device:
+Now you will need to forward the port to your local device via ssh:
 
 ```bash
 ssh -NL 42420:localhost:42420 hpcgpu.imb.uni-mainz.de
