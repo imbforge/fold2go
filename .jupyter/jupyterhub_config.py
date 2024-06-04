@@ -26,7 +26,7 @@ c.Authenticator.allow_all = True
 c.JupyterHub.bind_url = 'http://:42420'
 c.ConfigurableHTTPProxy.api_url = 'http://localhost:42421'
 c.JupyterHub.hub_port = 42424
-c.JupyterHub.hub_ip = 'hpc1'
+c.JupyterHub.hub_ip = 'hpcgpu'
 
 # spawner config
 c.JupyterHub.spawner_class = 'nextflow'
