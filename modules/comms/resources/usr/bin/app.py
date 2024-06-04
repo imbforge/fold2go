@@ -3,7 +3,6 @@ import os
 import signal
 import pandas
 import py3Dmol
-import pickle
 import plotly.express as px
 
 from pathlib import Path
@@ -28,42 +27,31 @@ cmaps = {
     'spectral': px.colors.diverging.Spectral_r
 }
 
-# initialize reactive value to hold metrics dataframe
-df = reactive.value()
-
 # list files of completed predictions
 def _list_files() -> list:
     return list(metrics.glob("*.template_indep_metrics.tsv"))
 
-# construct data frame from list of files, check for changes every 60s
-@reactive.effect
-@reactive.poll(_list_files, 60)
-def _update_frame() -> bool:
-    if (metrics := _list_files()):
-        data = []
-        for f in metrics:
-            data.append(pandas.read_csv(f, sep='\t'))
-        return df.set(pandas.concat(data))
-
 # parse log file to retrieve pipeline progress
 # TODO: replace this with an http endpoint and use nf-weblog
 def _parse_log() -> list:
-    log = []
+    msg = []
     with open(logfile) as txt:
         for line in txt:
             if 'INFO  nextflow' in line:
-                log.append(line.split(' - ')[-1])
-    return log
+                msg.append(line.split(' - ')[-1])
+    return msg
 
-# check for new log messages every 60s
-@reactive.poll(_parse_log, interval_secs=60)
-def _render_modal() -> ui.Tag:
-    return ui.modal(
-        ui.tags.pre(_parse_log()),
-        title=ui.HTML('<a href="https://gitlab.rlp.net/imbforge/fold2go">imbforge/fold2go</a> is currently running, please check back later to see some results...'),
-        size='xl',
-        footer=ui.div(class_='spinner-border')
-    )
+# initialize reactive value to hold metrics dataframe
+df = reactive.value()
+
+# construct data frame from list of files, check for changes every 30s
+@reactive.effect
+@reactive.poll(_list_files, 30)
+def _():
+    if (files := _list_files()):
+        metrics = pandas.concat([pandas.read_csv(f, sep='\t') for f in files])
+        metrics.attrs['done'] = len(files)
+        df.set(metrics)
 
 # display sidebar for (general) app settings
 with ui.sidebar(position='left', open='closed'):
@@ -73,16 +61,32 @@ with ui.sidebar(position='left', open='closed'):
 with ui.layout_columns(col_widths=(12, 6, 6)):
     # display dataframe with calculated metrics and selectable rows
     with ui.card():
+        with ui.card_header():
+            with ui.tooltip(placement="right", id="metrics_tooltip"):
+                "Metrics"
+                "Results will appear here as they are produced"
         @render.data_frame
         def render_frame():
-            if not (done := len(_list_files())):
-                ui.modal_show(_render_modal())
+            progress = ui.Progress(min=0, max=njobs)
+            if not df.is_set():
+                # display modal with log file content until predictions become available
+                progress.set(0, message="Predictions are running", detail=f"(0/{njobs} complete)")
+                ui.modal_show(
+                    ui.modal(
+                        ui.tags.pre(_parse_log()),
+                        title=ui.HTML('<a href="https://gitlab.rlp.net/imbforge/fold2go">imbforge/fold2go</a> is currently running, please check back later to see some results...'),
+                        size='xl',
+                        footer=[ui.modal_button("Dismiss"), ui.span(class_='spinner-border')]
+                    )
+                )
             else:
                 ui.modal_remove()
-                progress = ui.Progress(min=0, max=njobs)
-                progress.set(done, message="AlphaFold is running", detail=f"({done}/{njobs} complete)")
-
-            return render.DataGrid(df(), selection_mode='row')
+                if (done := df().attrs['done']) < njobs:
+                    progress.set(df().attrs['done'], message="Predictions are running", detail=f"({df().attrs['done']}/{njobs} done)")
+                else:
+                    progress.set(done, message="Predictions are complete", detail=f"({done}/{njobs} done)")
+        
+                return render.DataGrid(df(), selection_mode='row')
 
         @render.download(label="Download", filename="template_indep_info.csv")
         def download_metrics():
@@ -91,7 +95,9 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
     # render model structure based on selection in first card
     with ui.card():
         with ui.card_header():
-            ui.span("Model structure")
+            with ui.tooltip(placement="right", id="pdb_tooltip"):
+                "Model structure"
+                "Select a row to display the corresponding 3D model"
         @render.ui
         def render_pdb():
             prediction = req(render_frame.data_view(selected=True).to_dict(orient='records')).pop()
@@ -106,7 +112,9 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
     # plot predicted aligned error based on selection in first card
     with ui.card():
         with ui.card_header():
-            ui.span("Predicted aligned error")
+            with ui.tooltip(placement="right", id="pae_tooltip"):
+                "Predicted aligned error"
+                "Select a row to display the corresponding PAE plot"
         @render_plotly
         def render_pae():
             prediction = req(render_frame.data_view(selected=True).to_dict(orient='records')).pop()
@@ -116,8 +124,8 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
 
     # display button to terminate shiny server process
     with ui.card():
-        ui.input_action_button("exit", "Exit", class_="btn-danger")
+        ui.input_action_button("terminate", "Terminate", class_="btn-danger")
         @reactive.effect
-        @reactive.event(input.exit)
+        @reactive.event(input.terminate)
         def _():
-           return os.kill(os.getpid(), signal.SIGUSR1)
+            return os.kill(os.getpid(), signal.SIGUSR1)
