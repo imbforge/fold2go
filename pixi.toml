@@ -1,17 +1,20 @@
 [project]
 name = "fold2go"
 version = "0.1.0"
-description = "Nextflow wrapper for alphafold2"
+description = "Nextflow wrapper for AlphaFold"
 authors = ["Patrick Hüther <huether@imb-mainz.de>"]
 channels = ["conda-forge", "bioconda"]
 platforms = ["linux-64"]
 
 [tasks]
-setup = "pip install -r .jupyter/requirements.txt"
-imb-alphafold = { cmd = "jupyterhub --config .jupyter/jupyterhub_config.py", depends_on = ["setup"] }
+imb-alphafold = { cmd = "jupyterhub --config .jupyter/jupyterhub_config.py" }
 
 [dependencies]
 jupyterhub = ">=5.0.0,<5.1"
 nextflow = ">=24.4.1,<24.5"
-pip = ">=24.0,<25"
 python-ldap = ">=3.4.3,<3.5"
+
+[pypi-dependencies]
+jupyter-nextflow-proxy = { git = "https://github.com/phue/jupyter-nextflow-proxy", rev = "v0.2.0" }
+nextflowspawner = { git = "https://github.com/phue/nextflowspawner", rev = "v0.3.0" }
+jupyterhub-firstuseauthenticator = "*"
