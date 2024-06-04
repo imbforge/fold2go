@@ -188,7 +188,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/66/e8/00517a23d3eeaed0513e718fbc94aab26eaa1758f5690fc8578839791c79/nbclient-0.10.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b8/bb/bb5b6a515d1584aa2fd89965b11db6632e4bdc69495a52374bcc36e56cfa/nbconvert-7.16.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/82/0340caa499416c78e5d8f5f05947ae4bc3cba53c9f038ab6e9ed964e22f1/nbformat-5.10.4-py3-none-any.whl
-      - pypi: git+https://github.com/phue/nextflowspawner@faeb1303246ee002f8cc1d9fc74fbf45bf1ba452
+      - pypi: git+https://github.com/phue/nextflowspawner@1773d12479e16ad0e84c425dd364587228b74b5d
       - pypi: https://files.pythonhosted.org/packages/2c/ab/fc8290c6a4c722e5514d80f62b2dc4c4df1a68a41d1364e625c35990fcf3/overrides-7.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ef/af/4fbc8cab944db5d21b7e2a5b8e9211a03a79852b1157e2c102fcc61ac440/pandocfilters-1.5.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/68/13/2aa1f0e1364feb2c9ef45302f387ac0bd81484e9c9a4c5688a322fbdfd08/platformdirs-4.2.2-py3-none-any.whl
@@ -2185,8 +2185,8 @@ packages:
   timestamp: 1716967969458
 - kind: pypi
   name: nextflowspawner
-  version: 0.3.0
-  url: git+https://github.com/phue/nextflowspawner@faeb1303246ee002f8cc1d9fc74fbf45bf1ba452
+  version: 0.4.0
+  url: git+https://github.com/phue/nextflowspawner@1773d12479e16ad0e84c425dd364587228b74b5d
   requires_dist:
   - jsonschema
   - jupyterhub>=4.0.2
