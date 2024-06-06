@@ -1,5 +1,5 @@
 process COMMS {
-    tag "localhost:${params.COMMS.port}"
+    tag "localhost:${params.PORT}"
 
     when:
         params.COMMS.enabled
@@ -13,7 +13,7 @@ process COMMS {
     script:
         """
         shiny run \\
-            --port=${params.COMMS.port} \\
+            --port=${params.PORT} \\
             --host=0.0.0.0 \\
             ${moduleDir}/resources/usr/bin/app.py
         """

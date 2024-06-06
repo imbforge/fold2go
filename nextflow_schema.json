@@ -54,6 +54,12 @@
                     "description": "Email address for notifications",
                     "default": "huether@imb-mainz.de",
                     "hidden": true
+                },
+                "PORT": {
+                    "type": "integer",
+                    "description": "HTTP port to run shiny application on",
+                    "default": 9988,
+                    "hidden": true
                 }
             }
         },
@@ -115,13 +121,7 @@
                     "enabled": {
                         "type": "boolean",
                         "description": "Enable COMMS process",
-                        "default": false,
-                        "hidden": true
-                    },
-                    "port": {
-                        "type": "integer",
-                        "description": "HTTP port to run on",
-                        "default": 9988,
+                        "default": true,
                         "hidden": true
                     }
                 }
