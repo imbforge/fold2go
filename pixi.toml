@@ -7,7 +7,7 @@ channels = ["conda-forge", "bioconda"]
 platforms = ["linux-64"]
 
 [tasks]
-imb-alphafold = { cmd = "jupyterhub --config .jupyter/jupyterhub_config.py" }
+imb-alphafold = { cmd = "jupyterhub --config .jupyter/jupyterhub_config.py", env = { NXF_SCM_FILE = ".scm" } }
 
 [dependencies]
 jupyterhub = ">=5.0.0,<5.1"
@@ -15,6 +15,6 @@ nextflow = ">=24.4.1,<24.5"
 python-ldap = ">=3.4.3,<3.5"
 
 [pypi-dependencies]
-jupyter-nextflow-proxy = { git = "https://github.com/phue/jupyter-nextflow-proxy", rev = "v0.2.0" }
-nextflowspawner = { git = "https://github.com/phue/nextflowspawner", rev = "v0.4.0" }
+nextflowspawner = { git = "https://github.com/phue/nextflowspawner", rev = "v0.5.0" }
+jupyter-nextflow-proxy = { git = "https://github.com/phue/jupyter-nextflow-proxy", rev = "v0.3.0" }
 jupyterhub-firstuseauthenticator = "*"

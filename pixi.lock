@@ -30,7 +30,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/charset-normalizer-3.3.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/configurable-http-proxy-4.6.1-h92b4e83_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/coreutils-9.5-hd590300_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/cryptography-42.0.7-py312hbcc2302_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/cryptography-42.0.8-py312hbcc2302_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/curl-8.8.0-he654da7_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cyrus-sasl-2.1.27-h54b06d7_7.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/expat-2.6.2-h59595ed_0.conda
@@ -63,7 +63,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/keyutils-1.6.1-h166bdaf_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/krb5-1.21.2-h659d440_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/lcms2-2.16-hb7c19ff_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.40-hf3520f5_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.40-hf3520f5_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/lerc-4.0.0-h27087fc_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libcups-2.3.3-h4637d8d_4.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libcurl-8.8.0-hca28451_0.conda
@@ -99,7 +99,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/oauthlib-3.2.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-21.0.0-haa376d0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/openldap-2.6.8-hedd0468_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.3.0-h4ab18f5_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.3.1-h4ab18f5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-24.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pamela-1.1.0-pyh1a96a4e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pcre2-10.43-hcad00b1_0.conda
@@ -140,7 +140,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2024a-h0c530f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/uri-template-1.3.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/urllib3-2.2.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/webcolors-1.13-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/webcolors-24.6.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xorg-fixesproto-5.0-h7f98852_1002.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xorg-inputproto-2.3.2-h7f98852_1002.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xorg-kbproto-1.0.7-h7f98852_1002.tar.bz2
@@ -175,7 +175,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/07/6c/aa3f2f849e01cb6a001cd8554a88d4c77c5c1a31c95bdf1cf9301e6d9ef4/defusedxml-0.7.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9c/b9/79691036d4a8f9857e74d1728b23f34f583b81350a27492edda58d5604e1/fastjsonschema-2.19.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0b/f2/b8158a0f06faefec33f4dff6345a575c18095a44e52d4f10c678c137d0e0/frozenlist-1.4.1-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: git+https://github.com/phue/jupyter-nextflow-proxy@02d29b6739e1d467ba1e0ebd593d6520d1ab54a7
+      - pypi: git+https://github.com/phue/jupyter-nextflow-proxy@7dad1d3929ea954be2987e538913113f779ce6eb
       - pypi: https://files.pythonhosted.org/packages/cf/d3/c4bb02580bc0db807edb9a29b2d0c56031be1ef0d804336deb2699a470f6/jupyter_client-8.6.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c9/fb/108ecd1fe961941959ad0ee4e12ee7b8b1477247f30b1fdfd83ceaf017f0/jupyter_core-5.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/26/f5/be75c159deda5b54e15cf54029915ad28337fcfef402d671566c45f9e61f/jupyter_server-2.14.1-py3-none-any.whl
@@ -188,7 +188,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/66/e8/00517a23d3eeaed0513e718fbc94aab26eaa1758f5690fc8578839791c79/nbclient-0.10.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b8/bb/bb5b6a515d1584aa2fd89965b11db6632e4bdc69495a52374bcc36e56cfa/nbconvert-7.16.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/82/0340caa499416c78e5d8f5f05947ae4bc3cba53c9f038ab6e9ed964e22f1/nbformat-5.10.4-py3-none-any.whl
-      - pypi: git+https://github.com/phue/nextflowspawner@1773d12479e16ad0e84c425dd364587228b74b5d
+      - pypi: git+https://github.com/phue/nextflowspawner@526d9466d460fdb6536451d573cc6d99851b0475
       - pypi: https://files.pythonhosted.org/packages/2c/ab/fc8290c6a4c722e5514d80f62b2dc4c4df1a68a41d1364e625c35990fcf3/overrides-7.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ef/af/4fbc8cab944db5d21b7e2a5b8e9211a03a79852b1157e2c102fcc61ac440/pandocfilters-1.5.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/68/13/2aa1f0e1364feb2c9ef45302f387ac0bd81484e9c9a4c5688a322fbdfd08/platformdirs-4.2.2-py3-none-any.whl
@@ -710,24 +710,24 @@ packages:
   timestamp: 1711655132451
 - kind: conda
   name: cryptography
-  version: 42.0.7
+  version: 42.0.8
   build: py312hbcc2302_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/cryptography-42.0.7-py312hbcc2302_0.conda
-  sha256: 91fa2d4229096ecffa36e71a33f2163d1138dc1ef98a0be20ba0e5905e420a85
-  md5: 7bc0e1aae21b2e82d03959931f4294f0
+  url: https://conda.anaconda.org/conda-forge/linux-64/cryptography-42.0.8-py312hbcc2302_0.conda
+  sha256: 3808035ab718df43aa27e5df372cf17685a61c41ddced539e83f38e82372e18d
+  md5: d6cbf583b33e9473ca9129ad21936507
   depends:
   - cffi >=1.12
   - libgcc-ng >=12
-  - openssl >=3.3.0,<4.0a0
+  - openssl >=3.3.1,<4.0a0
   - python >=3.12,<3.13.0a0
   - python_abi 3.12.* *_cp312
   license: Apache-2.0 AND BSD-3-Clause AND PSF-2.0 AND MIT
   license_family: BSD
   purls:
   - pkg:pypi/cryptography?source=conda-forge-mapping
-  size: 1978679
-  timestamp: 1715044173081
+  size: 1981326
+  timestamp: 1717559617177
 - kind: conda
   name: curl
   version: 8.8.0
@@ -1273,8 +1273,8 @@ packages:
   requires_python: '>=3.8'
 - kind: pypi
   name: jupyter-nextflow-proxy
-  version: 0.2.0
-  url: git+https://github.com/phue/jupyter-nextflow-proxy@02d29b6739e1d467ba1e0ebd593d6520d1ab54a7
+  version: 0.3.0
+  url: git+https://github.com/phue/jupyter-nextflow-proxy@7dad1d3929ea954be2987e538913113f779ce6eb
   requires_dist:
   - jupyter-server-proxy
 - kind: pypi
@@ -1529,19 +1529,19 @@ packages:
 - kind: conda
   name: ld_impl_linux-64
   version: '2.40'
-  build: hf3520f5_1
-  build_number: 1
+  build: hf3520f5_2
+  build_number: 2
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.40-hf3520f5_1.conda
-  sha256: cb54a873c1c84c47f7174093889686b626946b8143905ec0f76a56785b26a304
-  md5: 33b7851c39c25da14f6a233a8ccbeeca
+  url: https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.40-hf3520f5_2.conda
+  sha256: 5ed96807b26bc32d2d180e38e7340388ddfdb642950f888f7da78d274846afea
+  md5: 61b0bd5219ce7192b4e3633521a78975
   constrains:
   - binutils_impl_linux-64 2.40
   license: GPL-3.0-only
   license_family: GPL
   purls: []
-  size: 707934
-  timestamp: 1716583433869
+  size: 708179
+  timestamp: 1717523002366
 - kind: conda
   name: lerc
   version: 4.0.0
@@ -2185,12 +2185,12 @@ packages:
   timestamp: 1716967969458
 - kind: pypi
   name: nextflowspawner
-  version: 0.4.0
-  url: git+https://github.com/phue/nextflowspawner@1773d12479e16ad0e84c425dd364587228b74b5d
+  version: 0.5.0
+  url: git+https://github.com/phue/nextflowspawner@526d9466d460fdb6536451d573cc6d99851b0475
   requires_dist:
   - jsonschema
   - jupyterhub>=4.0.2
-  - jupyter-nextflow-proxy @ git+https://github.com/phue/jupyter-nextflow-proxy@v0.2.0
+  - jupyter-nextflow-proxy @ git+https://github.com/phue/jupyter-nextflow-proxy@v0.3.0
   requires_python: '>=3.10'
 - kind: conda
   name: nodejs
@@ -2288,13 +2288,12 @@ packages:
   timestamp: 1716377814828
 - kind: conda
   name: openssl
-  version: 3.3.0
-  build: h4ab18f5_3
-  build_number: 3
+  version: 3.3.1
+  build: h4ab18f5_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.3.0-h4ab18f5_3.conda
-  sha256: 33dcea0ed3a61b2de6b66661cdd55278640eb99d676cd129fbff3e53641fa125
-  md5: 12ea6d0d4ed54530eaed18e4835c1f7c
+  url: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.3.1-h4ab18f5_0.conda
+  sha256: 9691f8bd6394c5bb0b8d2f47cd1467b91bd5b1df923b69e6b517f54496ee4b50
+  md5: a41fa0e391cc9e0d6b78ac69ca047a6c
   depends:
   - ca-certificates
   - libgcc-ng >=12
@@ -2303,8 +2302,8 @@ packages:
   license: Apache-2.0
   license_family: Apache
   purls: []
-  size: 2891147
-  timestamp: 1716468354865
+  size: 2896170
+  timestamp: 1717546157673
 - kind: pypi
   name: overrides
   version: 7.7.0
@@ -3151,21 +3150,21 @@ packages:
   timestamp: 1708239595549
 - kind: conda
   name: webcolors
-  version: '1.13'
+  version: 24.6.0
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/webcolors-1.13-pyhd8ed1ab_0.conda
-  sha256: 6e097d5fe92849ad3af2c2a313771ad2fbf1cadd4dc4afd552303b2bf3f85211
-  md5: 166212fe82dad8735550030488a01d03
+  url: https://conda.anaconda.org/conda-forge/noarch/webcolors-24.6.0-pyhd8ed1ab_0.conda
+  sha256: 6377de3bc05b80f25c5fe75f180a81fc8a6aa601d4b228161f75f78862d00a0f
+  md5: 419f2f6cf90fc7a6feee657752cd0f7b
   depends:
   - python >=3.5
   license: BSD-3-Clause
   license_family: BSD
   purls:
   - pkg:pypi/webcolors?source=conda-forge-mapping
-  size: 18186
-  timestamp: 1679900907305
+  size: 18291
+  timestamp: 1717667379821
 - kind: pypi
   name: webencodings
   version: 0.5.1
