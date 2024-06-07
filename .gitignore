@@ -1,9 +1,3 @@
-.ipynb_checkpoints
 .nextflow*
-.pixi
-*.dbm.*
-*.ipynb
-*.sqlite
-jupyterhub_cookie_secret
 results/
 work/
