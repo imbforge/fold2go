@@ -1,0 +1,16 @@
+include:
+  - 'modules/**/.gitlab-ci.yml'
+
+.build:
+  stage: build
+  image:
+    name: registry.gitlab.rlp.net/imbforge/imb-cicd/buildah:latest
+  variables:
+    STORAGE_DRIVER: vfs
+  before_script:
+    - echo ${CI_REGISTRY_PASSWORD} | buildah login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
+  script:
+    - buildah bud --tag ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${CI_COMMIT_BRANCH} modules/${CI_JOB_NAME}
+    - buildah push --authfile /run/containers/0/auth.json ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${CI_COMMIT_BRANCH}
+  after_script:
+    - buildah logout ${CI_REGISTRY}

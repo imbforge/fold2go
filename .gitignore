@@ -1,3 +1,6 @@
 .nextflow*
 results/
 work/
+# pixi environments
+.pixi
+*.egg-info
