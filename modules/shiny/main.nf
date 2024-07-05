@@ -1,8 +1,8 @@
-process COMMS {
+process SHINY {
     tag "localhost:${params.PORT}"
 
     when:
-        params.COMMS.enabled
+        params.SHINY.enabled
 
     input:
         env(SHINY_APP_NJOBS)

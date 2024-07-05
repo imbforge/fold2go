@@ -23,8 +23,6 @@ PYMOL:
   enabled:
     true
 
-COMMS:
+SHINY:
   enabled:
     true
-  port:
-    8899

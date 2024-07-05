@@ -11,7 +11,7 @@ switch ( params.MODEL_PRESET ) {
 
 include { MSA   } from '../../modules/alphafold'
 include { PYMOL } from '../../modules/pymol'
-include { COMMS } from '../../modules/comms'
+include { SHINY } from '../../modules/shiny'
 
 workflow FOLD2GO {
 
@@ -23,7 +23,7 @@ workflow FOLD2GO {
         .map { fasta, record -> [ [ ('A'..'H'), record.id ].transpose().collectEntries(), fasta ] }
         .set { fasta }
 
-        COMMS(
+        SHINY(
             fasta.count(),
             params.OUT,
             workflow.runName,

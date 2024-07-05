@@ -111,16 +111,16 @@
                 }
             }
         },
-        "comms_options": {
+        "shiny_options": {
             "type": "object",
             "properties": {
-                "title": "COMMS",
+                "title": "SHINY",
                 "type": "object",
                 "description": "Parameter options for shiny app.",
                 "properties": {
                     "enabled": {
                         "type": "boolean",
-                        "description": "Enable COMMS process",
+                        "description": "Enable SHINY process",
                         "default": true,
                         "hidden": true
                     }
