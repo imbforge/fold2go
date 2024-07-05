@@ -1,10 +1,6 @@
-
-
 FROM ghcr.io/prefix-dev/pixi:jammy-cuda-12.2.2
 
-LABEL org.opencontainers.image.authors="huether@imb-mainz.de" \
-      org.opencontainers.image.title="alphafold" \
-      org.opencontainers.image.version="f251de6613cb478207c732bf9627b1e853c99c2f"
+LABEL org.opencontainers.image.authors="huether@imb-mainz.de"
 
 ENV DEBIAN_FRONTEND="noninteractive" PATH="/opt/conda/bin:/app/alphafold:$PATH" PYTHONPATH="/app/alphafold:$PYTHONPATH" NVIDIA_VISIBLE_DEVICES="all" NVIDIA_DRIVER_CAPABILITIES="compute" TF_FORCE_UNIFIED_MEMORY=1 XLA_PYTHON_CLIENT_MEM_FRACTION=4.0
 
