@@ -10,6 +10,8 @@ PREDICTIONS_PER_MODEL:
   1
 EMAIL:
   "huether@imb-mainz.de"
+PORT:
+  3842
 
 ALPHAFOLD:
   enabled:
