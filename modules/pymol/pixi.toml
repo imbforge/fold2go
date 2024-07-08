@@ -3,11 +3,11 @@ name = "pymol"
 version = "0.1.0"
 description = "Add a short description here"
 authors = ["Patrick Hüther <huether@imb-mainz.de>"]
-channels = ["conda-forge","schrodinger"]
+channels = ["conda-forge"]
 platforms = ["linux-64"]
 
 [tasks]
 
 [dependencies]
-pymol-bundle = ">=2.4.1,<2.5"
-mdtraj = ">=1.10.0,<1.11"
+mdtraj = "1.10.0.*"
+pymol-open-source = ">=3.0.0,<3.1"
