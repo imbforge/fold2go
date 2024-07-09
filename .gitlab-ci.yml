@@ -10,8 +10,8 @@ include:
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | buildah login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
   script:
-    - buildah bud --tag ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${CI_COMMIT_BRANCH} modules/${CI_JOB_NAME}
-    - buildah push --authfile /run/containers/0/auth.json ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${CI_COMMIT_BRANCH}
+    - buildah bud --tag ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${CI_COMMIT_BRANCH:-${CI_COMMIT_TAG}} modules/${CI_JOB_NAME}
+    - buildah push --authfile /run/containers/0/auth.json ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${CI_COMMIT_BRANCH:-${CI_COMMIT_TAG}}
   after_script:
     - buildah logout ${CI_REGISTRY}
   rules:
