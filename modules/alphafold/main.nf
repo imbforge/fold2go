@@ -6,10 +6,10 @@ process MONOMER {
         params.ALPHAFOLD.enabled
 
     input:
-        tuple val(meta), path(fasta, stageAs: "chain.fasta"), path(chain, stageAs: "chain/msas/*")
+        tuple val(meta), path(fasta), path(chain, stageAs: "chain/msas/*")
 
     output:
-        tuple val(meta), path("chain/*.{pkl,pdb,json}"), path(fasta), emit: prediction
+        tuple val(meta), path("chain/*.{pkl,pdb,json}"), path("chain.fasta"), emit: prediction
 
     script:
         template 'run_alphafold_monomer.sh'
