@@ -2,12 +2,10 @@ switch ( params.MODEL_PRESET ) {
     case { it.startsWith('monomer') }:
         include { MONOMER as ALPHAFOLD } from '../../modules/alphafold'
         databases = ['uniref90', 'mgnify', 'bfd']
-        chains    = ['A']
         break
     case "multimer":
         include { MULTIMER as ALPHAFOLD } from '../../modules/alphafold'
         databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
-        chains    = ('A'..'H')
         break
 }
 
@@ -21,8 +19,13 @@ workflow FOLD2GO {
         .fromPath( params.IN )
         .map { fasta -> [ fasta, fasta ] }
         .splitFasta ( record: [ id: true ] )
-        .groupTuple ( by: 1 )
-        .map { record, fasta -> [ [ chains, record.id ].transpose().collectEntries(), fasta ] }
+        .groupTuple ( by: ( params.MODEL_PRESET.startsWith('monomer') ? [ 0, 1 ] : 1 ) )
+        .map { record, fasta ->
+            params.MODEL_PRESET.startsWith('monomer')
+            ? [ [ 'A': record.id ], fasta ]
+            : [ [ ('A'..'H'), record.id ].transpose().collectEntries(), fasta ]
+        }
+        .unique { meta, fasta -> meta }
         .set { fasta }
 
     SHINY(
@@ -41,10 +44,11 @@ workflow FOLD2GO {
         .combine ( MSA.out.msa )
         .filter { meta, fasta, record, msa -> ( record in meta*.value ) }
         .map { meta, fasta, record, msa -> [ groupKey( meta, meta*.value.unique().size() * databases.size() ), fasta, msa ] }
-        .groupTuple()
-        .map { meta, fasta, msa -> [ meta.getGroupTarget(), fasta.unique() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == chain } } : [ msa ] ) }
+        .groupTuple( by: 0 )
+        .map { meta, fasta, msa ->
+            [ meta.getGroupTarget(), fasta.first() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == chain } } : [ msa.unique() ] )
+        }
         .set { msa }
-
 
     ALPHAFOLD(msa) | PYMOL
 
