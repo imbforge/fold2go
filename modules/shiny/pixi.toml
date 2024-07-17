@@ -10,9 +10,7 @@ platforms = ["linux-64"]
 
 [dependencies]
 pandas = ">=2.2.2,<2.3"
-py3dmol = ">=2.1.0,<2.2"
 plotly_express = ">=0.4.1,<0.5"
+py3dmol = ">=2.2.0,<2.3"
 shiny = ">=0.10.2,<0.11"
-
-[pypi-dependencies]
-shinywidgets = { version = "==0.3.2" }
+shinywidgets = ">=0.3.2,<0.4"
