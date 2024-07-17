@@ -21,7 +21,7 @@
                 "OUT": {
                     "type": "string",
                     "format": "path",
-                    "default": "${launchDir}/fold2go",
+                    "default": "${launchDir}/results",
                     "description": "Path to output directory",
                     "hidden": true
                 },
