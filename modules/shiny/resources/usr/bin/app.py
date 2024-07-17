@@ -84,7 +84,7 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
                 if (done := df().attrs['done']) < njobs:
                     progress.set(df().attrs['done'], message="Predictions are running", detail=f"({df().attrs['done']}/{njobs} complete)")
                 else:
-                    progress.set(done, message="Predictions are complete", detail=f"({done}/{njobs} done)")
+                    progress.set(done, message="Predictions are complete", detail=f"({done}/{njobs} complete)")
         
                 return render.DataGrid(df(), selection_mode='row')
 
