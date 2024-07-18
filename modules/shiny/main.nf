@@ -1,5 +1,5 @@
 process SHINY {
-    tag "localhost:${params.PORT}"
+    tag "${workflow.userName}@localhost:${params.PORT}"
 
     when:
         params.SHINY.enabled
