@@ -14,7 +14,7 @@ process SHINY {
         """
         shiny run \\
             --port=${params.PORT} \\
-            --host=0.0.0.0 \\
+            --host=127.0.0.1 \\
             ${moduleDir}/resources/usr/bin/app.py
         """
 }
