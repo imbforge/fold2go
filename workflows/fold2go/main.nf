@@ -19,11 +19,11 @@ workflow FOLD2GO {
         .fromPath( params.IN )
         .map { fasta -> [ fasta, fasta ] }
         .splitFasta ( record: [ id: true ] )
-        .groupTuple ( by: ( params.MODEL_PRESET.startsWith('monomer') ? [ 0, 1 ] : 1 ) )
+        .groupTuple ( by: ( params.MODEL_PRESET == 'multimer' ? 1 : [ 0, 1 ] ) )
         .map { record, fasta ->
-            params.MODEL_PRESET.startsWith('monomer')
-            ? [ [ 'A': record.id ], fasta ]
-            : [ [ ('A'..'H'), record.id ].transpose().collectEntries(), fasta ]
+            params.MODEL_PRESET == 'multimer'
+            ? [ [ ('A'..'H'), record.id ].transpose().collectEntries(), fasta ]
+            : [ [ 'A': record.id ], fasta ]
         }
         .unique { meta, fasta -> meta }
         .set { fasta }
