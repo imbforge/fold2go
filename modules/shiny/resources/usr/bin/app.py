@@ -124,7 +124,7 @@ with ui.layout_columns(col_widths=(12, 6, 6)):
 
     # display button to terminate shiny server process
     with ui.card():
-        ui.input_action_button("terminate", "Terminate", class_="btn-danger")
+        ui.input_action_button("terminate", "Shutdown", class_="btn-danger")
         @reactive.effect
         @reactive.event(input.terminate)
         def _():
