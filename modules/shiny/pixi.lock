@@ -64,7 +64,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/prompt_toolkit-3.0.36-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/py3dmol-2.2.1-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/py3dmol-2.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.12.4-h194c7f8_0_cpython.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python-dateutil-2.9.0-pyhd8ed1ab_0.conda
@@ -75,8 +75,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/questionary-2.0.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/readline-8.2-h8228510_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/scipy-1.14.0-py312hc2bc53b_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/shiny-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/shinywidgets-0.3.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/shiny-1.1.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/shinywidgets-0.3.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.16.0-pyh6c4a22f_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/sniffio-1.3.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.2-pyhd8ed1ab_0.conda
@@ -1063,20 +1063,20 @@ packages:
   timestamp: 1721585805256
 - kind: conda
   name: py3dmol
-  version: 2.2.1
+  version: 2.4.0
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/py3dmol-2.2.1-pyhd8ed1ab_0.conda
-  sha256: e4ba49d41bd9a8da1a02471929970d5e248f6cedc56962eef40bccea4811a6ec
-  md5: 2d7ef2cf73e11d27afcc7b8afdafb1de
+  url: https://conda.anaconda.org/conda-forge/noarch/py3dmol-2.4.0-pyhd8ed1ab_0.conda
+  sha256: 77e5b2a7f9b1085e6969182e3eeebff393019052acc93dbf35223e6596d274e5
+  md5: 18462883a6f5aac4b59a1ab05d3ed5dc
   depends:
   - ipython
   - python >=3.6
   license: MIT
   license_family: MIT
-  size: 12657
-  timestamp: 1721629420687
+  size: 12730
+  timestamp: 1725956218447
 - kind: conda
   name: pygments
   version: 2.18.0
@@ -1258,13 +1258,13 @@ packages:
   timestamp: 1720324049729
 - kind: conda
   name: shiny
-  version: 1.0.0
+  version: 1.1.0
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/shiny-1.0.0-pyhd8ed1ab_0.conda
-  sha256: 32753cd8d1fb8b0eabb401c68ed3a4a7050ae96c55142e5cdba6709fdb0b4b67
-  md5: a85f86cbc4765dbe49bc5afd2f2d0fff
+  url: https://conda.anaconda.org/conda-forge/noarch/shiny-1.1.0-pyhd8ed1ab_0.conda
+  sha256: b0a5972bbf5528c59fdd9f52868ce44e0a89c65315b8bf17a00e80a917c0ece9
+  md5: 7b1f077bc0a573d75a8c619f7d003811
   depends:
   - appdirs >=1.4.4
   - asgiref >=3.5.2
@@ -1283,17 +1283,17 @@ packages:
   - watchfiles >=0.18.0
   - websockets >=10.0
   license: BSD-3-Clause AND MIT
-  size: 2943410
-  timestamp: 1721457975445
+  size: 2990206
+  timestamp: 1725402565096
 - kind: conda
   name: shinywidgets
-  version: 0.3.2
+  version: 0.3.3
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/shinywidgets-0.3.2-pyhd8ed1ab_0.conda
-  sha256: 3fa3eeb6be81ff84b4f2a1bd072d38fdaa8b488b208b2430c3bec099c024ddd9
-  md5: 781c317dd4c70206b391ea29ddbcb659
+  url: https://conda.anaconda.org/conda-forge/noarch/shinywidgets-0.3.3-pyhd8ed1ab_0.conda
+  sha256: 0f7d9acbd6d6757d7fa8a8bc510ad1aec9e098f3f3d362cd486b25ffd8cfe831
+  md5: f2bd7a8017331075d46d13b8356e3e72
   depends:
   - ipywidgets >=7.6.5
   - jupyter_core
@@ -1302,8 +1302,8 @@ packages:
   - shiny >=0.6.1.9005
   license: MIT
   license_family: MIT
-  size: 1336444
-  timestamp: 1719338985806
+  size: 1335980
+  timestamp: 1723649815740
 - kind: conda
   name: six
   version: 1.16.0
