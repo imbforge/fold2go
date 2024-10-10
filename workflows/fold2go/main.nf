@@ -46,7 +46,7 @@ workflow FOLD2GO {
         .map { meta, fasta, record, msa -> [ groupKey( meta, meta*.value.unique().size() * databases.size() ), fasta, msa ] }
         .groupTuple( by: 0 )
         .map { meta, fasta, msa ->
-            [ meta.getGroupTarget(), fasta.first() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == chain } } : [ msa.unique() ] )
+            [ meta.getGroupTarget(), fasta.first() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == meta[chain] } } : [ msa.unique() ] )
         }
         .set { msa }
 

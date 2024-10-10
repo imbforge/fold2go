@@ -68,6 +68,6 @@ process MSA {
             --database='${database}' \\
             --fasta_path='${record.id}.fasta' \\
             --database_root_path='${params.DATABASE}' \\
-            --out_path='msas/${chain}'
+            --out_path='msas/${record.id}'
         """
 }
