@@ -1,15 +1,15 @@
 switch ( params.MODEL_PRESET ) {
     case { it.startsWith('monomer') }:
-        include { MONOMER as ALPHAFOLD } from '../../modules/alphafold'
+        include { MONOMER as ALPHAFOLD } from '../../modules/alphafold2'
         databases = ['uniref90', 'mgnify', 'bfd']
         break
     case "multimer":
-        include { MULTIMER as ALPHAFOLD } from '../../modules/alphafold'
+        include { MULTIMER as ALPHAFOLD } from '../../modules/alphafold2'
         databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
         break
 }
 
-include { MSA   } from '../../modules/alphafold'
+include { MSA   } from '../../modules/alphafold2'
 include { PYMOL } from '../../modules/pymol'
 include { SHINY } from '../../modules/shiny'
 

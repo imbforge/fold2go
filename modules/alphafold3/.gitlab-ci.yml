@@ -1,2 +1,2 @@
-alphafold:
+alphafold3:
   extends: .build
