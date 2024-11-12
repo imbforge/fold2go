@@ -1,0 +1,33 @@
+[project]
+name = "alphafold"
+version = "0.1.0"
+description = "Add a short description here"
+authors = ["Patrick Hüther <huether@imb-mainz.de>"]
+channels = ["conda-forge","bioconda"]
+platforms = ["linux-64"]
+
+[system-requirements]
+cuda = "12.2.2"
+
+[tasks]
+
+[dependencies]
+python = "3.10.*"
+jaxlib = { version = "==0.4.26", build = "*cuda*" }
+jax = "0.4.26.*"
+biopython = "1.79.*"
+chex = "0.1.86.*"
+dm-haiku = "0.0.12.*"
+dm-tree = "0.1.8.*"
+immutabledict = "4.2.0.*"
+ml-collections = "0.1.1.*"
+numpy = "1.26.4.*"
+openmm = "8.0.0.*"
+scipy = "1.14.0.*"
+pandas = "2.2.0.*"
+tensorflow-cpu = "2.16.1.*"
+pdbfixer = "1.9.*"
+hhsuite = "3.3.0.*"
+hmmer = "3.4.*"
+kalign3 = "3.4.0.*"
+cuda-version = "12.2.*"
