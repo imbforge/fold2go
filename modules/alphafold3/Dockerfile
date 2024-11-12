@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 
 WORKDIR /app/alphafold
 
-COPY pixi.toml .
+COPY pixi.toml pixi.lock .
 
 RUN bash -c "install -D <(pixi shell-hook) /.singularity.d/env/99-pixi.sh" && pixi clean cache --yes
 
