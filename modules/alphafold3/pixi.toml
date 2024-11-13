@@ -14,6 +14,7 @@ cuda = "12"
 [dependencies]
 python = "3.11.*"
 hmmer = ">=3.4,<4"
+setuptools = ">=75.3.0,<76"
 
 [pypi-dependencies]
 alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "v3.0.0" }
