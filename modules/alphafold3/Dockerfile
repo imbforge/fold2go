@@ -16,7 +16,7 @@ FROM docker.io/nvidia/cuda:12.6.0-base-ubuntu22.04 AS alphafold
 
 LABEL org.opencontainers.image.authors="huether@imb-mainz.de"
 
-ENV PATH="/app/alphafold:$PATH" NVIDIA_VISIBLE_DEVICES="all" NVIDIA_DRIVER_CAPABILITIES="compute" XLA_FLAGS="--xla_gpu_enable_triton_gemm=false" XLA_PYTHON_CLIENT_MEM_FRACTION=0.95 XLA_PYTHON_CLIENT_PREALLOCATE=true
+ENV PATH="/app/alphafold:$PATH" NVIDIA_VISIBLE_DEVICES="all" NVIDIA_DRIVER_CAPABILITIES="compute" XLA_FLAGS="--xla_gpu_enable_triton_gemm=false" XLA_PYTHON_CLIENT_PREALLOCATE=false TF_FORCE_UNIFIED_MEMORY=true XLA_PYTHON_CLIENT_MEM_FRACTION=3.2
 
 COPY --from=build /app/alphafold /app/alphafold
 
