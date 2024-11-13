@@ -1,0 +1,51 @@
+switch ( params.MODEL_PRESET ) {
+    case { it ==~ /^monomer.*/ }:
+        include { MONOMER as MODEL } from '../../modules/alphafold2'
+        databases = ['uniref90', 'mgnify', 'bfd']
+        include { MSA } from '../../modules/alphafold2'
+        break
+    default:
+        include { MULTIMER as MODEL } from '../../modules/alphafold2'
+        databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
+}
+
+include { MSA } from '../../modules/alphafold2'
+
+workflow ALPHAFOLD2 {
+
+    main:
+
+        Channel
+            .fromPath( params.IN )
+            .map { fasta -> [ fasta, fasta ] }
+            .splitFasta ( record: [ id: true ] )
+            .groupTuple ( by: ( params.MODEL_PRESET == 'multimer' ? 1 : [ 0, 1 ] ) )
+            .map { record, fasta ->
+                params.MODEL_PRESET == 'multimer'
+                ? [ [ ('A'..'H'), record.id ].transpose().collectEntries(), fasta ]
+                : [ [ 'A': record.id ], fasta ]
+            }
+            .unique { meta, fasta -> meta }
+            .set { fasta }
+
+        MSA(
+            fasta.splitFasta ( record: [ id: true, seqString: true ] ).filter { meta, record -> ( record.id in meta*.value ) }.unique { meta, record -> record },
+            databases
+        )
+
+        fasta
+            .combine ( MSA.out.msa )
+            .filter { meta, fasta, record, msa -> ( record in meta*.value ) }
+            .map { meta, fasta, record, msa -> [ groupKey( meta, meta*.value.unique().size() * databases.size() ), fasta, msa ] }
+            .groupTuple( by: 0 )
+            .map { meta, fasta, msa ->
+                [ meta.getGroupTarget(), fasta.first() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == meta[chain] } } : [ msa.unique() ] )
+            }
+            .set { msa }
+
+        MODEL(msa)
+
+    emit:
+        prediction = MODEL.out.prediction
+        count      = fasta.count()
+}
