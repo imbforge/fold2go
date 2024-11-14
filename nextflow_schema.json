@@ -66,13 +66,13 @@
         "alphafold_options": {
             "type": "object",
             "properties": {
-                "title": "ALPHAFOLD",
+                "title": "INFERENCE",
                 "type": "object",
                 "description": "Parameter options for AlphaFold.",
                 "properties": {
                     "enabled": {
                         "type": "boolean",
-                        "description": "Enable ALPHAFOLD process",
+                        "description": "Enable INFERENCE process",
                         "default": true,
                         "hidden": true
                     }

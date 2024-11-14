@@ -2,17 +2,18 @@ include { MSA; MODEL } from '../../modules/alphafold3'
 
 workflow ALPHAFOLD3 {
 
+    take:
+        input
+
     main:
-        Channel
-            .fromPath( params.IN )
+        input
             .map { 
                 json -> [ [ id: new groovy.json.JsonSlurper().parse(json).name ], json ]
             }
             .set { json }
 
-        MSA(json) // | MODEL
+        MSA(json) // | INFERENCE
 
     emit:
         prediction = Channel.empty()
-        count      = json.count()
 }

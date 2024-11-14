@@ -1,11 +1,11 @@
 switch ( params.MODEL_PRESET ) {
     case { it ==~ /^monomer.*/ }:
-        include { MONOMER as MODEL } from '../../modules/alphafold2'
+        include { MONOMER as INFERENCE } from '../../modules/alphafold2'
         databases = ['uniref90', 'mgnify', 'bfd']
         include { MSA } from '../../modules/alphafold2'
         break
     default:
-        include { MULTIMER as MODEL } from '../../modules/alphafold2'
+        include { MULTIMER as INFERENCE } from '../../modules/alphafold2'
         databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
 }
 
@@ -13,10 +13,11 @@ include { MSA } from '../../modules/alphafold2'
 
 workflow ALPHAFOLD2 {
 
-    main:
+    take:
+        input
 
-        Channel
-            .fromPath( params.IN )
+    main:
+        input
             .map { fasta -> [ fasta, fasta ] }
             .splitFasta ( record: [ id: true ] )
             .groupTuple ( by: ( params.MODEL_PRESET == 'multimer' ? 1 : [ 0, 1 ] ) )
@@ -43,9 +44,8 @@ workflow ALPHAFOLD2 {
             }
             .set { msa }
 
-        MODEL(msa)
+        INFERENCE(msa)
 
     emit:
-        prediction = MODEL.out.prediction
-        count      = fasta.count()
+        prediction = INFERENCE.out.prediction
 }

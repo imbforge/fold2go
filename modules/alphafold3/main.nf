@@ -20,18 +20,18 @@ process MSA {
         """
 }
 
-process MODEL {
+process INFERENCE {
     tag "${meta}"
     label "gpu"
 
     when:
-        params.ALPHAFOLD.enabled
+        params.INFERENCE.enabled
 
     input:
         tuple val(meta), path(json)
 
     output:
-        tuple val(meta), path("predictions/*.pkl"), emit: prediction
+        tuple val(meta), path("seed-*"), emit: prediction
 
     script:
         """

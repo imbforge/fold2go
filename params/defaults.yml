@@ -13,11 +13,11 @@ EMAIL:
 PORT:
   3842
 
-ALPHAFOLD:
+MSA:
   enabled:
     true
 
-MSA:
+INFERENCE:
   enabled:
     true
 

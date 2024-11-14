@@ -11,10 +11,16 @@ include { PYMOL } from '../../modules/pymol'
 
 workflow FOLD2GO {
 
-    ALPHAFOLD()
+    Channel
+        .fromPath( params.IN )
+        .tap { input }
+        .count()
+        .set { count }
+    
+    ALPHAFOLD(input)
 
     SHINY(
-        ALPHAFOLD.out.count,
+        count,
         params.OUT,
         workflow.runName,
         workflow.launchDir

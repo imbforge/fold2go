@@ -3,7 +3,7 @@ process MONOMER {
     label "gpu"
 
     when:
-        params.ALPHAFOLD.enabled
+        params.INFERENCE.enabled
 
     input:
         tuple val(meta), path(fasta), path(chain, stageAs: "chain/msas/*")
@@ -20,7 +20,7 @@ process MULTIMER {
     label "gpu"
 
     when:
-        params.ALPHAFOLD.enabled
+        params.INFERENCE.enabled
 
     input:
         tuple val(meta),
