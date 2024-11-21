@@ -6,11 +6,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 
 WORKDIR /app/alphafold
 
-COPY pixi.toml .
+COPY pixi.toml pixi.lock .
 
-RUN printf '#!/bin/sh\n%s\nexec "$@"' "$(pixi shell-hook)" > 99-pixi.sh && chmod +x 99-pixi.sh
-
-RUN /app/alphafold/.pixi/envs/default/bin/build_data
+RUN printf '#!/bin/sh\n%s\nexec "$@"' "$(pixi shell-hook)" > 99-pixi.sh && chmod +x 99-pixi.sh && pixi run build_data
 
 FROM docker.io/nvidia/cuda:12.5.1-base-ubuntu22.04 AS alphafold
 
