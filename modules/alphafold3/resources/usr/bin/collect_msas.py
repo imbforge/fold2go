@@ -21,7 +21,7 @@ def _get_msa(entity, realm, msa_dir=args.msa_dir):
         case 'rna':
             return { 'unpairedMsa': record['unpairedMsa'] }
         case 'protein':
-            return { key: record[key] for key in ['unpairedMsa', 'templates'] }
+            return { key: record[key] for key in ['unpairedMsa', 'templates'] } | { 'pairedMsa': "" }
 
 with open(args.json_path) as fin:
     jobdef = json.load(fin)

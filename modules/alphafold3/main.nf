@@ -8,14 +8,14 @@ process MSA {
         tuple val(meta), path(json)
 
     output:
-        tuple val(meta), path("msa/**/*.json"), emit: json
+        tuple val(meta), path("msa/**/*_data.json"), emit: json
 
     script:
         """
         python /app/alphafold/run_alphafold.py \\
-            --norun_inference \\
-            --db_dir=${params.DATABASE} \\
+            --run_inference=false \\
             --json_path=${json} \\
+            --db_dir=${params.DATABASE} \\
             --output_dir=msa
         """
 }
@@ -28,22 +28,17 @@ process INFERENCE {
         params.INFERENCE.enabled
 
     input:
-        tuple val(meta), path(jobdef, stageAs: 'input.json'), path(msa, stageAs: 'msa/*')
+        tuple val(meta), path(json)
 
     output:
-        tuple val(meta), path("*.json"), emit: jobdef
-        //tuple val(meta), path("seed-*"), emit: prediction
+        tuple val(meta), path("predictions/*", type: 'dir'), emit: prediction
 
     script:
         """
-        python ${moduleDir}/resources/usr/bin/collect_msas.py --json_path=${jobdef}
+        python /app/alphafold/run_alphafold.py \\
+            --run_data_pipeline=false \\
+            --json_path=${json} \\
+            --output_dir=predictions
         """
 
-//      python /app/alphafold/run_alphafold.py \\
-//          --json_path=${jobdef}
-//          --norun_data_pipeline \\
-//          --db_dir=${params.DATABASE} \\
-//          --model_dir=${params.WEIGHTS}/${params.MODEL_PRESET} \\
-//          --json_path=${json} \\
-//          --output_dir=predictions
 }
