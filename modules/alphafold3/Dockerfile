@@ -12,7 +12,7 @@ RUN printf '#!/bin/sh\n%s\nexec "$@"' "$(pixi shell-hook)" > 99-pixi.sh && chmod
 
 RUN /app/alphafold/.pixi/envs/default/bin/build_data
 
-FROM docker.io/nvidia/cuda:12.5.1-base-ubuntu22.04 AS alphafold
+FROM docker.io/nvidia/cuda:12.6.0-base-ubuntu22.04 AS alphafold
 
 LABEL org.opencontainers.image.authors="huether@imb-mainz.de"
 
@@ -24,7 +24,7 @@ WORKDIR /app/alphafold
 
 COPY --from=build /app/alphafold/99-pixi.sh /.singularity.d/env/99-pixi.sh
 
-ADD --chmod=0755 https://raw.githubusercontent.com/google-deepmind/alphafold3/refs/tags/v3.0.0/run_alphafold.py .
+ADD --chmod=0755 https://raw.githubusercontent.com/google-deepmind/alphafold3/025701f02fe745bd21df4f5f8196e2a6b621b85d/run_alphafold.py .
 
 ENTRYPOINT ["/.singularity.d/env/99-pixi.sh"]
 
