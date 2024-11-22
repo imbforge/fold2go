@@ -14,3 +14,6 @@ plotly_express = ">=0.4.1,<0.5"
 py3dmol = ">=2.4.2,<3"
 shinywidgets = ">=0.3.3,<0.4"
 shiny = ">=1.2.1,<2"
+
+[pypi-dependencies]
+ipymolstar = ">=0.0.8, <0.0.9"
