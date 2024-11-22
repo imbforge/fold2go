@@ -95,16 +95,16 @@
                 }
             }
         },
-        "pymol_options": {
+        "metrics_options": {
             "type": "object",
             "properties": {
-                "title": "PYMOL",
+                "title": "METRICS",
                 "type": "object",
-                "description": "Parameter options for pymol metrics.",
+                "description": "Parameter options for model metrics.",
                 "properties": {
                     "enabled": {
                         "type": "boolean",
-                        "description": "Enable PYMOL process",
+                        "description": "Enable METRICS process",
                         "default": true,
                         "hidden": true
                     }

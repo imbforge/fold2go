@@ -9,6 +9,7 @@ switch ( params.MODEL_PRESET ) {
         databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
 }
 
+include { AF2_METRICS as METRICS } from '../../modules/pymol'
 include { MSA } from '../../modules/alphafold2'
 
 workflow ALPHAFOLD2 {
@@ -44,8 +45,9 @@ workflow ALPHAFOLD2 {
             }
             .set { msa }
 
-        INFERENCE(msa)
+        INFERENCE(msa) | METRICS
 
     emit:
+        metrics    = METRICS.out.metrics
         prediction = INFERENCE.out.prediction
 }

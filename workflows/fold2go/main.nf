@@ -7,7 +7,6 @@ switch ( params.MODEL_PRESET ) {
 }
 
 include { SHINY } from '../../modules/shiny'
-include { PYMOL } from '../../modules/pymol'
 
 workflow FOLD2GO {
 
@@ -25,10 +24,8 @@ workflow FOLD2GO {
         workflow.runName,
         workflow.launchDir
     )
-    
-    ALPHAFOLD.out.prediction | PYMOL
 
-    PYMOL.out.metrics
+    ALPHAFOLD.out.metrics
         .collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)
         .subscribe onNext: {
             sendMail {

@@ -1,4 +1,5 @@
-include { MSA; INFERENCE } from '../../modules/alphafold3'
+include { MSA; INFERENCE         } from '../../modules/alphafold3'
+include { AF3_METRICS as METRICS } from '../../modules/pymol'
 
 workflow ALPHAFOLD3 {
 
@@ -10,10 +11,11 @@ workflow ALPHAFOLD3 {
             .map { json ->
                 def job = new groovy.json.JsonSlurper().parse(json)
                 [ [ id: job.name ], json ]
-            } | MSA | INFERENCE
+            } | MSA | INFERENCE | METRICS
 
     emit:
-        prediction = Channel.empty()
+        metrics    = METRICS.out.metrics
+        prediction = INFERENCE.out.prediction
 }
 
 //workflow ALPHAFOLD3 {
