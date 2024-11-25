@@ -70,7 +70,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/prompt_toolkit-3.0.36-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/py3dmol-2.4.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.12.4-h194c7f8_0_cpython.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python-dateutil-2.9.0-pyhd8ed1ab_0.conda
@@ -1308,24 +1307,6 @@ packages:
   - pkg:pypi/pure-eval?source=hash-mapping
   size: 16551
   timestamp: 1721585805256
-- kind: conda
-  name: py3dmol
-  version: 2.4.2
-  build: pyhd8ed1ab_0
-  subdir: noarch
-  noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/py3dmol-2.4.2-pyhd8ed1ab_0.conda
-  sha256: d4b08047bfb50d7fc7cd5987552cef620a146bda842936771aa0c81d013f599f
-  md5: d29c724559d8e3edf59f927fd0455f42
-  depends:
-  - ipython
-  - python >=3.6
-  license: MIT
-  license_family: MIT
-  purls:
-  - pkg:pypi/py3dmol?source=hash-mapping
-  size: 12641
-  timestamp: 1731318183208
 - kind: conda
   name: pygments
   version: 2.18.0
