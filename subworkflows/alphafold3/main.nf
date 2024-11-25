@@ -1,21 +1,40 @@
 include { MSA; INFERENCE         } from '../../modules/alphafold3'
 include { AF3_METRICS as METRICS } from '../../modules/pymol'
 
+
 workflow ALPHAFOLD3 {
 
     take:
         input
 
     main:
+        // instantiate json slurper
+        def slurper = new groovy.json.JsonSlurper()
+
         input
-            .map { json ->
-                def job = new groovy.json.JsonSlurper().parse(json)
-                [ [ id: job.name ], json ]
-            } | MSA | INFERENCE | METRICS
+            .map {
+                // dispatch either one msa job per supplied json file, or a compound msa job if a directory is supplied as input
+                // the latter is useful to avoid redundant msa computation if multiple jsons contain the same sequences
+                [ [ id: ( it.isFile() ? slurper.parse(it).name : it.listFiles().collect { slurper.parse(it).name } ) ], it ]
+            }
+            .set { jobdef }
+
+        MSA(
+            jobdef
+        )
+
+        INFERENCE(
+            MSA.out.json.flatten().map { [ [ id: slurper.parse(it).name ], it ] }
+        )
+        
+        METRICS(
+            INFERENCE.out.prediction
+        )
 
     emit:
         metrics    = METRICS.out.metrics
         prediction = INFERENCE.out.prediction
+        jobcount   = jobdef.collect { meta, json -> meta.id }.flatten().count()
 }
 
 //workflow ALPHAFOLD3 {

@@ -5,16 +5,16 @@ process MSA {
         params.MSA.enabled
 
     input:
-        tuple val(meta), path(json)
+        tuple val(meta), path(input)
 
     output:
-        tuple val(meta), path("msa/**/*_data.json"), emit: json
+        path("msa/**/*_data.json"), emit: json
 
     script:
         """
         python /app/alphafold/run_alphafold.py \\
             --run_inference=false \\
-            --json_path=${json} \\
+            --${input.extension == "json" ? "json_path" : "input_dir"}=${input} \\
             --db_dir=${params.DATABASE} \\
             --output_dir=msa
         """

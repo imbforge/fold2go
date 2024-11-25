@@ -10,21 +10,16 @@ include { SHINY } from '../../modules/shiny'
 
 workflow FOLD2GO {
 
-    Channel
-        .fromPath( params.IN )
-        .tap { input }
-        .count()
-        .set { count }
-    
-    ALPHAFOLD(input)
+    ALPHAFOLD(
+        Channel.fromPath( params.IN )
+    )
 
     SHINY(
-        count,
+        ALPHAFOLD.out.jobcount,
         params.OUT,
         workflow.runName,
         workflow.launchDir
     )
-
 
     ALPHAFOLD.out.metrics
         .collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)
@@ -51,6 +46,5 @@ workflow FOLD2GO {
                 log.warn "Failed to send notification email to ${params.EMAIL}"
                 log.error e
             }
-        }
         }
 }

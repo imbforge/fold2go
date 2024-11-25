@@ -50,4 +50,5 @@ workflow ALPHAFOLD2 {
     emit:
         metrics    = METRICS.out.metrics
         prediction = INFERENCE.out.prediction
+        jobcount   = input.count()
 }
