@@ -38,6 +38,7 @@ process INFERENCE {
         python /app/alphafold/run_alphafold.py \\
             --run_data_pipeline=false \\
             --json_path=${json} \\
+            --jax_compilation_cache_dir=${workDir} \\
             --output_dir=predictions
         """
 
