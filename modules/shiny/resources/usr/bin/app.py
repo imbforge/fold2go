@@ -62,10 +62,12 @@ df, selection = reactive.value(), reactive.value()
 @reactive.effect
 @reactive.poll(_list_files, 30)
 def _():
-    if (files := _list_files()):
-        models = pandas.concat([pandas.read_csv(f, sep='\t') for f in files])
-        models.attrs['done'] = len(files)
-        df.set(models)
+    completed = _list_files()
+    ui.update_tooltip("metrics_tip", show=(not completed))
+    if completed:
+        metrics = pandas.concat([pandas.read_csv(tsv, sep='\t') for tsv in completed])
+        metrics.attrs['done'] = len(completed)
+        df.set(metrics)
 
 # store row selection
 @reactive.effect
@@ -89,13 +91,12 @@ with ui.card():
     with ui.card_header(class_='text-center'):
         with ui.tooltip(placement="bottom", id="metrics_tip"):
             "Metrics"
-            "Results will appear here as they are produced"
+            "Results will appear here as they become available"
     @render.data_frame
     def render_frame():
         progress = ui.Progress(min=0, max=njobs)
         if not df.is_set():
             # display modal with log file content until predictions become available
-            progress.set(0, message="Predictions are running", detail=f"(0/{njobs} complete)")
             ui.modal_show(
                 ui.modal(
                     ui.tags.pre(_parse_log()),
@@ -104,14 +105,20 @@ with ui.card():
                     footer=[ui.modal_button("Dismiss"), ui.span(class_='spinner-border')]
                 )
             )
+            progress.set(
+                value=0,
+                message="Predictions are running",
+                detail=f"(0/{njobs} complete)"
+            )
         else:
             ui.modal_remove()
-            if (done := df().attrs['done']) < njobs:
-                progress.set(df().attrs['done'], message="Predictions are running", detail=f"({df().attrs['done']}/{njobs} complete)")
-            else:
-                progress.set(done, message="Predictions are complete", detail=f"({done}/{njobs} complete)")
-    
-            return render.DataGrid(df(), selection_mode='row')
+#            ncomplete = df().attrs['done']
+            progress.set(
+                value=(ncomplete := df().attrs['done']),
+                message="Predictions are running" if ( ncomplete < njobs ) else "Predictions are complete",
+                detail=f"({ncomplete}/{njobs} complete)"
+            )
+        return render.DataGrid(df(), selection_mode='row')
 
     with ui.card_footer(class_='text-center'):
         # display button to download metrics table
