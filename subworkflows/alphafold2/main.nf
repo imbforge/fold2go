@@ -1,13 +1,10 @@
-switch ( params.MODEL_PRESET ) {
-    case { it ==~ /^monomer.*/ }:
-        include { MONOMER as INFERENCE } from '../../modules/alphafold2'
-        databases = ['uniref90', 'mgnify', 'bfd']
-        include { MSA } from '../../modules/alphafold2'
-        break
-    default:
-        include { MULTIMER as INFERENCE } from '../../modules/alphafold2'
-        databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
-}
+if ( params.MODEL_PRESET == 'multimer' ) {
+    include { MULTIMER as INFERENCE } from '../../modules/alphafold2'
+    databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
+} else {
+    include { MONOMER as INFERENCE } from '../../modules/alphafold2'
+    databases = ['uniref90', 'mgnify', 'bfd']
+}  
 
 include { AF2_METRICS as METRICS } from '../../modules/pymol'
 include { MSA } from '../../modules/alphafold2'

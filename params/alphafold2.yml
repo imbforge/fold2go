@@ -2,8 +2,10 @@ IN:
   "/fsimb/common/cicd/test-data/alphafold/chains/*.fasta"
 OUT:
   "${projectDir}/results"
-DATABASE:
-  "/mnt/storage/alphafold/v232"
+DATABASE_DIR:
+  "/mnt/storage/alphafold"
+ALPHAFOLD_VERSION:
+  "v232"
 MODEL_PRESET:
   "multimer"
 PREDICTIONS_PER_MODEL:

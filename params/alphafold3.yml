@@ -1,0 +1,30 @@
+IN:
+  "/fsimb/common/cicd/test-data/alphafold/chains/*.json"
+OUT:
+  "${projectDir}/results"
+DATABASE_DIR:
+  "/mnt/storage/alphafold"
+ALPHAFOLD_VERSION:
+  "v300"
+MODEL_DIR:
+  "/mnt/storage/alphafold/v300/.model"
+EMAIL:
+  "huether@imb-mainz.de"
+PORT:
+  3842
+
+MSA:
+  enabled:
+    true
+
+INFERENCE:
+  enabled:
+    true
+
+METRICS:
+  enabled:
+    true
+
+SHINY:
+  enabled:
+    true

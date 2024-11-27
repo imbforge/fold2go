@@ -67,7 +67,7 @@ process MSA {
             --cores=${task.cpus} \\
             --database='${database}' \\
             --fasta_path='${record.id}.fasta' \\
-            --database_root_path='${params.DATABASE}' \\
+            --database_root_path='${params.DATABASE_DIR}/${params.ALPHAFOLD_VERSION}' \\
             --out_path='msas/${record.id}'
         """
 }

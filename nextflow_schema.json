@@ -13,10 +13,8 @@
                 "IN": {
                     "type": "string",
                     "format": "path",
-                    "pattern": ".(fasta|fa)$",
-                    "description": "Path to input fasta file(s)",
-                    "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.fasta",
-                    "errorMessage": "File glob must match '*.fasta' or '*.fa'"
+                    "description": "Path to input fasta (AlphaFold2) or json (AlphaFold3) file(s)",
+                    "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json"
                 },
                 "OUT": {
                     "type": "string",
@@ -25,16 +23,25 @@
                     "description": "Path to output directory",
                     "hidden": true
                 },
-                "DATABASE": {
+                "DATABASE_DIR": {
                     "type": "string",
                     "format": "path",
                     "description": "Path to AlphaFold database",
-                    "default": "/mnt/storage/alphafold/v232",
+                    "default": "/mnt/storage/alphafold",
                     "hidden": true
+                },
+                "ALPHAFOLD_VERSION": {
+                    "type": "string",
+                    "description": "AlphaFold version identifier v(major)(minor)(patch)",
+                    "default": "v300",
+                    "enum": [
+                        "v300",
+                        "v232"
+                    ]
                 },
                 "MODEL_PRESET": {
                     "type": "string",
-                    "description": "AlphaFold model preset",
+                    "description": "AlphaFold model preset (AlphaFold2 only)",
                     "default": "multimer",
                     "enum": [
                         "multimer",
@@ -43,9 +50,16 @@
                         "monomer_casp14"
                     ]
                 },
+                "MODEL_DIR": {
+                    "type": "string",
+                    "format": "path",
+                    "description": "Path to model weights (AlphaFold3 only)",
+                    "default": "/mnt/storage/alphafold/v300/.model",
+                    "hidden": true
+                },
                 "PREDICTIONS_PER_MODEL": {
                     "type": "integer",
-                    "description": "Number of multimer predictions per model",
+                    "description": "Number of multimer predictions per model (AlphaFold2 only)",
                     "default": 1
                 },
                 "EMAIL": {

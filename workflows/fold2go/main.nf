@@ -1,9 +1,7 @@
-switch ( params.MODEL_PRESET ) {
-    case { it ==~ /^(mono|multi)mer.*/ }:
-        include { ALPHAFOLD2 as ALPHAFOLD } from '../../subworkflows/alphafold2'
-        break
-    default:
-        include { ALPHAFOLD3 as ALPHAFOLD } from '../../subworkflows/alphafold3'
+if ( params.ALPHAFOLD_VERSION.startsWith("v3") ) {
+    include { ALPHAFOLD3 as ALPHAFOLD } from '../../subworkflows/alphafold3'
+} else {
+    include { ALPHAFOLD2 as ALPHAFOLD } from '../../subworkflows/alphafold2'
 }
 
 include { SHINY } from '../../modules/shiny'
