@@ -44,8 +44,9 @@ process AF3_METRICS {
 
         for model in Path('${prediction}').glob('**/seed-*/summary_confidences.json'):
             df = pandas.read_json(model, precise_float=True).select_dtypes(exclude=['object'])
-            df.insert(0, 'prediction_name', model.parent.parent.name)
-            df.insert(1, 'model_id', model.parent.name)
+            df.insert(0, 'project_name', '${workflow.runName}')
+            df.insert(1, 'prediction_name', model.parent.parent.name)
+            df.insert(2, 'model_id', model.parent.name)
             models.append(df)
         
         pandas.concat(models).to_csv('${meta.id}_metrics.tsv', sep='\t', index=False)
