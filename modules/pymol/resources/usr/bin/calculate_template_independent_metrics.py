@@ -17,19 +17,20 @@ from string import ascii_uppercase
 @dataclass
 class PredictionFolder:
     """Class that stores prediction folder information"""
-    prediction_folder: Path
+    model_preset: str
+    prediction_dir: Path
     prediction_name: str
     project_name: str
 
     @property
     def model_confidences(self) -> dict:
-        with open(Path(f'{self.prediction_folder}/ranking_debug.json'), 'r') as fin:
+        with open(Path(f'{self.prediction_dir}/ranking_debug.json'), 'r') as fin:
             data = json.load(fin)
         return {model:list(data.values())[0].get(model) for model in data['order']}
 
     @property
     def chain_lengths(self) -> dict:
-        with open(Path(f'{self.prediction_folder}.fasta')) as fin:
+        with open(Path(f'{self.prediction_dir}.fasta')) as fin:
             chain_dict, record = defaultdict(int), 0
             for line in fin:
                 if line.startswith(">"):
@@ -42,7 +43,7 @@ class PredictionFolder:
     @property
     def model_instances(self) -> list:
         return [
-            PredictedModel(model_path=self.prediction_folder,
+            PredictedModel(model_path=self.prediction_dir,
                            model_id=model,
                            model_rank=f'ranked_{rank}',
                            model_confidence=confidence,
@@ -56,6 +57,7 @@ class PredictionFolder:
         common_metrics = pd.DataFrame({
             'project_name':self.project_name,
             'prediction_name':self.prediction_name,
+            'model_preset': f"alphafold2_{self.model_preset}",
             'model_id':self.model_confidences.keys()
         })
 
@@ -350,10 +352,16 @@ class PredictedModel:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path_to_prediction', type=Path, help='Path to the prediction folder', dest='path_to_prediction')
-    parser.add_argument('--prediction_name', type=str, help='Optional name of the prediction, otherwise inferred from the directory name', dest='prediction_name')
-    parser.add_argument('--project_name', type=str, help='Optional name for the project', dest='project_name')
+    parser.add_argument('--model_preset', type=str, choices=['multimer', 'monomer_ptm', 'monomer', 'monomer_casp14'], help='Name of the AlphaFold2 model preset', dest='model_preset')
+    parser.add_argument('--prediction_dir', type=Path, help='Path to the prediction directory', dest='prediction_dir')
+    parser.add_argument('--prediction_name', type=str, help='Name of the prediction', dest='prediction_name')
+    parser.add_argument('--project_name', type=str, help='Name for the project', dest='project_name')
 
     args = parser.parse_args()
 
-    PredictionFolder(prediction_folder=args.path_to_prediction, project_name=args.project_name, prediction_name=args.prediction_name).write_metrics()
+    PredictionFolder(
+        model_preset=args.model_preset,
+        prediction_dir=args.prediction_dir,
+        prediction_name=args.prediction_name,
+        project_name=args.project_name
+    ).write_metrics()
