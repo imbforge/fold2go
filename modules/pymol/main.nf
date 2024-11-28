@@ -8,15 +8,16 @@ process AF2_METRICS {
         tuple val(meta), path(prediction, stageAs: "chains/*"), path(fasta, stageAs: "chains.fasta")
 
     output:
-        path("template_indep_info.tsv"), emit: metrics
+        tuple val("alphafold2_${params.ALPHAFOLD2.MODEL_PRESET}"), path("template_indep_info.tsv"), emit: metrics
         path("*_contacts.pse"), optional: true, emit: contacts
 
     script:
         """
         python ${moduleDir}/resources/usr/bin/calculate_template_independent_metrics.py \\
-            --path_to_prediction='chains' \\
-            --project_name='${workflow.runName}' \\
-            --prediction_name='${meta*.value.join('.')}'
+            --model_preset=${params.ALPHAFOLD2.MODEL_PRESET} \\
+            --prediction_dir=chains \\
+            --project_name=${workflow.runName} \\
+            --prediction_name=${meta*.value.join('.')}
         """
 }
 
@@ -30,7 +31,7 @@ process AF3_METRICS {
         tuple val(meta), path(prediction)
 
     output:
-        path("*_metrics.tsv"), emit: metrics
+        tuple val("alphafold3"), path("*_metrics.tsv"), emit: metrics
 
     script:
         """
@@ -46,7 +47,8 @@ process AF3_METRICS {
             df = pandas.read_json(model, precise_float=True).select_dtypes(exclude=['object'])
             df.insert(0, 'project_name', '${workflow.runName}')
             df.insert(1, 'prediction_name', model.parent.parent.name)
-            df.insert(2, 'model_id', model.parent.name)
+            df.insert(2, 'model_preset', 'alphafold3')
+            df.insert(3, 'model_id', model.parent.name)
             models.append(df)
         
         pandas.concat(models).to_csv('${meta.id}_metrics.tsv', sep='\t', index=False)

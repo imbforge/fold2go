@@ -65,9 +65,9 @@ process MSA {
 
         python ${moduleDir}/resources/usr/bin/run_msa.py \\
             --cores=${task.cpus} \\
-            --database='${database}' \\
-            --fasta_path='${record.id}.fasta' \\
-            --database_root_path='${params.DATABASE_DIR}/${params.ALPHAFOLD_VERSION}' \\
-            --out_path='msas/${record.id}'
+            --database=${database} \\
+            --fasta_path=${record.id}.fasta \\
+            --data_dir=${params.ALPHAFOLD2.DATABASE_DIR} \\
+            --out_path=msas/${record.id}
         """
 }

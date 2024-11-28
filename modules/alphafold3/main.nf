@@ -15,7 +15,7 @@ process MSA {
         python /app/alphafold/run_alphafold.py \\
             --run_inference=false \\
             --${input.extension == "json" ? "json_path" : "input_dir"}=${input} \\
-            --db_dir=${params.DATABASE_DIR}/${params.ALPHAFOLD_VERSION} \\
+            --db_dir=${params.ALPHAFOLD3.DATABASE_DIR} \\
             --output_dir=msa
         """
 }
@@ -38,7 +38,7 @@ process INFERENCE {
         python /app/alphafold/run_alphafold.py \\
             --run_data_pipeline=false \\
             --json_path=${json} \\
-            --model_dir=${params.MODEL_DIR} \\
+            --model_dir=${params.ALPHAFOLD3.MODEL_DIR} \\
             --jax_compilation_cache_dir=${workDir} \\
             --output_dir=predictions
         """

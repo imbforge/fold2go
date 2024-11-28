@@ -1,7 +1,6 @@
 include { MSA; INFERENCE         } from '../../modules/alphafold3'
 include { AF3_METRICS as METRICS } from '../../modules/pymol'
 
-
 workflow ALPHAFOLD3 {
 
     take:

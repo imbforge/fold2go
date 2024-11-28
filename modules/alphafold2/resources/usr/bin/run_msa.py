@@ -15,7 +15,7 @@ parser.add_argument('--database', type=str, choices=['uniref90', 'mgnify', 'unip
 parser.add_argument('--cores', type=int, help='Number of cpu cores to use')
 parser.add_argument('--fasta_path', type=Path, help='Path to the input fasta file')
 parser.add_argument('--out_path', type=Path, help='Path to output dir')
-parser.add_argument('--database_root_path', type=Path, help='Path to the alphafold database root directory')
+parser.add_argument('--data_dir', type=Path, help='Path to the alphafold database root directory')
 
 args = parser.parse_args()
 
@@ -23,16 +23,16 @@ args.out_path.mkdir(parents=True, exist_ok=True)
 
 match args.database:
     case "uniref90":
-        database_path=f'{args.database_root_path}/uniref90/uniref90.fasta'
+        database_path=f'{args.data_dir}/uniref90/uniref90.fasta'
         msa_runner, msa_out_path, max_sto_sequences, msa_format = jackhmmer.Jackhmmer(binary_path=shutil.which('jackhmmer'), database_path=str(database_path)), f'{args.out_path}/uniref90_hits.sto', 10000, 'sto'
     case "mgnify":
-        database_path=f'{args.database_root_path}/mgnify/mgy_clusters_2022_05.fa'
+        database_path=f'{args.data_dir}/mgnify/mgy_clusters_2022_05.fa'
         msa_runner, msa_out_path, max_sto_sequences, msa_format = jackhmmer.Jackhmmer(binary_path=shutil.which('jackhmmer'), database_path=str(database_path)), f'{args.out_path}/mgnify_hits.sto', 501, 'sto'
     case "uniprot":
-        database_path=f'{args.database_root_path}/uniprot/uniprot.fasta'
+        database_path=f'{args.data_dir}/uniprot/uniprot.fasta'
         msa_runner, msa_out_path, max_sto_sequences, msa_format = jackhmmer.Jackhmmer(binary_path=shutil.which('jackhmmer'), database_path=str(database_path)), f'{args.out_path}/uniprot_hits.sto', None, 'sto'
     case "bfd":
-        databases=[f'{args.database_root_path}/uniref30/UniRef30_2023_02', f'{args.database_root_path}/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt']
+        databases=[f'{args.data_dir}/uniref30/UniRef30_2023_02', f'{args.data_dir}/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt']
         msa_runner, msa_out_path, max_sto_sequences, msa_format = hhblits.HHBlits(binary_path=shutil.which('hhblits'), databases=databases), f'{args.out_path}/bfd_uniref_hits.a3m', None, 'a3m'
     case _:
         parser.error(f"{args.database} is not a valid choice")
