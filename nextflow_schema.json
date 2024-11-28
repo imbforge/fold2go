@@ -4,7 +4,7 @@
     "title": "fold2go",
     "description": "Configure pipeline parameters",
     "type": "object",
-    "defs": {
+    "$defs": {
         "pipeline_options": {
             "title": "Pipeline options",
             "type": "object",
@@ -13,7 +13,7 @@
                 "IN": {
                     "type": "string",
                     "format": "path",
-                    "description": "Path to input fasta (AlphaFold2) or json (AlphaFold3) file(s)",
+                    "description": "Path to input fasta [AlphaFold2] or json [AlphaFold3] file(s)",
                     "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json"
                 },
                 "OUT": {
@@ -23,50 +23,11 @@
                     "description": "Path to output directory",
                     "hidden": true
                 },
-                "DATABASE_DIR": {
-                    "type": "string",
-                    "format": "path",
-                    "description": "Path to AlphaFold database",
-                    "default": "/mnt/storage/alphafold",
-                    "hidden": true
-                },
-                "ALPHAFOLD_VERSION": {
-                    "type": "string",
-                    "description": "AlphaFold version identifier v(major)(minor)(patch)",
-                    "default": "v300",
-                    "enum": [
-                        "v300",
-                        "v232"
-                    ]
-                },
-                "MODEL_PRESET": {
-                    "type": "string",
-                    "description": "AlphaFold model preset (AlphaFold2 only)",
-                    "default": "multimer",
-                    "enum": [
-                        "multimer",
-                        "monomer_ptm",
-                        "monomer",
-                        "monomer_casp14"
-                    ]
-                },
-                "MODEL_DIR": {
-                    "type": "string",
-                    "format": "path",
-                    "description": "Path to model weights (AlphaFold3 only)",
-                    "default": "/mnt/storage/alphafold/v300/.model",
-                    "hidden": true
-                },
-                "PREDICTIONS_PER_MODEL": {
-                    "type": "integer",
-                    "description": "Number of multimer predictions per model (AlphaFold2 only)",
-                    "default": 1
-                },
                 "EMAIL": {
                     "type": "string",
 		            "format": "email",
                     "description": "Email address for notifications",
-                    "default": "huether@imb-mainz.de",
+                    "default": "",
                     "hidden": true
                 },
                 "PORT": {
@@ -77,66 +38,61 @@
                 }
             }
         },
-        "alphafold_options": {
+        "AlphaFold2": {
             "type": "object",
             "properties": {
-                "title": "INFERENCE",
-                "type": "object",
-                "description": "Parameter options for AlphaFold.",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean",
-                        "description": "Enable INFERENCE process",
-                        "default": true,
-                        "hidden": true
+                "ALPHAFOLD2" : {
+                    "type": "object",
+                    "description": "Parameter options for AlphaFold2",
+                    "properties": {
+                        "DATABASE_DIR": {
+                            "type": "string",
+                            "format": "path",
+                            "description": "Path to AlphaFold2 database",
+                            "default": "/mnt/storage/alphafold/v232",
+                            "hidden": true
+                        },
+                        "MODEL_PRESET": {
+                            "type": "string",
+                            "description": "AlphaFold2 model preset",
+                            "default": "multimer",
+                            "enum": [
+                                "multimer",
+                                "monomer_ptm",
+                                "monomer",
+                                "monomer_casp14"
+                            ]
+                        },
+                        "PREDICTIONS_PER_MODEL": {
+                            "type": "integer",
+                            "description": "Number of multimer predictions per AlphaFold2 model",
+                            "default": 1
+                        }
                     }
                 }
             }
         },
-        "msa_options": {
+        "AlphaFold3": {
             "type": "object",
             "properties": {
-                "title": "MSA",
-                "type": "object",
-                "description": "Parameter options for multiple sequence alignment.",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean",
-                        "description": "Enable MSA process",
-                        "default": true,
-                        "hidden": true
-                    }
-                }
-            }
-        },
-        "metrics_options": {
-            "type": "object",
-            "properties": {
-                "title": "METRICS",
-                "type": "object",
-                "description": "Parameter options for model metrics.",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean",
-                        "description": "Enable METRICS process",
-                        "default": true,
-                        "hidden": true
-                    }
-                }
-            }
-        },
-        "shiny_options": {
-            "type": "object",
-            "properties": {
-                "title": "SHINY",
-                "type": "object",
-                "description": "Parameter options for shiny app.",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean",
-                        "description": "Enable SHINY process",
-                        "default": true,
-                        "hidden": true
+                "ALPHAFOLD3": {
+                    "type": "object",
+                    "description": "Parameter options for AlphaFold3.",
+                    "properties": {
+                        "DATABASE_DIR": {
+                            "type": "string",
+                            "format": "path",
+                            "description": "Path to AlphaFold3 database",
+                            "default": "/mnt/storage/alphafold/v300",
+                            "hidden": true
+                        },
+                        "MODEL_DIR": {
+                            "type": "string",
+                            "format": "path",
+                            "description": "Path to AlphaFold3 model weights",
+                            "default": "/mnt/storage/alphafold/v300/.model",
+                            "hidden": true
+                        }
                     }
                 }
             }
@@ -144,7 +100,13 @@
     },
     "allOf": [
         {
-            "$ref": "#/defs/pipeline_options"
+            "$ref": "#/$defs/pipeline_options"
+        },
+        {
+            "$ref": "#/$defs/alphafold2_options"
+        },
+        {
+            "$ref": "#/$defs/alphafold3_options"
         }
     ]
 }
