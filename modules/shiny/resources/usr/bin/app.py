@@ -20,7 +20,7 @@ log_file = Path(os.getenv("SHINY_APP_LAUNCH_DIR")) / '.nextflow.log'
 
 # load pae metric for selected prediction
 def _get_pae(record: dict) -> list:
-    if 'ranking_score' in record:
+    if record.get('model_id').startswith('seed-'):
         with (results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open() as fin:
             return json.load(fin).get('pae')
     else:
@@ -29,7 +29,7 @@ def _get_pae(record: dict) -> list:
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
-    if 'ranking_score' in record:
+    if record.get('model_id').startswith('seed-'):
         model = results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
     else:
         model = results_dir / 'predictions' / record.get('prediction_name') / f"{record.get('model_rank')}.pdb"
@@ -49,7 +49,7 @@ def _parse_log() -> list:
     msg = []
     with log_file.open() as txt:
         for line in txt:
-            if 'INFO  nextflow' in line:
+            if 'INFO  nextflow.Session' in line:
                 msg.append(line.split(' - ')[-1])
     return msg
 
@@ -112,7 +112,6 @@ with ui.card():
             )
         else:
             ui.modal_remove()
-#            ncomplete = df().attrs['done']
             progress.set(
                 value=(ncomplete := df().attrs['done']),
                 message="Predictions are running" if ( ncomplete < njobs ) else "Predictions are complete",
