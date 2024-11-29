@@ -4,14 +4,16 @@ OUT:
   "${projectDir}/results"
 EMAIL:
   ""
-PORT: # port for the shiny app (make sure it is not already in use)
-  3843
+PORT:
+  0
 
 ALPHAFOLD3:
   DATABASE_DIR:
     "/mnt/storage/alphafold"
   MODEL_DIR:
     "/mnt/storage/alphafold/v300/.model"
+  GROUP_MSA:
+    true
 
 SHINY:
   enabled:

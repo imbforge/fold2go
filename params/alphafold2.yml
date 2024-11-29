@@ -4,8 +4,8 @@ OUT:
   "${projectDir}/results"
 EMAIL:
   ""
-PORT: # port for the shiny app (make sure it is not already in use)
-  3842
+PORT:
+  0
 
 ALPHAFOLD2:
   DATABASE_DIR:

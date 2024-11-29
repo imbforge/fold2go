@@ -13,6 +13,7 @@
                 "IN": {
                     "type": "string",
                     "format": "path",
+                    "pattern": ".(json|fasta|fa)$",
                     "description": "Path to input fasta [AlphaFold2] or json [AlphaFold3] file(s)",
                     "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json"
                 },
@@ -32,8 +33,8 @@
                 },
                 "PORT": {
                     "type": "integer",
-                    "description": "HTTP port to run shiny application on",
-                    "default": 9988,
+                    "description": "HTTP port to run shiny application on. Set to 0 to use random port.",
+                    "default": 0,
                     "hidden": true
                 }
             }
@@ -91,6 +92,12 @@
                             "format": "path",
                             "description": "Path to AlphaFold3 model weights",
                             "default": "/mnt/storage/alphafold/v300/.model",
+                            "hidden": true
+                        },
+                        "GROUP_MSA": {
+                            "type": "boolean",
+                            "description": "Run multiple sequence alignments in a single job. This avoids redundant computation if sequences are shared between inputs.",
+                            "default": true,
                             "hidden": true
                         }
                     }
