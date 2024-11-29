@@ -21,6 +21,7 @@ workflow FOLD2GO {
     )
 
     SHINY(
+        params.PORT ?: new Random().nextInt(39000, 39200),
         ALPHAFOLD3.out.jobcount.mix(ALPHAFOLD2.out.jobcount).sum(),
         params.OUT,
         workflow.runName,
