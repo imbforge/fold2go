@@ -5,14 +5,14 @@
     "description": "Configure pipeline parameters",
     "type": "object",
     "$defs": {
-        "pipeline_options": {
-            "title": "Pipeline options",
+        "General": {
+            "title": "General options",
             "type": "object",
             "description": "Define fold2go pipeline parameters.",
             "properties": {
                 "IN": {
                     "type": "string",
-                    "format": "path",
+                    "format": "file-path-pattern",
                     "pattern": ".(json|fasta|fa)$",
                     "description": "Path to input fasta [AlphaFold2] or json [AlphaFold3] file(s)",
                     "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json"
@@ -39,12 +39,72 @@
                 }
             }
         },
+        "Processes": {
+            "title": "Process options",
+            "type": "object",
+            "description": "Define fold2go pipeline parameters.",
+            "properties": {
+                "SHINY": {
+                    "type": "object",
+                    "description": "Options for SHINY process",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "format": "path",
+                            "description": "Run SHINY",
+                            "default": false,
+                            "hidden": true
+                        }
+                    }
+                },
+                "MSA": {
+                    "type": "object",
+                    "description": "Options for MSA process",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "format": "path",
+                            "description": "Run MSA",
+                            "default": true,
+                            "hidden": true
+                        }
+                    }
+                },
+                "INFERENCE": {
+                    "type": "object",
+                    "description": "Options for INFERENCE process",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "format": "path",
+                            "description": "Run INFERENCE",
+                            "default": true,
+                            "hidden": true
+                        }
+                    }
+                },
+                "METRICS": {
+                    "type": "object",
+                    "description": "Options for METRICS process",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "format": "path",
+                            "description": "Run METRICS",
+                            "default": true,
+                            "hidden": true
+                        }
+                    }
+                }
+            }
+        },
         "AlphaFold2": {
+            "title": "AlphaFold2 options",
             "type": "object",
             "properties": {
                 "ALPHAFOLD2" : {
                     "type": "object",
-                    "description": "Parameter options for AlphaFold2",
+                    "description": "Define AlphaFold2 parameters",
                     "properties": {
                         "DATABASE_DIR": {
                             "type": "string",
@@ -74,11 +134,12 @@
             }
         },
         "AlphaFold3": {
+            "title": "AlphaFold3 options",
             "type": "object",
             "properties": {
                 "ALPHAFOLD3": {
                     "type": "object",
-                    "description": "Parameter options for AlphaFold3.",
+                    "description": "Define AlphaFold3 parameters",
                     "properties": {
                         "DATABASE_DIR": {
                             "type": "string",
@@ -96,7 +157,7 @@
                         },
                         "GROUP_MSA": {
                             "type": "boolean",
-                            "description": "Run multiple sequence alignments in a single job. This avoids redundant computation if sequences are shared between inputs.",
+                            "description": "Run multiple sequence alignments as single job. Avoids redundant computation if sequences are shared between inputs.",
                             "default": true,
                             "hidden": true
                         }
@@ -107,13 +168,16 @@
     },
     "allOf": [
         {
-            "$ref": "#/$defs/pipeline_options"
+            "$ref": "#/$defs/General"
         },
         {
-            "$ref": "#/$defs/alphafold2_options"
+            "$ref": "#/$defs/AlphaFold2"
         },
         {
-            "$ref": "#/$defs/alphafold3_options"
+            "$ref": "#/$defs/AlphaFold3"
+        },
+        {
+            "$ref": "#/$defs/Processes"
         }
     ]
 }
