@@ -45,7 +45,7 @@ process AF3_METRICS {
 
         for model in Path('${prediction}').glob('**/seed-*/summary_confidences.json'):
             with model.open('r') as fin:
-                metrics = { metric: value for metric, value in json.load(fin).items() if not isinstance(value, dict) }
+                metrics = { metric: value for metric, value in json.load(fin).items() if not isinstance(value, dict | list) }
             info = {
                 'project_name': '${workflow.runName}',
                 'prediction_name': model.parent.parent.name,
