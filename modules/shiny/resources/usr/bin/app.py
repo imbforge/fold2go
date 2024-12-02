@@ -2,6 +2,7 @@ import json
 import os
 import pandas
 import signal
+import numpy as np
 import plotly.express as px
 
 from ipymolstar import PDBeMolstar
@@ -20,19 +21,26 @@ log_file = Path(os.getenv("SHINY_APP_LAUNCH_DIR")) / '.nextflow.log'
 
 # load pae metric for selected prediction
 def _get_pae(record: dict) -> list:
-    if record.get('model_id').startswith('seed-'):
-        with (results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open() as fin:
-            return json.load(fin).get('pae')
-    else:
-        with (results_dir / 'predictions' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open() as fin:
-            return json.load(fin)[0].get('predicted_aligned_error')
+    match record.get('model_preset').split('_')[0]:
+        case 'alphafold2':
+            with (results_dir / 'predictions' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
+                return json.load(fin)[0].get('predicted_aligned_error')
+        case 'alphafold3':
+            with (results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
+                return json.load(fin).get('pae')
+        case 'boltz':
+            with np.load(results_dir / 'predictions' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
+                return fin.get('pae')
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
-    if record.get('model_id').startswith('seed-'):
-        model = results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
-    else:
-        model = results_dir / 'predictions' / record.get('prediction_name') / f"{record.get('model_rank')}.pdb"
+    match record.get('model_preset').split('_')[0]:
+        case 'alphafold2':
+            model = results_dir / 'predictions' / record.get('prediction_name') / f"{record.get('model_rank')}.pdb"
+        case 'alphafold3':
+            model = results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
+        case 'boltz':
+            model = results_dir / 'predictions' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
     return {
         'data'  : model.read_text(),
         'format': model.suffix[1:],
@@ -47,7 +55,7 @@ def _list_files() -> list:
 # TODO: replace this with an http endpoint and use nf-weblog
 def _parse_log() -> list:
     msg = []
-    with log_file.open() as txt:
+    with log_file.open('r') as txt:
         for line in txt:
             if 'INFO  nextflow.Session' in line:
                 msg.append(line.split(' - ')[-1])
@@ -157,7 +165,7 @@ with ui.layout_columns(col_widths=(4,8)):
         def render_structure():
             return PDBeMolstar(
                 custom_data = _get_model(selection()),
-                alphafold_view = True,
+                #alphafold_view = True,
                 sequence_panel = True,
                 hide_animation_icon = True
             )
