@@ -1,4 +1,4 @@
-process MONOMER {
+process INFERENCE_MONOMER {
     tag "${meta}"
     label "gpu"
 
@@ -15,7 +15,7 @@ process MONOMER {
         template 'run_alphafold_monomer.sh'
 }
 
-process MULTIMER {
+process INFERENCE_MULTIMER {
     tag "${meta}"
     label "gpu"
 
