@@ -24,13 +24,13 @@ def _get_pae(record: dict) -> list:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
             with (results_dir / 'predictions' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
-                return json.load(fin)[0].get('predicted_aligned_error')
+                return np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
         case 'alphafold3':
             with (results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
-                return json.load(fin).get('pae')
+                return np.array(json.load(fin).get('pae'), dtype=np.float16)
         case 'boltz':
             with np.load(results_dir / 'predictions' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
-                return fin.get('pae')
+                return np.array(fin.get('pae'), dtype=np.float16)
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
