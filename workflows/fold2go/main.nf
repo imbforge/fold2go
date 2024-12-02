@@ -1,5 +1,6 @@
 include { ALPHAFOLD2 } from '../../subworkflows/alphafold2'
 include { ALPHAFOLD3 } from '../../subworkflows/alphafold3'
+include { BOLTZ      } from '../../subworkflows/boltz'
 include { SHINY      } from '../../modules/shiny'
 
 workflow FOLD2GO {
@@ -9,22 +10,23 @@ workflow FOLD2GO {
         .branch {
             fasta: it =~ /.(fasta|fa)$/
             json : it =~ /.json$/
+            yaml : it =~ /.(yaml|yml)$/
         }
         .set { input }
 
-    ALPHAFOLD2( input.fasta )
-    ALPHAFOLD3( input.json  )
+    input.fasta | ALPHAFOLD2
+    input.json  | ALPHAFOLD3
+    input.yaml  | BOLTZ
 
     SHINY(
         params.PORT ?: new Random().nextInt(39000, 39200),
-        ALPHAFOLD3.out.jobcount.mix(ALPHAFOLD2.out.jobcount).sum(),
+        ALPHAFOLD2.out.jobcount.mix(ALPHAFOLD2.out.jobcount).mix(BOLTZ.out.jobcount).sum(),
         params.OUT,
         workflow.runName,
         workflow.launchDir
     )
 
-    ALPHAFOLD3.out.metrics
-        .mix(ALPHAFOLD2.out.metrics)
+    ALPHAFOLD2.out.metrics.mix(ALPHAFOLD3.out.metrics).mix(BOLTZ.out.metrics)
         .collectFile ( storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true ) {
             preset, metrics -> [ "${preset}_metrics.tsv", metrics ]
         }

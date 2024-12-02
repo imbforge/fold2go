@@ -13,8 +13,7 @@
                 "IN": {
                     "type": "string",
                     "format": "file-path-pattern",
-                    "pattern": ".(json|fasta|fa)$",
-                    "description": "Path to input fasta [AlphaFold2] or json [AlphaFold3] file(s)",
+                    "description": "Path to fasta [AlphaFold2], json [AlphaFold3] or yaml [Boltz-1] file(s)",
                     "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json"
                 },
                 "OUT": {
@@ -164,6 +163,52 @@
                     }
                 }
             }
+        },
+        "Boltz-1": {
+            "title": "Boltz-1 options",
+            "type": "object",
+            "properties": {
+                "BOLTZ": {
+                    "type": "object",
+                    "description": "Define Boltz-1 parameters",
+                    "properties": {
+                        "MSA_PAIRING_STRATEGY": {
+                            "type": "string",
+                            "description": "Pairing strategy to use",
+                            "default": "greedy",
+                            "enum": [
+                                "greedy",
+                                "complete"
+                            ],
+                            "hidden": true
+                        },
+                        "MSA_SERVER_URL": {
+                            "type": "string",
+                            "description": "Server URL for MMseqs2 API",
+                            "default": "https://api.colabfold.com",
+                            "hidden": true
+                        },
+                        "RECYCLING_STEPS": {
+                            "type": "integer",
+                            "description": "Number of recycling steps to use for prediction",
+                            "default": 3,
+                            "hidden": true
+                        },
+                        "SAMPLING_STEPS": {
+                            "type": "integer",
+                            "description": "Number of sampling steps to use for prediction",
+                            "default": 200,
+                            "hidden": true
+                        },
+                        "DIFFUSION_SAMPLES": {
+                            "type": "integer",
+                            "description": "Number of diffusion samples to use for prediction",
+                            "default": 1,
+                            "hidden": true
+                        }
+                    }
+                }
+            }
         }
     },
     "allOf": [
@@ -175,6 +220,9 @@
         },
         {
             "$ref": "#/$defs/AlphaFold3"
+        },
+        {
+            "$ref": "#/$defs/Boltz-1"
         },
         {
             "$ref": "#/$defs/Processes"

@@ -1,0 +1,24 @@
+IN:
+  "${projectDir}/assets/alphafold3/*.yaml"
+OUT:
+  "${projectDir}/results"
+EMAIL:
+  ""
+PORT:
+  0
+
+ALPHAFOLD3:
+  MSA_SERVER_URL:
+    "https://api.colabfold.com"
+  MSA_PAIRING_STRATEGY:
+    "greedy"
+  RECYCLING_STEPS:
+    3
+  SAMPLING_STEPS:
+    200
+  DIFFUSION_SAMPLES:
+    1
+
+SHINY:
+  enabled:
+    false
