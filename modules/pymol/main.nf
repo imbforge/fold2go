@@ -41,16 +41,19 @@ process AF3_METRICS {
         import pandas
         from pathlib import Path
 
-        models = []
+        models = {}
 
         for model in Path('${prediction}').glob('**/seed-*/summary_confidences.json'):
-            df = pandas.read_json(model, precise_float=True).select_dtypes(exclude=['object'])
-            df.insert(0, 'project_name', '${workflow.runName}')
-            df.insert(1, 'prediction_name', model.parent.parent.name)
-            df.insert(2, 'model_preset', 'alphafold3')
-            df.insert(3, 'model_id', model.parent.name)
-            models.append(df)
+            with model.open('r') as fin:
+                metrics = { metric: value for metric, value in json.load(fin).items() if not isinstance(value, dict) }
+            info = {
+                'project_name': '${workflow.runName}',
+                'prediction_name': model.parent.parent.name,
+                'model_preset': 'alphafold3',
+                'model_id': model.parent.name
+            }
+            models[model.stem] = { **info, **metrics }
         
-        pandas.concat(models).to_csv('${meta.id}_metrics.tsv', sep='\t', index=False)
+        pandas.DataFrame.from_dict(models, orient='index').to_csv('${meta.id}_metrics.tsv', sep='\t', index=False)
         """
 }
