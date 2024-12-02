@@ -1,5 +1,6 @@
 process MSA {
     tag "${meta}"
+    label "ssd"
 
     when:
         params.MSA.enabled

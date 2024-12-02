@@ -44,6 +44,7 @@ process INFERENCE_MULTIMER {
 
 process MSA {
     tag "${record.id}:${database}"
+    label "ssd"
 
     when:
         params.MSA.enabled
