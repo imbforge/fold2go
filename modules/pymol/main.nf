@@ -52,7 +52,7 @@ process AF3_METRICS {
                 'model_preset': 'alphafold3',
                 'model_id': model.parent.name
             }
-            models[model.stem] = { **info, **metrics }
+            models[model.parent.name] = { **info, **metrics }
         
         pandas.DataFrame.from_dict(models, orient='index').to_csv('${meta.id}_metrics.tsv', sep='\t', index=False)
         """
