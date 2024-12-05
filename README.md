@@ -4,13 +4,12 @@
 
 `fold2go` is a Nextflow pipeline for *in silico* prediction of three-dimensional protein structures through various machine learning models.
 
-It currently supports AlphaFold2[^1], AlphaFold-Multimer[^2], AlphaFold3[^3] and Boltz-1[^4] predictions and is fully containerised.
+It currently supports `AlphaFold2`[^1], `AlphaFold-Multimer`[^2], `AlphaFold3`[^3] and `Boltz-1`[^4] predictions and is fully containerised.
+
+Moreover, it accumulates and computes various metrics and contains a `py-shiny` application that allows to track pipeline progress and explore results interactively. Three-dimensional visualization of predicted structures therein is implemented via `Mol* Viewer`[^5].
 
 > :warning: 
 AlphaFold3 has a restrictive license and the model weights have to be requested from Google Deepmind. Usage is subject to their [Terms of Use](https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_TERMS_OF_USE.md).
-
-Moreover, it accumulates and computes various metrics and implements a `shiny` application that allows to track pipeline progress and results interactively.
-
 
 ### Overview
 
@@ -72,6 +71,8 @@ nextflow run imbforge/fold2go --help
 This pipeline can be launched through a Jupyterhub-based graphical frontend. If you want to try this out, head over to [imb-alphafold](https://gitlab.rlp.net/imbforge/imb-alphafold).
 
 
+## References
+
 [^1]:
     ```
     @Article{AlphaFold2021,
@@ -132,3 +133,17 @@ This pipeline can be launched through a Jupyterhub-based graphical frontend. If 
     }
     ```
 
+[^5]:
+
+    ```
+    @article{sehnal2021mol,
+    title={Mol* Viewer: modern web app for 3D visualization and analysis of large biomolecular structures},
+    author={Sehnal, David and Bittrich, Sebastian and Deshpande, Mandar and Svobodov{\'a}, Radka and Berka, Karel and Bazgier, V{\'a}clav and Velankar, Sameer and Burley, Stephen K and Ko{\v{c}}a, Jaroslav and Rose, Alexander S},
+    journal={Nucleic acids research},
+    volume={49},
+    number={W1},
+    pages={W431--W437},
+    year={2021},
+    publisher={Oxford University Press}
+    }
+    ```
