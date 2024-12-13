@@ -23,24 +23,24 @@ log_file = Path(os.getenv("SHINY_APP_LAUNCH_DIR")) / '.nextflow.log'
 def _get_pae(record: dict) -> list:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
-            with (results_dir / 'predictions' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
+            with (results_dir / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
                 return np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
         case 'alphafold3':
-            with (results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
+            with (results_dir / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
                 return np.array(json.load(fin).get('pae'), dtype=np.float16)
         case 'boltz':
-            with np.load(results_dir / 'predictions' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
+            with np.load(results_dir / 'predictions' / 'boltz' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
                 return np.array(fin.get('pae'), dtype=np.float16)
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
-            model = results_dir / 'predictions' / record.get('prediction_name') / f"{record.get('model_rank')}.pdb"
+            model = results_dir / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"{record.get('model_rank')}.pdb"
         case 'alphafold3':
-            model = results_dir / 'predictions' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
+            model = results_dir / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
         case 'boltz':
-            model = results_dir / 'predictions' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
+            model = results_dir / 'predictions' / 'boltz' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
     return {
         'data'  : model.read_text(),
         'format': model.suffix[1:],
