@@ -15,4 +15,4 @@ cuda = "12"
 python = "3.12.*"
 
 [pypi-dependencies]
-boltz = "==0.3.0"
+boltz = ">=0.3.2, <0.4"
