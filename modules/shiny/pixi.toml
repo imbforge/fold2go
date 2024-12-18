@@ -14,5 +14,5 @@ plotly_express = ">=0.4.1,<0.5"
 shiny = ">=1.2.1,<2"
 
 [pypi-dependencies]
-shinywidgets = ">=0.3.4, <0.4"
+shinywidgets = ">=0.4.1, <0.5"
 ipymolstar = { git = "https://github.com/Jhsmit/ipymolstar", rev = "157d6cb888984470a0f6d7668df9a0d241e6eb03" }
