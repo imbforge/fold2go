@@ -4,7 +4,7 @@
 # pDockQ code source: https://gitlab.com/ElofssonLab/FoldDock/-/blob/main/src/pdockq.py
 # iPAE code source: https://github.com/fteufel/alphafold-peptide-receptors/blob/main/qc_metrics.py
 
-import json, argparse, itertools
+import json, pickle, argparse, itertools
 import mdtraj as md
 import numpy as np
 import pandas as pd
@@ -90,9 +90,9 @@ class PredictedModel:
             self.chain_plddt: dict
 
             self.pdb_path: Path = (f'{self.model_path}/{self.model_rank}.pdb')
-            self.pae_path: Path = Path(f'{self.model_path}/pae_{self.model_id}.json')
+            self.pickle_path: Path = Path(f'{self.model_path}/result_{self.model_id}.pkl')
 
-            self.chain_coords, self.chain_plddt = self.parse_pdb()
+            self.chain_coords, self.chain_plddt = self.parse_pdb()            
 
             self.model_metrics.update({
                 **self.calculate_iPAE(),
@@ -113,9 +113,16 @@ class PredictedModel:
             """
             cmd.load(pdb)
             if 'C' in cmd.get_chains():
+                # change the chain id into a temporary arbitrary name
+                cmd.alter('chain B', 'chain="tempA"')
+                cmd.sort()
+                cmd.alter('chain C', 'chain="tempB"')
+                cmd.sort()
                 # change the chain id into A and B
-                cmd.alter('chain B', 'chain="A"')
-                cmd.alter('chain C', 'chain="B"')
+                cmd.alter('chain tempA', 'chain="A"')
+                cmd.sort()
+                cmd.alter('chain tempB', 'chain="B"')
+                cmd.sort()
                 # save and overwrite the predicted model
                 cmd.save(pdb)
             cmd.reinitialize()
@@ -249,19 +256,19 @@ class PredictedModel:
 
         input_to_calc_contacts = [list(product) for product in itertools.product(ligand_res.values,receptor_res.values)]
 
-        contacts, input_to_calc_contacts = md.compute_contacts(model_mdtraj, contacts=input_to_calc_contacts, scheme='closest', periodic=False)
-        ligand_res_in_contact = set()
-        receptor_res_in_contact = set()
+        contacts, input_to_calc_contacts = md.compute_contacts(model_mdtraj, contacts=input_to_calc_contacts,scheme='closest', periodic=False)
+        ligand_res_in_contact = []
+        receptor_res_in_contact = []
 
         for i in input_to_calc_contacts[np.where(contacts[0]<0.35)]: # threshold in nm
-            ligand_res_in_contact.add(i[0])
-            receptor_res_in_contact.add(i[1])
-        receptor_res_in_contact = np.fromiter(receptor_res_in_contact, int, len(receptor_res_in_contact))
-        ligand_res_in_contact = np.fromiter(ligand_res_in_contact, int, len(ligand_res_in_contact))
+            ligand_res_in_contact.append(i[0])
+            receptor_res_in_contact.append(i[1])
+        receptor_res_in_contact, receptor_res_counts = np.unique(np.asarray(receptor_res_in_contact),return_counts=True)
+        ligand_res_in_contact, ligand_res_counts = np.unique(np.asarray(ligand_res_in_contact), return_counts=True)
 
         if len(ligand_res_in_contact) > 0:
-            with open(self.pae_path, 'rb') as fin:
-                pae = np.array(json.load(fin)[0]['predicted_aligned_error'], dtype=np.float16)
+            with open(self.pickle_path, 'rb') as pkl:
+                pae = pickle.load(pkl)['predicted_aligned_error']
             ipae = np.median(pae[receptor_res_in_contact,:][:,ligand_res_in_contact])
         else:
             ipae = 50 # if no residue in contact, impute ipae with large value
@@ -281,22 +288,25 @@ class PredictedModel:
         # load the predicted model
         cmd.load(self.pdb_path)
         # remove hydrogen as they are filled automatically by AlphaFold
-        cmd.remove('hydrogens')
+        cmd.extract('h_atoms', 'hydrogens', source_state=1, target_state=1)
+        cmd.delete('h_atoms')
+        cmd.remove('hydrogen')
+        cmd.sort()
         # make a selection of residues in both chain that have at least one atom with less than or equal to 5A from any atom from the other chain
         selection_line = f"({self.model_rank} and chain A within 5A of {self.model_rank} and chain B) or ({self.model_rank} and chain B within 5A of {self.model_rank} and chain A)"
         cmd.select(selection=selection_line, name="residues_less_5A")
         # iterate through the selection by chain to get the b-factor (loaded with plddt by AlphaFold) of the residues
         resi_bfactorA = set()
         resi_bfactorB = set()
-        cmd.iterate(f"(residues_less_5A) and chain A","resi_bfactorA.add((resi,b))", space={'resi_bfactorA':resi_bfactorA})
-        cmd.iterate(f"(residues_less_5A) and chain B","resi_bfactorB.add((resi,b))", space={'resi_bfactorB':resi_bfactorB})
+        cmd.iterate(f"(residues_less_5A) and chain A","resi_bfactorA.add((resi,b))",space={'resi_bfactorA':resi_bfactorA})
+        cmd.iterate(f"(residues_less_5A) and chain B","resi_bfactorB.add((resi,b))",space={'resi_bfactorB':resi_bfactorB})
 
         # calculate the average plddt of contact residues from each chain
-        chainA_intf_plddt = np.array([ele[1] for ele in resi_bfactorA], dtype=np.float16)
-        chainB_intf_plddt = np.array([ele[1] for ele in resi_bfactorB], dtype=np.float16)
-        intf_plddt = np.concatenate([chainA_intf_plddt, chainB_intf_plddt])
+        chainA_intf_avg_plddt = np.mean([float(ele[1]) for ele in resi_bfactorA])
+        chainB_intf_avg_plddt = np.mean([float(ele[1]) for ele in resi_bfactorB])
+        intf_avg_plddt = np.mean([float(ele[1]) for ele in resi_bfactorA] + [float(ele[1]) for ele in resi_bfactorB])
 
-        return {'chainA_intf_avg_plddt':chainA_intf_plddt.mean(), 'chainB_intf_avg_plddt':chainB_intf_plddt.mean(), 'intf_avg_plddt':intf_plddt.mean(), 'num_chainA_intf_res': len(resi_bfactorA), 'num_chainB_intf_res': len(resi_bfactorB)}
+        return {'chainA_intf_avg_plddt':chainA_intf_avg_plddt, 'chainB_intf_avg_plddt':chainB_intf_avg_plddt, 'intf_avg_plddt':intf_avg_plddt, 'num_chainA_intf_res': len(resi_bfactorA), 'num_chainB_intf_res': len(resi_bfactorB)}
 
     def calculate_structural_metric(self) -> dict:
         """Parse the atoms that are in contact in the predicted model. Contacts are limited to the distance of 5A between two atoms of residues from different chain. Color the predicted model by chain and display the residues in contact as sticks
@@ -314,12 +324,12 @@ class PredictedModel:
         # iterate through the list of indices and find atoms from the other chain that is less than 5A away and calculate distance between them
         unique_resi_pair = set()
         atom_atom_contacts = []
-        for oneletterA, resiA, nameA, indexA in chainA_contact_indices:
+        for oneletterA,resiA,nameA,indexA in chainA_contact_indices:
             chainB_contact_indices = []
             cmd.iterate(f"{self.model_rank} and chain B within 5A from {self.model_rank} and index {indexA}","chainB_contact_indices.append([oneletter,resi,name,index])",space={'chainB_contact_indices':chainB_contact_indices})
             # iterate through the indices from the other chain to calculate their distance with the index from the previous chain
             for oneletterB,resiB,nameB,indexB in chainB_contact_indices:
-                dist = cmd.distance("interface_contacts", f"{self.model_rank}`{indexA}",f"{self.model_rank}`{indexB}")
+                dist = cmd.distance("interface_contacts",f"{self.model_rank}`{indexA}",f"{self.model_rank}`{indexB}")
                 unique_resi_pair.add((resiA,resiB))
                 atom_atom_contact = ['A',oneletterA,resiA,nameA,'B',oneletterB,resiB,nameB,f'{dist:.2f}']
                 atom_atom_contacts.append(atom_atom_contact)
