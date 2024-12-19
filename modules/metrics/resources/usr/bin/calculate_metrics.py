@@ -63,7 +63,7 @@ def get_interface_residues(structure: Coor, chains: np.ndarray, cutoff: float = 
         f"(chain {chains[0]} and within {cutoff} of chain {chains[1]}) or (chain {chains[1]} and within {cutoff} of chain {chains[0]})"
     )
 
-    # select receptor and ligand chains (arbirtary assignment)
+    # select receptor and ligand chains (arbitrary assignment)
     receptor, ligand = interface.select_atoms(f"chain {chains[0]}"), interface.select_atoms(f"chain {chains[1]}")
 
     # get number of interface residues and atoms
@@ -104,7 +104,7 @@ def get_interface_plddt(structure: Coor, chains: np.ndarray, cutoff: float = 5.0
         f"(chain {chains[0]} and within {cutoff} of chain {chains[1]}) or (chain {chains[1]} and within {cutoff} of chain {chains[0]})"
     )
 
-    # select receptor and ligand chains (arbirtary assignment)    
+    # select receptor and ligand chains (arbitrary assignment)    
     receptor, ligand = interface.select_atoms(f"chain {chains[0]}"), interface.select_atoms(f"chain {chains[1]}")
 
     # get ipLDDT scores for each chain and the entire interface
@@ -268,7 +268,7 @@ def calculate_boltz_metrics(run_name: str, predictions_dir: Path, model_preset: 
 
 def calculate_af3_metrics(run_name: str, predictions_dir: Path, model_preset: str) -> dict:
     """
-    Calculate template independent metrics for Boltz-1 predictions.
+    Calculate template independent metrics for AlphaFold3 predictions.
 
     Parameters:
     -----------
