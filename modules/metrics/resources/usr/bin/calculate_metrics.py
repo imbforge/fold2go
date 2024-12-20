@@ -18,7 +18,7 @@ def get_contact_pairs(interface: Coor, chains: np.ndarray, cutoff: float = 5.0) 
     chains: np.ndarray
         The chain identifiers of the two chains
     cutoff: float
-        The distance cutoff for contact definition (default: 5 Å)
+        The distance cutoff for contact definition (default: 5.0)
     
     Returns:
     --------
@@ -47,7 +47,7 @@ def get_interface_residues(structure: Coor, chains: np.ndarray, cutoff: float = 
     chains: np.ndarray
         The chain identifiers of the two chains
     cutoff: float
-        The distance cutoff for contact definition (default: 5 Å)
+        The distance cutoff for contact definition (default: 5.0)
 
     Returns:
     --------
@@ -118,7 +118,7 @@ def get_interface_plddt(structure: Coor, chains: np.ndarray, cutoff: float = 5.0
         'intf_avg_plddt'                  : interface_plddt.mean()
     }
 
-def get_interface_pae(structure: Coor, chains: np.ndarray, pae: np.ndarray, cutoff: float = 3.5) -> float:
+def get_interface_pae(structure: Coor, chains: np.ndarray, pae: np.ndarray, cutoff: float = 3.5) -> dict:
     """
     Get the median predicted aligned error (iPAE) at the interface of two chains in a dimeric protein complex.
     Following https://github.com/fteufel/alphafold-peptide-receptors/blob/main/qc_metrics.py, the distance threshold to define contact is set to 3.5 Å.
@@ -136,8 +136,8 @@ def get_interface_pae(structure: Coor, chains: np.ndarray, pae: np.ndarray, cuto
 
     Returns:
     --------
-    float
-        The median predicted aligned error at the interface of the protein complex (iPAE)
+    dict
+        A dictionary containing the median predicted aligned error at the interface of the protein complex (iPAE)
     """
     
     # select interface atoms
@@ -148,30 +148,57 @@ def get_interface_pae(structure: Coor, chains: np.ndarray, pae: np.ndarray, cuto
     # get contact pairs at the interface
     contacts = get_contact_pairs(interface, chains, cutoff)
 
-    return np.median(
-        pae[np.unique(contacts[:,0]),:][:,np.unique(contacts[:,1])]
-    )
+    return {
+        'iPAE': np.median(pae[np.unique(contacts[:,0]),:][:,np.unique(contacts[:,1])])
+    }
 
-def calculate_af2_metrics(run_name: str, predictions_dir: Path, model_preset: str) -> dict:
+def get_pdockq(structure: Coor, chains: np.ndarray, cutoff: float = 8.0) -> dict:
+    """
+    Get the pDockQ score for a dimeric protein complex.
+    Following https://gitlab.com/ElofssonLab/FoldDock/-/blob/main/src/pdockq.py, the distance threshold to define contact is set to 8 Å.
+
+    Parameters:
+    -----------
+    structure: Coor
+        The protein complex topology
+    cutoff: float
+        The distance cutoff for contact definition (default: 8.0)
+    chain: np.ndarray
+        The chain identifiers of the two chains
+
+    Returns:
+    --------
+    dict
+        A dictionary containing the pDockQ score for the protein complex, or mpDockQ if there are more than two chains
+    """
+
+    assert chains.size > 1, "At least two chains are required to calculate pDockQ"
+
+    if chains.size == 2:
+        return {
+            'pDockQ': compute_pdockQ(structure, cutoff=cutoff, L=0.724, x0=152.611, k=0.052, b=0.018).pop()
+        }
+    else:
+        return {
+            'mpDockQ': compute_pdockQ(structure, cutoff=cutoff, L=0.728, x0=309.375, k=0.098, b=0.262).pop()
+        }
+
+def calculate_af2_metrics(predictions_dir: Path) -> dict:
     """
     Calculate template independent metrics for AlphaFold2 predictions.
 
     Parameters:
     -----------
-    run_name: str
-        The name of the project
     predictions_dir: Path
         The directory containing the predictions
-    model_preset: str
-        The model preset used for the predictions
-    
+
     Returns:
     --------
     dict
         A dictionary containing the calculated metrics for each prediction
     """
 
-    with (predictions_dir / 'ranking_debug.json').open() as fin:
+    with (predictions_dir / 'ranking_debug.json').open('r') as fin:
         data = json.load(fin)
 
     ranking = { model:list(data.values())[0].get(model) for model in data['order'] }
@@ -180,14 +207,11 @@ def calculate_af2_metrics(run_name: str, predictions_dir: Path, model_preset: st
 
     for rank, (model, score) in enumerate(ranking.items()):
 
-        coor = Coor(predictions_dir / f"ranked_{rank}.pdb")
+        coor = Coor(predictions_dir / f"ranked_{rank}.cif")
 
         chains, lengths = np.unique(coor.select_atoms('protein and name CA').chain, return_counts=True)
 
         common_metrics = {
-            'project_name'           : run_name,
-            'prediction_name'        : predictions_dir.name,
-            'model_preset'           : model_preset,
             'model_id'               : model,
             'model_rank'             : f"ranked_{rank}",
             'model_confidence'       : float(score),
@@ -195,33 +219,29 @@ def calculate_af2_metrics(run_name: str, predictions_dir: Path, model_preset: st
         }
 
         if chains.size == 2:
-            with (predictions_dir / f"pae_{model}.json").open() as fin:
+            with (predictions_dir / f"pae_{model}.json").open('r') as fin:
                 pae = np.array(json.load(fin)[0]['predicted_aligned_error'], dtype=np.float16)
 
             metrics[model] = {
                 **common_metrics,
                 **get_interface_plddt(coor, chains),
                 **get_interface_residues(coor, chains),
-                'iPAE'  : get_interface_pae(coor, chains, pae),
-                'pDockQ': compute_pdockQ(coor).pop() # uses 8Å distance cutoff
+                **get_interface_pae(coor, chains, pae),
+                **get_pdockq(coor, chains)
             }
         else:
             metrics[model] = common_metrics
 
     return metrics
 
-def calculate_boltz_metrics(run_name: str, predictions_dir: Path, model_preset: str) -> dict:
+def calculate_boltz_metrics(predictions_dir: Path) -> dict:
     """
     Calculate template independent metrics for Boltz-1 predictions.
 
     Parameters:
     -----------
-    run_name: str
-        The name of the project
     predictions_dir: Path
         The directory containing the predictions
-    model_preset: str
-        The model preset used for the predictions
     
     Returns:
     --------
@@ -242,9 +262,6 @@ def calculate_boltz_metrics(run_name: str, predictions_dir: Path, model_preset: 
         chains, lengths = np.unique(coor.select_atoms('protein and name CA').chain, return_counts=True)
 
         common_metrics = {
-            'project_name': run_name,
-            'prediction_name': model.parent.name,
-            'model_preset': model_preset,
             'model_id': f"model_{model.stem.split('_').pop()}",
             **{f"chain{chain}_length":length for chain, length in zip(chains, lengths)},
             **scores,
@@ -256,28 +273,24 @@ def calculate_boltz_metrics(run_name: str, predictions_dir: Path, model_preset: 
 
             metrics[model_name] = {
                 **common_metrics,
-                'iPAE': get_interface_pae(coor, chains, pae),
+                **get_interface_pae(coor, chains, pae),
                 **get_interface_residues(coor, chains),
                 # **get_interface_plddt(coor, chains), # FIXME: boltz does not populate bfactor
-                # 'pDockQ': compute_pdockQ(coor).pop(),# FIXME: boltz does not populate bfactor
+                # **get_pdockq(coor, chains)           # FIXME: boltz does not populate bfactor
             }
         else:
             metrics[model_name] = common_metrics
 
     return metrics
 
-def calculate_af3_metrics(run_name: str, predictions_dir: Path, model_preset: str) -> dict:
+def calculate_af3_metrics(predictions_dir: Path) -> dict:
     """
     Calculate template independent metrics for AlphaFold3 predictions.
 
     Parameters:
     -----------
-    run_name: str
-        The name of the project
     predictions_dir: Path
         The directory containing the predictions
-    model_preset: str
-        The model preset used for the predictions
 
     Returns:
     --------
@@ -297,24 +310,21 @@ def calculate_af3_metrics(run_name: str, predictions_dir: Path, model_preset: st
             scores = { score: value for score, value in json.load(fin).items() if not isinstance(value, dict | list) }
 
         common_metrics = {
-            'project_name': run_name,
-            'prediction_name': model.parent.parent.name,
-            'model_preset': model_preset,
             'model_id': model.parent.name,
             **{f"chain{chain}_length":length for chain, length in zip(chains, lengths)},
             **scores
         }
 
         if chains.size == 2:
-            with (model.parent / 'confidences.json').open() as fin:
+            with (model.parent / 'confidences.json').open('r') as fin:
                 pae = np.array(json.load(fin)['pae'], dtype=np.float16)
             
             metrics[model.parent.name] = {
                     **common_metrics,
                     **get_interface_plddt(coor, chains),
                     **get_interface_residues(coor, chains),
-                    'iPAE': get_interface_pae(coor, chains, pae),
-                    'pDockQ': compute_pdockQ(coor).pop() # uses 8Å distance cutoff
+                    **get_interface_pae(coor, chains, pae),
+                    **get_pdockq(coor, chains)
             }
         else:
             metrics[model.parent.name] = common_metrics
@@ -326,18 +336,25 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--predictions_dir', type=Path, dest='predictions_dir')
-    parser.add_argument('--model_preset', type=str, choices=['alphafold3', 'boltz', 'multimer', 'monomer_ptm', 'monomer', 'monomer_casp14'], dest='model_preset')
+    parser.add_argument('--predictions', type=Path, dest='predictions')
+    parser.add_argument('--id', type=Path, dest='id')
+    parser.add_argument('--model_preset', type=str, choices=['alphafold3', 'boltz', 'alphafold2_multimer', 'alphafold2_monomer_ptm', 'alphafold2_monomer', 'alphafold2_monomer_casp14'], dest='model_preset')
     parser.add_argument('--run_name', type=str, dest='run_name')
 
     args = parser.parse_args()
 
-    match args.model_preset:
-        case 'alphafold3':
-            metrics = calculate_af3_metrics(args.run_name, args.predictions_dir, args.model_preset)
-        case 'boltz':
-            metrics = calculate_boltz_metrics(args.run_name, args.predictions_dir, args.model_preset)
-        case _:
-            metrics = calculate_af2_metrics(args.run_name, args.predictions_dir, f"alphafold_2_{args.model_preset}")
+    meta = {
+        'project_name': args.run_name,
+        'prediction_name': args.id,
+        'model_preset': args.model_preset
+    }
 
-    pd.DataFrame.from_dict(metrics, orient='index').to_csv(f"{args.run_name}_{args.model_preset}_metrics.tsv", sep='\t', index=False)
+    match args.model_preset.split('_')[0]:
+        case 'alphafold3':
+            metrics = calculate_af3_metrics(args.predictions)
+        case 'alphafold2':
+            metrics = calculate_af2_metrics(args.predictions)
+        case 'boltz':
+            metrics = calculate_boltz_metrics(args.predictions)
+
+    pd.DataFrame.from_dict({**meta, **metrics}, orient='index').to_csv(f"{args.model_preset}_metrics.tsv", sep='\t', index=False)
