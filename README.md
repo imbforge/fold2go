@@ -53,7 +53,7 @@ flowchart LR
     v23 --> v4
     v33 --> v4
     v4  --tsv--> v5
-    v12 --json,pdb--> v5
+    v12 --json,mmcif--> v5
     v22 --json,mmcif--> v5
     v32 --npz, mmcif--> v5
 ```
