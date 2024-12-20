@@ -9,7 +9,7 @@ process INFERENCE_MONOMER {
         tuple val(meta), path(fasta), path(chain, stageAs: "chain/msas/*")
 
     output:
-        tuple val(meta), path("chain/*.{pkl,pdb,json}"), path("chain.fasta"), emit: prediction
+        tuple val(meta), path("chain/*.{pdb,pkl,cif,json}"), emit: prediction
 
     script:
         template 'run_alphafold_monomer.sh'
@@ -35,12 +35,11 @@ process INFERENCE_MULTIMER {
               path(chainH, stageAs: "chains/msas/H/*")
 
     output:
-        tuple val(meta), path("chains/*.{pkl,pdb,json}"), path(fasta), emit: prediction
+        tuple val(meta), path("chains/*.{pdb,pkl,cif,json}"), emit: prediction
 
     script:
         template 'run_alphafold_multimer.sh'
 }
-
 
 process MSA {
     tag "${record.id}:${database}"

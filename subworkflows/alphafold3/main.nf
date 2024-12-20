@@ -1,5 +1,4 @@
-include { MSA; INFERENCE         } from '../../modules/alphafold3'
-include { AF3_METRICS as METRICS } from '../../modules/pymol'
+include { MSA; INFERENCE } from '../../modules/alphafold3'
 
 workflow ALPHAFOLD3 {
 
@@ -7,11 +6,9 @@ workflow ALPHAFOLD3 {
         input
 
     main:
-        // instantiate json slurper
-        def slurper = new groovy.json.JsonSlurper()
 
         input.map { json ->
-            def jobdef = slurper.parse(json)
+            def jobdef = new groovy.json.JsonSlurper().parse(json)
             [ jobdef.name, ( jobdef instanceof List ? 'alphafoldserver' : jobdef.dialect ), json ]
         }
         .groupTuple( by: params.ALPHAFOLD3.GROUP_MSA ? 1 : [0, 1] )
@@ -23,15 +20,10 @@ workflow ALPHAFOLD3 {
         MSA( jobdef )
 
         INFERENCE(
-            MSA.out.json.flatten().map { [ [ id: slurper.parse(it).name ], it ] }
-        )
-        
-        METRICS(
-            INFERENCE.out.prediction
+            MSA.out.json.flatten().map { [ [ id: it.name.minus('_data.json'), model: 'alphafold3' ], it ] }
         )
 
     emit:
-        metrics    = METRICS.out.metrics
         prediction = INFERENCE.out.prediction
         jobcount   = jobdef.sum { meta, json -> meta.jobsize }
 }

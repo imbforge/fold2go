@@ -36,7 +36,7 @@ def _get_pae(record: dict) -> list:
 def _get_model(record: dict) -> dict:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
-            model = results_dir / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"{record.get('model_rank')}.pdb"
+            model = results_dir / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"{record.get('model_rank')}.cif"
         case 'alphafold3':
             model = results_dir / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
         case 'boltz':
@@ -165,7 +165,7 @@ with ui.layout_columns(col_widths=(4,8)):
         def render_structure():
             return PDBeMolstar(
                 custom_data = _get_model(selection()),
-                #alphafold_view = True,
+                alphafold_view = True,
                 sequence_panel = True,
                 hide_animation_icon = True
             )

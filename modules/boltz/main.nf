@@ -36,8 +36,9 @@ process MSA {
                 entity['protein']['msa'] = f"{msa_id}.csv"
 
         compute_msa(
-            sequences,
-            Path.cwd(),
+            data=sequences,
+            target_id="${meta.id}",
+            msa_dir=Path.cwd(),
             msa_server_url="${params.BOLTZ.MSA_SERVER_URL}",
             msa_pairing_strategy="${params.BOLTZ.MSA_PAIRING_STRATEGY}"
         )
@@ -71,42 +72,4 @@ process INFERENCE {
             --out_dir=.
         """
 
-}
-
-
-process METRICS {
-    tag "${meta}"
- 
-    when:
-        params.METRICS.enabled
-
-    input:
-        tuple val(meta), path(prediction)
-
-    output:
-        tuple val("boltz"), path("*_metrics.tsv"), emit: metrics
-
-    script:
-        """
-        #!/usr/bin/env python
-
-        import json
-        import pandas
-        from pathlib import Path
-
-        models = {}
-
-        for model in Path('${prediction}').glob('confidence_*.json'):
-            with model.open('r') as fin:
-                metrics = { metric: value for metric, value in json.load(fin).items() if not isinstance(value, dict) }
-            info = {
-                'project_name': '${workflow.runName}',
-                'prediction_name': model.parent.name,
-                'model_preset': 'boltz',
-                'model_id': f"model_{model.stem.split('_').pop()}"
-            }
-            models[model.stem] = { **info, **metrics }
-        
-        pandas.DataFrame.from_dict(models, orient='index').to_csv('${meta.id}_metrics.tsv', sep='\t', index=False)
-        """
 }

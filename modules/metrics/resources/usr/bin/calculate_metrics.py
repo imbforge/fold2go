@@ -2,8 +2,9 @@
 
 import json
 import numpy as np
-import pandas as pd
+
 from pathlib import Path
+from pandas import DataFrame
 from pdb_numpy import Coor
 from pdb_numpy.analysis import compute_pdockQ, distance_matrix
 
@@ -149,7 +150,7 @@ def get_interface_pae(structure: Coor, chains: np.ndarray, pae: np.ndarray, cuto
     contacts = get_contact_pairs(interface, chains, cutoff)
 
     return {
-        'iPAE': np.median(pae[np.unique(contacts[:,0]),:][:,np.unique(contacts[:,1])])
+        'iPAE': np.median(pae[np.unique(contacts[:,0]),:][:,np.unique(contacts[:,1])]) if contacts.size else np.nan
     }
 
 def get_pdockq(structure: Coor, chains: np.ndarray, cutoff: float = 8.0) -> dict:
@@ -357,4 +358,4 @@ if __name__ == '__main__':
         case 'boltz':
             metrics = calculate_boltz_metrics(args.predictions)
 
-    pd.DataFrame.from_dict({**meta, **metrics}, orient='index').to_csv(f"{args.model_preset}_metrics.tsv", sep='\t', index=False)
+    DataFrame.from_dict(metrics, orient='index').assign(**meta).round(2).to_csv(f"{args.model_preset}_metrics.tsv", sep='\t', index=False)

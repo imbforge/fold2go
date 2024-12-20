@@ -1,5 +1,4 @@
 include { MSA; INFERENCE_MONOMER; INFERENCE_MULTIMER } from '../../modules/alphafold2'
-include { AF2_METRICS as METRICS }                     from '../../modules/pymol'
 
 workflow ALPHAFOLD2 {
 
@@ -31,11 +30,10 @@ workflow ALPHAFOLD2 {
             .map { meta, fasta, record, msa -> [ groupKey( meta, meta*.value.unique().size() * databases.size() ), fasta, msa ] }
             .groupTuple( by: 0 )
             .map { meta, fasta, msa ->
-                [ meta.getGroupTarget(), fasta.first() ] + ( multimer ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == meta[chain] } } : [ msa.unique() ] )
-            } | ( multimer ? INFERENCE_MULTIMER : INFERENCE_MONOMER ) | METRICS
+                [ [ id: meta.getGroupTarget()*.value.join('.'), model: "alphafold2_${params.ALPHAFOLD2.MODEL_PRESET}" ], fasta.first() ] + ( multimer ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == meta[chain] } } : [ msa.unique() ] )
+            } | ( multimer ? INFERENCE_MULTIMER : INFERENCE_MONOMER )
 
     emit:
-        metrics    = METRICS.out.metrics
         prediction = ( multimer ? INFERENCE_MULTIMER : INFERENCE_MONOMER ).out.prediction
         jobcount   = input.count()
 }

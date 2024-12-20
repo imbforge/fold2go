@@ -1,4 +1,4 @@
-include { MSA; INFERENCE; METRICS } from '../../modules/boltz'
+include { MSA; INFERENCE } from '../../modules/boltz'
 
 workflow BOLTZ {
 
@@ -8,14 +8,12 @@ workflow BOLTZ {
     main:
 
         input.map { yaml ->
-            [ [id: yaml.simpleName], yaml ]
+            [ [ id: yaml.simpleName, model: 'boltz' ], yaml ]
         }
         | MSA
         | INFERENCE
-        | METRICS
 
     emit:
-        metrics    = METRICS.out.metrics
         prediction = INFERENCE.out.prediction
         jobcount   = input.count()
 }

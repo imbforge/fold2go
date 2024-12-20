@@ -2,6 +2,7 @@ include { ALPHAFOLD2 } from '../../subworkflows/alphafold2'
 include { ALPHAFOLD3 } from '../../subworkflows/alphafold3'
 include { BOLTZ      } from '../../subworkflows/boltz'
 include { SHINY      } from '../../modules/shiny'
+include { METRICS    } from '../../modules/metrics'
 
 workflow FOLD2GO {
 
@@ -26,9 +27,13 @@ workflow FOLD2GO {
         workflow.launchDir
     )
 
-    ALPHAFOLD2.out.metrics.mix(ALPHAFOLD3.out.metrics).mix(BOLTZ.out.metrics)
+    METRICS(
+        ALPHAFOLD2.out.prediction.mix(ALPHAFOLD3.out.prediction).mix(BOLTZ.out.prediction)
+    )
+    
+    METRICS.out.metrics
         .collectFile ( storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true ) {
-            preset, metrics -> [ "${preset}_metrics.tsv", metrics ]
+            model, metrics -> [ "${model}_metrics.tsv", metrics ]
         }
         .collect()
         .map { metrics ->
@@ -55,6 +60,6 @@ workflow FOLD2GO {
                     log.warn "Failed to send notification email to ${params.EMAIL}"
                     log.error e
                 }
-        }
+            }
         }
 }

@@ -11,11 +11,10 @@ process METRICS {
         tuple val(meta.model), path("*_metrics.tsv"), emit: metrics
 
     script:
-        println prediction
         """
         python ${moduleDir}/resources/usr/bin/calculate_metrics.py \\
             --run_name=${workflow.runName} \\
-            --predictions=${prediction} \\
+            --predictions=${prediction instanceof List ? '.' : prediction} \\
             --id=${meta.id} \\
             --model_preset=${meta.model}
         """
