@@ -153,7 +153,9 @@ with ui.layout_columns(col_widths=(4,8)):
             return px.imshow(
                 _get_pae(selection()),
                 labels = {'color': 'PAE'},
-                color_continuous_scale = px.colors.sequential.Viridis
+                color_continuous_scale = px.colors.sequential.Viridis,
+                zmin=0.0,
+                zmax=31.75
             )
     # render model structure based on selection in first card
     with ui.card():
