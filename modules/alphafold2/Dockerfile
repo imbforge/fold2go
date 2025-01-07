@@ -8,7 +8,7 @@ WORKDIR /app/alphafold
 
 COPY pixi.toml pixi.lock .
 
-RUN printf '#!/bin/sh\n%s\nexec "$@"' "$(pixi shell-hook)" > /.singularity.d/env/99-pixi.sh && chmod +x /.singularity.d/env/99-pixi.sh
+RUN mkdir -p /.singularity.d/env && printf '#!/bin/sh\n%s\nexec "$@"' "$(pixi shell-hook)" > /.singularity.d/env/99-pixi.sh && chmod +x /.singularity.d/env/99-pixi.sh
 
 ADD https://github.com/google-deepmind/alphafold/archive/f251de6613cb478207c732bf9627b1e853c99c2f.tar.gz /app/alphafold/alphafold.tar.gz
 RUN tar -xvzf alphafold.tar.gz --strip-components=1 && chmod +x run_alphafold.py && rm alphafold.tar.gz
