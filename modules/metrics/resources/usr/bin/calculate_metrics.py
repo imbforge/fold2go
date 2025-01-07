@@ -276,8 +276,8 @@ def calculate_boltz_metrics(predictions_dir: Path) -> dict:
                 **common_metrics,
                 **get_interface_pae(coor, chains, pae),
                 **get_interface_residues(coor, chains),
-                # **get_interface_plddt(coor, chains), # FIXME: boltz does not populate bfactor
-                # **get_pdockq(coor, chains)           # FIXME: boltz does not populate bfactor
+                **get_interface_plddt(coor, chains),
+                **get_pdockq(coor, chains)
             }
         else:
             metrics[model_name] = common_metrics
