@@ -2,7 +2,7 @@ FROM ghcr.io/prefix-dev/pixi:jammy AS build
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential ca-certificates git
 
 WORKDIR /app/boltz
 
