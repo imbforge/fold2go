@@ -18,4 +18,4 @@ setuptools = ">=75.5.0,<76"
 zstd = ">=1.5.6,<2"
 
 [pypi-dependencies]
-alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "574cc74ff79588b00cde3e860c5cbc83c9fe2b5d" }
+alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "1bb31e736bcde76e31aa75fbd56225fae380708f" }
