@@ -9,6 +9,7 @@ platforms = ["linux-64"]
 [tasks]
 
 [dependencies]
+python = "3.12.*"
 pandas = ">=2.2.3,<3"
 plotly_express = ">=0.4.1,<0.5"
 shiny = ">=1.2.1,<2"
