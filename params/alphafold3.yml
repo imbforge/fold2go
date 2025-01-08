@@ -12,6 +12,8 @@ ALPHAFOLD3:
     "/mnt/storage/alphafold"
   MODEL_DIR:
     "/mnt/storage/alphafold/v300/.model"
+  DIFFUSION_SAMPLES:
+    1
   GROUP_MSA:
     true
 

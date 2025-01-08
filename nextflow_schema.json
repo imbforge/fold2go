@@ -154,6 +154,12 @@
                             "default": "/mnt/storage/alphafold/v300/.model",
                             "hidden": true
                         },
+                        "DIFFUSION_SAMPLES": {
+                            "type": "integer",
+                            "description": "Number of diffusion samples to generate",
+                            "default": 1,
+                            "hidden": true
+                        },
                         "GROUP_MSA": {
                             "type": "boolean",
                             "description": "Run multiple sequence alignments as single job. Avoids redundant computation if sequences are shared between inputs.",

@@ -40,6 +40,7 @@ process INFERENCE {
             --run_data_pipeline=false \\
             --json_path=${json} \\
             --model_dir=${params.ALPHAFOLD3.MODEL_DIR} \\
+            --num_diffusion_samples=${params.ALPHAFOLD3.DIFFUSION_SAMPLES} \\
             --jax_compilation_cache_dir=${workDir} \\
             --output_dir=predictions
         """
