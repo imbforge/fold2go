@@ -51,7 +51,7 @@
                             "type": "boolean",
                             "format": "path",
                             "description": "Run SHINY",
-                            "default": false,
+                            "default": true,
                             "hidden": true
                         }
                     }
