@@ -115,7 +115,7 @@
                         },
                         "MODEL_PRESET": {
                             "type": "string",
-                            "description": "AlphaFold2 model preset",
+                            "description": "Model preset",
                             "default": "multimer",
                             "enum": [
                                 "multimer",
@@ -126,7 +126,7 @@
                         },
                         "PREDICTIONS_PER_MODEL": {
                             "type": "integer",
-                            "description": "Number of multimer predictions per AlphaFold2 model",
+                            "description": "Number of multimer predictions per model",
                             "default": 1
                         }
                     }
