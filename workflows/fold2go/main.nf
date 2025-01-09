@@ -41,14 +41,14 @@ workflow FOLD2GO {
                 try {
                     sendMail {
                         to "${params.EMAIL}"
-                        from "alphafold@imb-mainz.de"
-                        subject "AlphaFold (${workflow.runName})"
+                        from "fold2go@imb-mainz.de"
+                        subject "fold2go (${workflow.runName})"
                         attach metrics
 
                         """
                         Dear ${workflow.userName},
 
-                        AlphaFold predictions are complete, please find some useful metrics attached.
+                        fold2go predictions are complete, please find some useful metrics attached.
                         Results of this run have all been stored at ${params.OUT}/${workflow.runName}.
 
                         ---
