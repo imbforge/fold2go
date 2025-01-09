@@ -13,7 +13,8 @@
                 "IN": {
                     "type": "string",
                     "format": "file-path-pattern",
-                    "description": "Path to fasta [AlphaFold2], json [AlphaFold3] or yaml [Boltz-1] file(s)",
+                    "description": "Path to input file(s)",
+                    "help_text": "Supported formats: fasta for <a href=https://github.com/google-deepmind/alphafold#examples>AlphaFold2</a>, json for <a href=https://github.com/google-deepmind/alphafold3/blob/main/docs/input.md>AlphaFold3</a> or yaml for <a href=https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#yaml-format>Boltz</a>",
                     "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json"
                 },
                 "OUT": {
@@ -157,8 +158,7 @@
                         "DIFFUSION_SAMPLES": {
                             "type": "integer",
                             "description": "Number of diffusion samples to generate",
-                            "default": 1,
-                            "hidden": true
+                            "default": 1
                         },
                         "GROUP_MSA": {
                             "type": "boolean",
@@ -209,8 +209,7 @@
                         "DIFFUSION_SAMPLES": {
                             "type": "integer",
                             "description": "Number of diffusion samples to use for prediction",
-                            "default": 1,
-                            "hidden": true
+                            "default": 1
                         }
                     }
                 }
