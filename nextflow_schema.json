@@ -152,8 +152,7 @@
                             "format": "directory-path",
                             "description": "Path to AlphaFold3 model weights",
                             "default": "/mnt/storage/alphafold/v300/.model",
-                            "hidden": true,
-                            "exists": true
+                            "hidden": true
                         },
                         "DIFFUSION_SAMPLES": {
                             "type": "integer",
