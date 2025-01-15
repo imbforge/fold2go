@@ -15,11 +15,12 @@
                     "format": "file-path-pattern",
                     "description": "Path to input file(s)",
                     "help_text": "Supported formats: fasta for <a href=https://github.com/google-deepmind/alphafold#examples>AlphaFold2</a>, json for <a href=https://github.com/google-deepmind/alphafold3/blob/main/docs/input.md>AlphaFold3</a> or yaml for <a href=https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#yaml-format>Boltz</a>",
-                    "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json"
+                    "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json",
+                    "exists": true
                 },
                 "OUT": {
                     "type": "string",
-                    "format": "path",
+                    "format": "directory-path",
                     "default": "${launchDir}/results",
                     "description": "Path to output directory",
                     "hidden": true
@@ -50,7 +51,6 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "format": "path",
                             "description": "Run SHINY",
                             "default": true,
                             "hidden": true
@@ -63,7 +63,6 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "format": "path",
                             "description": "Run MSA",
                             "default": true,
                             "hidden": true
@@ -76,7 +75,6 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "format": "path",
                             "description": "Run INFERENCE",
                             "default": true,
                             "hidden": true
@@ -89,7 +87,6 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "format": "path",
                             "description": "Run METRICS",
                             "default": true,
                             "hidden": true
@@ -108,10 +105,11 @@
                     "properties": {
                         "DATABASE_DIR": {
                             "type": "string",
-                            "format": "path",
+                            "format": "directory-path",
                             "description": "Path to AlphaFold2 database",
                             "default": "/mnt/storage/alphafold/v232",
-                            "hidden": true
+                            "hidden": true,
+                            "exists": true
                         },
                         "MODEL_PRESET": {
                             "type": "string",
@@ -143,17 +141,19 @@
                     "properties": {
                         "DATABASE_DIR": {
                             "type": "string",
-                            "format": "path",
+                            "format": "directory-path",
                             "description": "Path to AlphaFold3 database",
                             "default": "/mnt/storage/alphafold/v300",
-                            "hidden": true
+                            "hidden": true,
+                            "exists": true
                         },
                         "MODEL_DIR": {
                             "type": "string",
-                            "format": "path",
+                            "format": "directory-path",
                             "description": "Path to AlphaFold3 model weights",
                             "default": "/mnt/storage/alphafold/v300/.model",
-                            "hidden": true
+                            "hidden": true,
+                            "exists": true
                         },
                         "DIFFUSION_SAMPLES": {
                             "type": "integer",
@@ -170,7 +170,7 @@
                 }
             }
         },
-        "Boltz-1": {
+        "Boltz": {
             "title": "Boltz-1 options",
             "type": "object",
             "properties": {
@@ -227,7 +227,7 @@
             "$ref": "#/$defs/AlphaFold3"
         },
         {
-            "$ref": "#/$defs/Boltz-1"
+            "$ref": "#/$defs/Boltz"
         },
         {
             "$ref": "#/$defs/Processes"
