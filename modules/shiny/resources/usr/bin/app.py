@@ -6,19 +6,13 @@ import numpy as np
 import plotly.express as px
 
 from ipymolstar import PDBeMolstar
-from ollama import Client
 from pathlib import Path
 from shiny import reactive
 from shiny.express import input, render, ui
 from shinywidgets import render_plotly, render_widget
 
-# set some shiny page options
-ui.page_opts(
-    fillable=True,
-    fillable_mobile=True
-)
-
 ## get environment and store vars
+
 njobs = int(os.getenv('SHINY_APP_NJOBS'))
 results_dir = Path(os.getenv("SHINY_APP_DATA")) / os.getenv("SHINY_APP_RUN_NAME")
 log_file = Path(os.getenv("SHINY_APP_LAUNCH_DIR")) / '.nextflow.log'
@@ -98,36 +92,6 @@ def _():
 def _():
     return os.kill(os.getpid(), signal.SIGUSR1)
 
-## set up chatbot
-
-# connect to ollama server
-client = Client(
-  host='http://localhost:11434'
-)
-
-# create a chat instance
-chat = ui.Chat(
-    id="chat"
-)
-
-# define callback to handle user prompts
-@chat.on_user_submit
-async def _():
-    response = client.chat(
-        model='llama3.3:70b',
-        messages=[
-            {
-                'role': 'system',
-                'content': 'You are an accomplished structural biologist that likes to point out the shortcomings of AI-based protein structure prediction.',
-            },
-            {
-                'role': 'user',
-                'content': chat.user_input()
-            }
-        ]
-    )
-    await chat.append_message(response.message.content)
-
 ## define user interface
 
 # display dataframe with calculated metrics and selectable rows
@@ -143,7 +107,7 @@ with ui.card():
             # display modal with log file content until predictions become available
             ui.modal_show(
                 ui.modal(
-                    [ui.tags.pre(_parse_log()), chat.ui()],
+                    ui.tags.pre(_parse_log()),
                     title=ui.HTML('<a href="https://gitlab.rlp.net/imbforge/fold2go">imbforge/fold2go</a> is currently running, please check back later to see some results...'),
                     size='xl',
                     footer=[ui.modal_button("Dismiss"), ui.span(class_='spinner-border')]
