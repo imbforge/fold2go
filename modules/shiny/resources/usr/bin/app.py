@@ -102,7 +102,7 @@ def _():
 
 # connect to ollama server
 client = Client(
-  host='http://localhost:11434'
+  host='http://host.docker.internal:11434'
 )
 
 # create a chat instance
