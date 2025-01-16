@@ -11,8 +11,13 @@ from shiny import reactive
 from shiny.express import input, render, ui
 from shinywidgets import render_plotly, render_widget
 
-## get environment and store vars
+# set some shiny page options
+ui.page_opts(
+    fillable=True,
+    fillable_mobile=True
+)
 
+## get environment and store vars
 njobs = int(os.getenv('SHINY_APP_NJOBS'))
 results_dir = Path(os.getenv("SHINY_APP_DATA")) / os.getenv("SHINY_APP_RUN_NAME")
 log_file = Path(os.getenv("SHINY_APP_LAUNCH_DIR")) / '.nextflow.log'
