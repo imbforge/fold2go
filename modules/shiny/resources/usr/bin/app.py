@@ -1,6 +1,6 @@
 import json
 import os
-import pandas
+import polars
 import signal
 import numpy as np
 import plotly.express as px
@@ -78,14 +78,13 @@ def _():
     completed = _list_files()
     ui.update_tooltip("metrics_tip", show=(not completed))
     if completed:
-        metrics = pandas.concat([pandas.read_csv(tsv, sep='\t') for tsv in completed])
-        metrics.attrs['done'] = len(completed)
+        metrics = polars.concat([polars.read_csv(tsv, separator='\t') for tsv in completed], how="diagonal_relaxed")
         df.set(metrics)
 
 # store row selection
 @reactive.effect
 def _():
-    selected = render_frame.data_view(selected=True).to_dict(orient='records')
+    selected = render_frame.data_view(selected=True).to_dicts()
     ui.update_tooltip("structure_tip", show=(not selected))
     ui.update_tooltip("pae_tip", show=(not selected))
     if selected:
@@ -126,7 +125,7 @@ with ui.card():
         else:
             ui.modal_remove()
             progress.set(
-                value=(ncomplete := df().attrs['done']),
+                value=(ncomplete := df().n_unique(subset=['prediction_name', 'model_preset'])),
                 message="Predictions are running" if ( ncomplete < njobs ) else "Predictions are complete",
                 detail=f"({ncomplete}/{njobs} complete)"
             )
@@ -137,14 +136,13 @@ with ui.card():
         with ui.tooltip(id="download_tip"):
             @render.download(label="Download", filename="template_indep_info.csv")
             def download_metrics():
-                yield df().to_csv(index=False)
+                yield df().write_csv()
             "Press this button to download metrics table as csv"
 
         # display button to terminate shiny server process
         with ui.tooltip(id="terminate_tip"):
             ui.input_action_button("terminate", "Shutdown", class_="btn-danger")
             "Press this button to terminate fold2go. Unfinished predictions will be lost"
-
 
 with ui.layout_columns(col_widths=(4,8)):
     # plot predicted aligned error based on selection in first card
@@ -162,6 +160,7 @@ with ui.layout_columns(col_widths=(4,8)):
                 zmin=0.0,
                 zmax=31.75
             )
+
     # render model structure based on selection in first card
     with ui.card():
         with ui.card_header(class_='text-center'):
