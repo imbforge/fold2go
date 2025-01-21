@@ -12,10 +12,10 @@ cuda = "12"
 [tasks]
 
 [dependencies]
-python = "3.11.*"
+python = "3.12.*"
 hmmer = ">=3.4,<4"
 setuptools = ">=75.5.0,<76"
 zstd = ">=1.5.6,<2"
 
 [pypi-dependencies]
-alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "1bb31e736bcde76e31aa75fbd56225fae380708f" }
+alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "231efc9bb9c13b45cc59e43f7107869084ee9624" }
