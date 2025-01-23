@@ -12,6 +12,7 @@ from shiny.express import input, render, ui
 from shinywidgets import render_plotly, render_widget
 
 # set some shiny page options
+ui.busy_indicators.use(pulse=False)
 ui.page_opts(
     fillable=True,
     fillable_mobile=True
@@ -78,7 +79,10 @@ def _():
     completed = _list_files()
     ui.update_tooltip("metrics_tip", show=(not completed))
     if completed:
-        metrics = polars.concat([polars.read_csv(tsv, separator='\t') for tsv in completed], how="diagonal_relaxed")
+        metrics = polars.concat(
+            [polars.read_csv(tsv, separator='\t') for tsv in completed],
+            how="diagonal"
+        )
         df.set(metrics)
 
 # store row selection
@@ -88,7 +92,32 @@ def _():
     ui.update_tooltip("structure_tip", show=(not selected))
     ui.update_tooltip("pae_tip", show=(not selected))
     if selected:
-        selection.set(selected.pop())
+        row = selected.pop()
+        # collect chain lengths from column names (chain<single letter>_length) and store them as {<single letter>: <len>}
+        row['chain_info'] = { c.split('_')[0].removeprefix('chain'): n for c, n in row.items() if c.endswith('_length') }
+        selection.set(row)
+
+# get selected residue pairs from PAE plot and highlight them in structure
+@reactive.effect
+def _():
+    def _get_query_param(residue, chains=selection().get('chain_info')):
+        idx = 0
+        for chain, length in chains.items():
+            if residue <= (idx + length):
+                return {
+                    "struct_asym_id": chain,
+                    "residue_number": residue - idx,
+                }
+            idx += length
+        else:
+            raise ValueError(f"Residue {residue} is out of range")
+
+    def _hover_callback(trace, points, _):
+        render_structure.widget.highlight = {
+            "data": [_get_query_param(res) for res in points.point_inds.pop()],
+            "focus": True
+        }
+    render_pae.widget.data[0].on_hover(_hover_callback)
 
 # terminate shiny server on button press
 @reactive.effect
@@ -153,13 +182,34 @@ with ui.layout_columns(col_widths=(4,8)):
                 "Select row to display corresponding PAE plot"
         @render_plotly
         def render_pae():
-            return px.imshow(
-                _get_pae(selection()),
-                labels = {'color': 'PAE'},
-                color_continuous_scale = px.colors.sequential.Viridis,
+            fig = px.imshow(
+                img = _get_pae(selection()),
+                labels = {'x': 'Scored residue', 'y': 'Aligned residue', 'color': 'PAE  [Å]'},
+                color_continuous_scale = px.colors.sequential.Greens_r,
                 zmin=0.0,
                 zmax=31.75
             )
+            # draw chain boundaries as dashed lines
+            idx = 0
+            for chain in selection().get('chain_info').values():
+                idx += chain
+                fig.add_shape(
+                    type = "line",
+                    x0 = idx - 0.5,
+                    x1 = idx - 0.5,
+                    y0 = 0,
+                    y1 = fig.data[0]['z'][0].size,
+                    line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
+                )
+                fig.add_shape(
+                    type = "line",
+                    x0 = 0,
+                    x1 = fig.data[0]['z'][0].size,
+                    y0 = idx - 0.5,
+                    y1 = idx - 0.5,
+                    line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
+                )
+            return fig
 
     # render model structure based on selection in first card
     with ui.card():
