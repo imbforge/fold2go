@@ -26,17 +26,25 @@ log_file = Path(os.getenv("SHINY_APP_LAUNCH_DIR")) / '.nextflow.log'
 ## define helper functions
 
 # load pae metric for selected prediction
-def _get_pae(record: dict) -> list:
+def _get_pae(record: dict) -> dict:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
             with (results_dir / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
-                return np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
+                arr = np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
         case 'alphafold3':
             with (results_dir / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
-                return np.array(json.load(fin).get('pae'), dtype=np.float16)
+                arr = np.array(json.load(fin).get('pae'), dtype=np.float16)
         case 'boltz':
             with np.load(results_dir / 'predictions' / 'boltz' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
-                return np.array(fin.get('pae'), dtype=np.float16)
+                arr = np.array(fin.get('pae'), dtype=np.float16)
+    return {
+        'img': arr,
+        **dict.fromkeys(('x', 'y'), list(range(1, arr.shape[0] + 1))),
+        'labels': {'x': 'Scored residue', 'y': 'Aligned residue', 'color': 'PAE  [Å]'},
+        'color_continuous_scale': px.colors.sequential.Greens_r,
+        'zmin': 0.0,
+        'zmax': 31.75
+    }
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
@@ -114,7 +122,7 @@ def _():
 
     def _hover_callback(trace, points, _):
         render_structure.widget.highlight = {
-            "data": [_get_query_param(res) for res in points.point_inds.pop()],
+            "data": [_get_query_param(res + 1) for res in points.point_inds.pop()],
             "focus": True
         }
     render_pae.widget.data[0].on_hover(_hover_callback)
@@ -182,32 +190,27 @@ with ui.layout_columns(col_widths=(4,8)):
                 "Select row to display corresponding PAE plot"
         @render_plotly
         def render_pae():
-            fig = px.imshow(
-                img = _get_pae(selection()),
-                labels = {'x': 'Scored residue', 'y': 'Aligned residue', 'color': 'PAE  [Å]'},
-                color_continuous_scale = px.colors.sequential.Greens_r,
-                zmin=0.0,
-                zmax=31.75
-            )
+            fig = px.imshow(**_get_pae(selection()))
+
             # draw chain boundaries as dashed lines
-            idx = 0
+            idx = 0.5
             for chain in selection().get('chain_info').values():
                 idx += chain
                 fig.add_shape(
                     type = "line",
-                    x0 = idx - 0.5,
-                    x1 = idx - 0.5,
+                    x0 = idx,
+                    x1 = idx,
                     y0 = 0,
-                    y1 = fig.data[0]['z'][0].size,
-                    line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
+                    y1 = fig.data[0]['z'][0].size + 1,
+                    line = {'color': 'red', 'dash':'dot', 'width': 1.5}
                 )
                 fig.add_shape(
                     type = "line",
                     x0 = 0,
-                    x1 = fig.data[0]['z'][0].size,
-                    y0 = idx - 0.5,
-                    y1 = idx - 0.5,
-                    line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
+                    x1 = fig.data[0]['z'][0].size + 1,
+                    y0 = idx,
+                    y1 = idx,
+                    line = {'color': 'red', 'dash':'dot', 'width': 1.5}
                 )
             return fig
 
