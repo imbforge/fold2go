@@ -201,16 +201,16 @@ with ui.layout_columns(col_widths=(4,8)):
                     x0 = idx,
                     x1 = idx,
                     y0 = 0,
-                    y1 = fig.data[0]['z'][0].size + 1,
-                    line = {'color': 'red', 'dash':'dot', 'width': 1.5}
+                    y1 = fig.data[0]['y'][-1],
+                    line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
                 )
                 fig.add_shape(
                     type = "line",
                     x0 = 0,
-                    x1 = fig.data[0]['z'][0].size + 1,
+                    x1 = fig.data[0]['x'][-1],
                     y0 = idx,
                     y1 = idx,
-                    line = {'color': 'red', 'dash':'dot', 'width': 1.5}
+                    line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
                 )
             return fig
 
