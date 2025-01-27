@@ -102,7 +102,11 @@ def _():
     if selected:
         row = selected.pop()
         # collect chain lengths from column names (chain<single letter>_length) and store them as {<single letter>: <len>}
-        row['chain_info'] = { c.split('_')[0].removeprefix('chain'): n for c, n in row.items() if c.endswith('_length') }
+        row['chain_info'] = {
+            label.split('_')[0].removeprefix('chain'): length 
+            for label, length in row.items()
+            if label.endswith('_length') and length is not None
+        }
         selection.set(row)
 
 # get selected residue pairs from PAE plot and highlight them in structure
