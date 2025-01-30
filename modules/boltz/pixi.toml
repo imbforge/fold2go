@@ -15,4 +15,4 @@ cuda = "12"
 python = "3.12.*"
 
 [pypi-dependencies]
-boltz = ">=0.4.1, <0.5"
+boltz = { git = "https://github.com/phue/boltz", rev = "9b58b4edc73114703c9db7e25d4cc118e56e3ae3" }
