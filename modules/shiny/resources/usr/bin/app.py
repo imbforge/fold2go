@@ -3,7 +3,7 @@ import os
 import polars
 import signal
 import numpy as np
-import plotly.express as px
+import plotly.graph_objects as go
 
 from ipymolstar import PDBeMolstar
 from pathlib import Path
@@ -30,21 +30,13 @@ def _get_pae(record: dict) -> dict:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
             with (results_dir / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
-                arr = np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
+                return np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
         case 'alphafold3':
             with (results_dir / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
-                arr = np.array(json.load(fin).get('pae'), dtype=np.float16)
+                return np.array(json.load(fin).get('pae'), dtype=np.float16)
         case 'boltz':
             with np.load(results_dir / 'predictions' / 'boltz' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
-                arr = np.array(fin.get('pae'), dtype=np.float16)
-    return {
-        'img': arr,
-        **dict.fromkeys(('x', 'y'), list(range(1, arr.shape[0] + 1))),
-        'labels': {'x': 'Scored residue', 'y': 'Aligned residue', 'color': 'PAE  [Å]'},
-        'color_continuous_scale': px.colors.sequential.Greens_r,
-        'zmin': 0.0,
-        'zmax': 31.75
-    }
+                return np.array(fin.get('pae'), dtype=np.float16)
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
@@ -57,7 +49,7 @@ def _get_model(record: dict) -> dict:
             model = results_dir / 'predictions' / 'boltz' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
     return {
         'data'  : model.read_text(),
-        'format': model.suffix[1:],
+        'format': 'cif',
         'binary': False
     }
 
@@ -194,8 +186,24 @@ with ui.layout_columns(col_widths=(4,8)):
                 "Select row to display corresponding PAE plot"
         @render_plotly
         def render_pae():
-            fig = px.imshow(**_get_pae(selection()))
-
+            fig = go.Figure(
+                data = {
+                    'type': 'heatmap',
+                    'colorbar': {'title': 'PAE [Å]'},
+                    'colorscale': 'Greens_r',
+                    'z': (pae := _get_pae(selection())),
+                    'x0': 1,
+                    'y0': 1,
+                    'hovertemplate': 'Scored residue: %{x}<br>Aligned residue: %{y}<br>Predicted Aligned Error: %{z:.2f} Å',
+                    'zmin': 0.0,
+                    'zmax': 31.75,
+                    'name': ''
+                },
+                layout = {
+                    'xaxis' : {'title': 'Scored residue', 'constrain': 'domain'},
+                    'yaxis' : {'title': 'Aligned residue', 'autorange': 'reversed', 'scaleanchor': 'x'},
+                }
+            )
             # draw chain boundaries as dashed lines
             idx = 0.5
             for chain in selection().get('chain_info').values():
@@ -205,13 +213,13 @@ with ui.layout_columns(col_widths=(4,8)):
                     x0 = idx,
                     x1 = idx,
                     y0 = 0,
-                    y1 = fig.data[0]['y'][-1],
+                    y1 = pae.shape[1],
                     line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
                 )
                 fig.add_shape(
                     type = "line",
                     x0 = 0,
-                    x1 = fig.data[0]['x'][-1],
+                    x1 = pae.shape[0],
                     y0 = idx,
                     y1 = idx,
                     line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
