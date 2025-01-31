@@ -9,7 +9,7 @@ It currently supports `AlphaFold2`[^1], `AlphaFold-Multimer`[^2], `AlphaFold3`[^
 Moreover, it accumulates and computes various metrics and contains a `py-shiny` application that allows to track pipeline progress and explore results interactively. Three-dimensional visualization of predicted structures therein is implemented via `Mol* Viewer`[^5].
 
 > :warning: 
-AlphaFold3 has a restrictive license and the model weights have to be requested from Google Deepmind. Usage is subject to their [Terms of Use](https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_TERMS_OF_USE.md).
+AlphaFold3 has a restrictive license and the model weights have to be requested from Google DeepMind. Usage is subject to their [Terms of Use](https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_TERMS_OF_USE.md).
 
 ### Overview
 
@@ -17,45 +17,42 @@ AlphaFold3 has a restrictive license and the model weights have to be requested 
 flowchart LR
     classDef cpu stroke:#A5B0F2,fill:#A5B0F2
     classDef gpu stroke:#A5F2C1,fill:#A5F2C1
-    subgraph fold2go
-        subgraph af2["ALPHAFOLD2"]
-            v11([MSA]):::cpu
-            v12([INFERENCE]):::gpu
-            v13([METRICS]):::cpu
-        v11 --> v12 --> v13
-        end
-        subgraph af3["ALPHAFOLD3"]
-            v21([MSA]):::cpu
-            v22([INFERENCE]):::gpu
-            v23([METRICS]):::cpu
-        v21 --> v22 --> v23
-        end
-        subgraph boltz["BOLTZ-1"]
-            v31([MSA]):::cpu
-            v32([INFERENCE]):::gpu
-            v33([METRICS]):::cpu
-        v31 --> v32 --> v33
-        end
-    end
-    v1(( ))
-    v1 ==fasta==> v11
-    v1 ==json==> v21
-    v1 ==yaml==> v31
-    v4(( ))
-    v5([SHINY])
     subgraph Legend
         l2([CPU]):::cpu
         l1([GPU]):::gpu
     end
     l1 ~~~ v1
     l2 ~~~ v1
-    v13 --> v4
-    v23 --> v4
-    v33 --> v4
+    subgraph fold2go
+        subgraph af2["ALPHAFOLD2"]
+            v11([MSA]):::cpu
+            v12([INFERENCE]):::gpu
+        v11 --> v12
+        end
+        subgraph af3["ALPHAFOLD3"]
+            v21([MSA]):::cpu
+            v22([INFERENCE]):::gpu
+        v21 --> v22
+        end
+        subgraph boltz["BOLTZ-1"]
+            v31([MSA]):::cpu
+            v32([INFERENCE]):::gpu
+        v31 --> v32
+        end
+        v12 --> v4
+        v22 --> v4
+        v32 --> v4
     v4  --tsv--> v5
     v12 --json,mmcif--> v5
     v22 --json,mmcif--> v5
-    v32 --npz, mmcif--> v5
+    v32 --npz,mmcif--> v5
+    v1(( ))
+    v1 ==fasta==> v11
+    v1 ==json==> v21
+    v1 ==yaml==> v31
+    v4([METRICS]):::cpu
+    v5([SHINY])
+    end
 ```
 
 ## Usage
@@ -69,7 +66,6 @@ nextflow run imbforge/fold2go --help
 ## Graphical User Interface
 
 This pipeline can be launched through a Jupyterhub-based graphical frontend. If you want to try this out, head over to [imb-alphafold](https://gitlab.rlp.net/imbforge/imb-alphafold).
-
 
 ## References
 
