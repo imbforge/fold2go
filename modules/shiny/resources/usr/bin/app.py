@@ -13,10 +13,7 @@ from shinywidgets import render_plotly, render_widget
 
 # set some shiny page options
 ui.busy_indicators.use(pulse=False)
-ui.page_opts(
-    fillable=True,
-    fillable_mobile=True
-)
+ui.page_opts(full_width=True)
 
 ## get environment and store vars
 njobs = int(os.getenv('SHINY_APP_NJOBS'))
@@ -189,19 +186,19 @@ with ui.layout_columns(col_widths=(4,8)):
             fig = go.Figure(
                 data = {
                     'type': 'heatmap',
-                    'colorbar': {'title': 'PAE [Å]'},
+                    'colorbar': {'title': 'Å', 'thickness': 10},
                     'colorscale': 'Greens_r',
                     'z': (pae := _get_pae(selection())),
                     'x0': 1,
                     'y0': 1,
-                    'hovertemplate': 'Scored residue: %{x}<br>Aligned residue: %{y}<br>Predicted Aligned Error: %{z:.2f} Å',
+                    'hovertemplate': 'Scored residue: %{x}<br>Aligned residue: %{y}<br>PAE: %{z:.2f} Å',
                     'zmin': 0.0,
                     'zmax': 31.75,
-                    'name': ''
+                    'name': '',
                 },
                 layout = {
                     'xaxis' : {'title': 'Scored residue', 'constrain': 'domain'},
-                    'yaxis' : {'title': 'Aligned residue', 'autorange': 'reversed', 'scaleanchor': 'x'},
+                    'yaxis' : {'title': 'Aligned residue', 'autorange': 'reversed', 'constrain': 'domain', 'scaleanchor': 'x'},
                 }
             )
             # draw chain boundaries as dashed lines
