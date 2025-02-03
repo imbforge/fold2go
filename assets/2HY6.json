@@ -1,0 +1,14 @@
+{
+    "name": "2HY6",
+    "sequences": [
+      {
+        "protein": {
+          "id": ["A", "B", "C", "D", "E", "F", "G"],
+          "sequence": "MKVKQLADAVEELASANYHLANAVARLAKAVGER"
+        }
+      }
+    ],
+    "modelSeeds": [1],
+    "dialect": "alphafold3",
+    "version": 1
+}
