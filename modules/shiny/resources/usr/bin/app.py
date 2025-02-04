@@ -233,7 +233,11 @@ with ui.layout_columns(col_widths=(4,8)):
         def render_structure():
             return PDBeMolstar(
                 custom_data = _get_model(selection()),
-                alphafold_view = True,
+                alphafold_view = input.colorscheme(),
                 sequence_panel = True,
                 hide_animation_icon = True
             )
+        with ui.card_footer(class_='text-center'):
+            with ui.popover(id="color_popover", title="Settings"):
+                "🔴 🟢 🔵"
+                ui.input_switch("colorscheme", "apply pLDDT colorscheme", True)
