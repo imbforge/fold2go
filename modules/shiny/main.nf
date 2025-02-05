@@ -6,10 +6,7 @@ process SHINY {
 
     input:
         val(SHINY_APP_PORT)
-        env(SHINY_APP_NJOBS)
-        env(SHINY_APP_DATA)
-        env(SHINY_APP_RUN_NAME)
-        env(SHINY_APP_LAUNCH_DIR)
+        path(json)
 
     script:
         """

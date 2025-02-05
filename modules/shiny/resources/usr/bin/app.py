@@ -15,10 +15,11 @@ from shinywidgets import render_plotly, render_widget
 ui.busy_indicators.use(pulse=False)
 ui.page_opts(full_width=True)
 
-## get environment and store vars
-njobs = int(os.getenv('SHINY_APP_NJOBS'))
-results_dir = Path(os.getenv("SHINY_APP_DATA")) / os.getenv("SHINY_APP_RUN_NAME")
-log_file = Path(os.getenv("SHINY_APP_LAUNCH_DIR")) / '.nextflow.log'
+# load app config from file
+with ( Path.cwd() / 'shiny_config.json' ).open('r') as fin:
+    config = json.load(fin)
+
+njobs, data, log = config.get('njobs'), Path(config.get('data')), Path(config.get('log'))
 
 ## define helper functions
 
@@ -26,24 +27,24 @@ log_file = Path(os.getenv("SHINY_APP_LAUNCH_DIR")) / '.nextflow.log'
 def _get_pae(record: dict) -> dict:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
-            with (results_dir / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
+            with (data / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
                 return np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
         case 'alphafold3':
-            with (results_dir / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
+            with (data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
                 return np.array(json.load(fin).get('pae'), dtype=np.float16)
         case 'boltz':
-            with np.load(results_dir / 'predictions' / 'boltz' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
+            with np.load(data / 'predictions' / 'boltz' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
                 return np.array(fin.get('pae'), dtype=np.float16)
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
-            model = results_dir / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"{record.get('model_rank')}.cif"
+            model = data / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"{record.get('model_rank')}.cif"
         case 'alphafold3':
-            model = results_dir / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
+            model = data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
         case 'boltz':
-            model = results_dir / 'predictions' / 'boltz' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
+            model = data / 'predictions' / 'boltz' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
     return {
         'data'  : model.read_text(),
         'format': 'cif',
@@ -52,13 +53,13 @@ def _get_model(record: dict) -> dict:
 
 # list files of completed predictions
 def _list_files() -> list:
-    return list( (results_dir / 'metrics').glob("*_metrics.tsv") )
+    return list( (data / 'metrics').glob("*_metrics.tsv") )
 
 # parse log file to retrieve pipeline progress
 # TODO: replace this with an http endpoint and use nf-weblog
 def _parse_log() -> list:
     msg = []
-    with log_file.open('r') as txt:
+    with log.open('r') as txt:
         for line in txt:
             if 'INFO  nextflow.Session' in line:
                 msg.append(line.split(' - ')[-1])
@@ -238,6 +239,14 @@ with ui.layout_columns(col_widths=(4,8)):
                 hide_animation_icon = True
             )
         with ui.card_footer(class_='text-center'):
-            with ui.popover(id="color_popover", title="Settings"):
-                "🔴 🟢 🔵"
-                ui.input_switch("colorscheme", "apply pLDDT colorscheme", True)
+            with ui.popover(id="settings_popover", title="Settings"):
+                ui.span(
+                    ui.HTML(
+                        '''
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+                        </svg>
+                        '''
+                    )
+                )
+                ui.input_switch("colorscheme", "pLDDT colorscheme", True)

@@ -19,12 +19,22 @@ workflow FOLD2GO {
     input.json  | ALPHAFOLD3
     input.yaml  | BOLTZ
 
+    ALPHAFOLD2.out.jobcount.mix(ALPHAFOLD3.out.jobcount).mix(BOLTZ.out.jobcount).sum().set { jobcount }
+
     SHINY(
         params.PORT ?: new Random().nextInt(39000, 39200),
-        ALPHAFOLD2.out.jobcount.mix(ALPHAFOLD3.out.jobcount).mix(BOLTZ.out.jobcount).sum(),
-        params.OUT,
-        workflow.runName,
-        workflow.launchDir
+        jobcount.collectFile { njobs ->
+            [
+            "shiny_config.json",
+            """
+            {
+                "njobs": ${njobs},
+                "data": "${params.OUT}/${workflow.runName}",
+                "log": "${workflow.launchDir}/.nextflow.log"
+            }
+            """
+            ]
+        }
     )
 
     METRICS(
