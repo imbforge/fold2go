@@ -13,6 +13,7 @@ process SHINY {
         shiny run \\
             --port=${SHINY_APP_PORT} \\
             --host=127.0.0.1 \\
+            --ws-max-size=33554432 \\
             --log-level=debug \\
             ${moduleDir}/resources/usr/bin/app.py
         """
