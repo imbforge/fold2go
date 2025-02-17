@@ -1,18 +1,19 @@
 process SHINY {
-    tag "${workflow.userName}@localhost:${SHINY_APP_PORT}"
+    tag "${workflow.userName}@localhost:${socket}"
 
     when:
         params.SHINY.enabled
 
     input:
-        val(SHINY_APP_PORT)
+        val(socket)
         path(json)
 
     script:
         """
-        shiny run \\
-            --port=${SHINY_APP_PORT} \\
-            --host=127.0.0.1 \\
-            ${moduleDir}/resources/usr/bin/app.py
+        #!/usr/bin/env python
+
+        from shiny import run_app
+
+        run_app("${moduleDir}/resources/usr/bin/app.py:app", uds="${socket}")
         """
 }

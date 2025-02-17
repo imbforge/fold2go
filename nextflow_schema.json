@@ -32,10 +32,10 @@
                     "default": "",
                     "hidden": true
                 },
-                "PORT": {
-                    "type": "integer",
-                    "description": "HTTP port to run shiny application on. Set to 0 to use random port.",
-                    "default": 0,
+                "SOCKET": {
+                    "type": "string",
+                    "description": "Unix Domain Socket for shiny application to bind to.",
+                    "default": "",
                     "hidden": true
                 }
             }

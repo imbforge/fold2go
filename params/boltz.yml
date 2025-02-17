@@ -4,8 +4,6 @@ OUT:
   "${projectDir}/results"
 EMAIL:
   ""
-PORT:
-  0
 
 ALPHAFOLD3:
   MSA_SERVER_URL:

@@ -22,7 +22,7 @@ workflow FOLD2GO {
     ALPHAFOLD2.out.jobcount.mix(ALPHAFOLD3.out.jobcount).mix(BOLTZ.out.jobcount).sum().set { jobcount }
 
     SHINY(
-        params.PORT ?: new Random().nextInt(39000, 39200),
+        params.SOCKET ?: "${workflow.workDir}/shiny.sock",
         jobcount.collectFile { njobs ->
             [
             "shiny_config.json",

@@ -4,8 +4,6 @@ OUT:
   "${projectDir}/results"
 EMAIL:
   ""
-PORT:
-  0
 
 ALPHAFOLD2:
   DATABASE_DIR:
