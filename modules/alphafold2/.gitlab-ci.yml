@@ -1,0 +1,2 @@
+alphafold2:
+  extends: .build

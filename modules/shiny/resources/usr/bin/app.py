@@ -1,131 +1,252 @@
 import json
 import os
+import polars
 import signal
-import pandas
-import py3Dmol
-import plotly.express as px
+import numpy as np
+import plotly.graph_objects as go
 
+from ipymolstar import PDBeMolstar
 from pathlib import Path
-from shiny import reactive, req
+from shiny import reactive
 from shiny.express import input, render, ui
-from shinywidgets import render_plotly
+from shinywidgets import render_plotly, render_widget
 
-# get environment and store vars
-njobs = int(os.getenv('SHINY_APP_NJOBS'))
-metrics = Path(f'{os.getenv("SHINY_APP_DATA")}/{os.getenv("SHINY_APP_RUN_NAME")}/metrics')
-predictions = Path(f'{os.getenv("SHINY_APP_DATA")}/{os.getenv("SHINY_APP_RUN_NAME")}/predictions')
-logfile = Path(f'{os.getenv("SHINY_APP_LAUNCH_DIR")}/.nextflow.log')
+# set some shiny page options
+ui.busy_indicators.use(pulse=False)
+ui.page_opts(full_width=True)
 
-# initialize surface styles for 3Dmol
-styles = ['cartoon', 'stick', 'sphere']
+# load app config from file
+with ( Path.cwd() / 'shiny_config.json' ).open('r') as fin:
+    config = json.load(fin)
 
-# initialize color maps to select from
-cmaps = {
-    'viridis': px.colors.sequential.Viridis,
-    'aggrnyl': px.colors.sequential.Aggrnyl,
-    'portland': px.colors.diverging.Portland,
-    'spectral': px.colors.diverging.Spectral_r
-}
+njobs, data, log = config.get('njobs'), Path(config.get('data')), Path(config.get('log'))
+
+## define helper functions
+
+# load pae metric for selected prediction
+def _get_pae(record: dict) -> dict:
+    match record.get('model_preset').split('_')[0]:
+        case 'alphafold2':
+            with (data / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
+                return np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
+        case 'alphafold3':
+            with (data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
+                return np.array(json.load(fin).get('pae'), dtype=np.float16)
+        case 'boltz':
+            with np.load(data / 'predictions' / 'boltz' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
+                return np.array(fin.get('pae'), dtype=np.float16)
+
+# load 3D model for selected prediction
+def _get_model(record: dict) -> dict:
+    match record.get('model_preset').split('_')[0]:
+        case 'alphafold2':
+            model = data / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"{record.get('model_rank')}.cif"
+        case 'alphafold3':
+            model = data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
+        case 'boltz':
+            model = data / 'predictions' / 'boltz' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
+    return {
+        'data'  : model.read_text(),
+        'format': 'cif',
+        'binary': False
+    }
 
 # list files of completed predictions
 def _list_files() -> list:
-    return list(metrics.glob("*.template_indep_metrics.tsv"))
+    return list( (data / 'metrics').glob("*_metrics.tsv") )
 
 # parse log file to retrieve pipeline progress
 # TODO: replace this with an http endpoint and use nf-weblog
 def _parse_log() -> list:
     msg = []
-    with open(logfile) as txt:
+    with log.open('r') as txt:
         for line in txt:
-            if 'INFO  nextflow' in line:
+            if 'INFO  nextflow.Session' in line:
                 msg.append(line.split(' - ')[-1])
     return msg
 
-# initialize reactive value to hold metrics dataframe
-df = reactive.value()
+## define reactive values and functions
+
+# initialize reactive values to hold metrics dataframe and selected row
+df, selection = reactive.value(), reactive.value()
 
 # construct data frame from list of files, check for changes every 30s
 @reactive.effect
 @reactive.poll(_list_files, 30)
 def _():
-    if (files := _list_files()):
-        metrics = pandas.concat([pandas.read_csv(f, sep='\t') for f in files])
-        metrics.attrs['done'] = len(files)
+    completed = _list_files()
+    ui.update_tooltip("metrics_tip", show=(not completed))
+    if completed:
+        metrics = polars.concat(
+            [polars.read_csv(tsv, separator='\t') for tsv in completed],
+            how="diagonal"
+        )
         df.set(metrics)
 
-# display sidebar for (general) app settings
-with ui.sidebar(position='left', open='closed'):
-    ui.input_select('style', 'Surface style', {style:style for style in styles}, selected='cartoon')
-    ui.input_select('cmap', 'Color scheme', {cmap:cmap for cmap in cmaps.keys()}, selected='viridis')
+# store row selection
+@reactive.effect
+def _():
+    selected = render_frame.data_view(selected=True).to_dicts()
+    ui.update_tooltip("structure_tip", show=(not selected))
+    ui.update_tooltip("pae_tip", show=(not selected))
+    if selected:
+        row = selected.pop()
+        # collect chain lengths from column names (chain<single letter>_length) and store them as {<single letter>: <len>}
+        row['chain_info'] = {
+            label.split('_')[0].removeprefix('chain'): length 
+            for label, length in row.items()
+            if label.endswith('_length') and length is not None
+        }
+        selection.set(row)
 
-with ui.layout_columns(col_widths=(12, 6, 6)):
-    # display dataframe with calculated metrics and selectable rows
-    with ui.card():
-        with ui.card_header():
-            with ui.tooltip(placement="right", id="metrics_tooltip"):
-                "Metrics"
-                "Results will appear here as they are produced"
-        @render.data_frame
-        def render_frame():
-            progress = ui.Progress(min=0, max=njobs)
-            if not df.is_set():
-                # display modal with log file content until predictions become available
-                progress.set(0, message="Predictions are running", detail=f"(0/{njobs} complete)")
-                ui.modal_show(
-                    ui.modal(
-                        ui.tags.pre(_parse_log()),
-                        title=ui.HTML('<a href="https://gitlab.rlp.net/imbforge/fold2go">imbforge/fold2go</a> is currently running, please check back later to see some results...'),
-                        size='xl',
-                        footer=[ui.modal_button("Dismiss"), ui.span(class_='spinner-border')]
-                    )
+# get selected residue pairs from PAE plot and highlight them in structure
+@reactive.effect
+def _():
+    def _get_query_param(residue, chains=selection().get('chain_info')):
+        idx = 0
+        for chain, length in chains.items():
+            if residue <= (idx + length):
+                return {
+                    "struct_asym_id": chain,
+                    "residue_number": residue - idx,
+                }
+            idx += length
+        else:
+            raise ValueError(f"Residue {residue} is out of range")
+
+    def _hover_callback(trace, points, _):
+        render_structure.widget.highlight = {
+            "data": [_get_query_param(res + 1) for res in points.point_inds.pop()],
+            "focus": True
+        }
+    render_pae.widget.data[0].on_hover(_hover_callback)
+
+# terminate shiny server on button press
+@reactive.effect
+@reactive.event(input.terminate)
+def _():
+    return os.kill(os.getpid(), signal.SIGUSR1)
+
+## define user interface
+
+# display dataframe with calculated metrics and selectable rows
+with ui.card():
+    with ui.card_header(class_='text-center'):
+        with ui.tooltip(placement="bottom", id="metrics_tip"):
+            "Metrics"
+            "Results will appear here as they become available"
+    @render.data_frame
+    def render_frame():
+        progress = ui.Progress(min=0, max=njobs)
+        if not df.is_set():
+            # display modal with log file content until predictions become available
+            ui.modal_show(
+                ui.modal(
+                    ui.tags.pre(_parse_log()),
+                    title=ui.HTML('<a href="https://gitlab.rlp.net/imbforge/fold2go">imbforge/fold2go</a> is currently running, please check back later to see some results...'),
+                    size='xl',
+                    footer=[ui.modal_button("Dismiss"), ui.span(class_='spinner-border')]
                 )
-            else:
-                ui.modal_remove()
-                if (done := df().attrs['done']) < njobs:
-                    progress.set(df().attrs['done'], message="Predictions are running", detail=f"({df().attrs['done']}/{njobs} complete)")
-                else:
-                    progress.set(done, message="Predictions are complete", detail=f"({done}/{njobs} complete)")
-        
-                return render.DataGrid(df(), selection_mode='row')
+            )
+            progress.set(
+                value=0,
+                message="Predictions are running",
+                detail=f"(0/{njobs} complete)"
+            )
+        else:
+            ui.modal_remove()
+            progress.set(
+                value=(ncomplete := df().n_unique(subset=['prediction_name', 'model_preset'])),
+                message="Predictions are running" if ( ncomplete < njobs ) else "Predictions are complete",
+                detail=f"({ncomplete}/{njobs} complete)"
+            )
+        return render.DataGrid(df(), selection_mode='row')
 
-        @render.download(label="Download", filename="template_indep_info.csv")
-        def download_metrics():
-            yield df().to_csv(index=False)
+    with ui.card_footer(class_='text-center'):
+        # display button to download metrics table
+        with ui.tooltip(id="download_tip"):
+            @render.download(label="Download", filename="template_indep_info.csv")
+            def download_metrics():
+                yield df().write_csv()
+            "Press this button to download metrics table as csv"
+
+        # display button to terminate shiny server process
+        with ui.tooltip(id="terminate_tip"):
+            ui.input_action_button("terminate", "Shutdown", class_="btn-danger")
+            "Press this button to terminate fold2go. Unfinished predictions will be lost"
+
+with ui.layout_columns(col_widths=(4,8)):
+    # plot predicted aligned error based on selection in first card
+    with ui.card():
+        with ui.card_header(class_='text-center'):
+            with ui.tooltip(placement="bottom", id="pae_tip"):
+                "Predicted Aligned Error"
+                "Select row to display corresponding PAE plot"
+        @render_plotly
+        def render_pae():
+            fig = go.Figure(
+                data = {
+                    'type': 'heatmap',
+                    'colorbar': {'title': 'Å', 'thickness': 10},
+                    'colorscale': 'Greens_r',
+                    'z': (pae := _get_pae(selection())),
+                    'x0': 1,
+                    'y0': 1,
+                    'hovertemplate': 'Scored residue: %{x}<br>Aligned residue: %{y}<br>PAE: %{z:.2f} Å',
+                    'zmin': 0.0,
+                    'zmax': 31.75,
+                    'name': '',
+                },
+                layout = {
+                    'xaxis' : {'title': 'Scored residue', 'constrain': 'domain'},
+                    'yaxis' : {'title': 'Aligned residue', 'autorange': 'reversed', 'constrain': 'domain', 'scaleanchor': 'x'},
+                }
+            )
+            # draw chain boundaries as dashed lines
+            idx = 0.5
+            for chain in selection().get('chain_info').values():
+                idx += chain
+                fig.add_shape(
+                    type = "line",
+                    x0 = idx,
+                    x1 = idx,
+                    y0 = 0,
+                    y1 = pae.shape[1],
+                    line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
+                )
+                fig.add_shape(
+                    type = "line",
+                    x0 = 0,
+                    x1 = pae.shape[0],
+                    y0 = idx,
+                    y1 = idx,
+                    line = {'color': 'red', 'dash': 'dot', 'width': 1.5}
+                )
+            return fig
 
     # render model structure based on selection in first card
     with ui.card():
-        with ui.card_header():
-            with ui.tooltip(placement="right", id="pdb_tooltip"):
-                "Model structure"
-                "Select a row to display the corresponding 3D model"
-        @render.ui
-        def render_pdb():
-            prediction = req(render_frame.data_view(selected=True).to_dict(orient='records')).pop()
-            with open(f'{predictions}/{prediction.get('prediction_name')}/{prediction.get('model_rank')}.pdb') as pdb:
-                model = "".join([res for res in pdb])
-            view = py3Dmol.view(width=800, height=600)
-            view.addModelsAsFrames(model)
-            view.setStyle({'model': -1}, {input.style(): {'colorscheme': {'prop':'b', 'gradient':'linear', 'colors':list(reversed(cmaps.get(input.cmap()))), 'min':50, 'max':90}}})
-            view.zoomTo()
-            return ui.HTML(view._make_html())
-
-    # plot predicted aligned error based on selection in first card
-    with ui.card():
-        with ui.card_header():
-            with ui.tooltip(placement="right", id="pae_tooltip"):
-                "Predicted aligned error"
-                "Select a row to display the corresponding PAE plot"
-        @render_plotly
-        def render_pae():
-            prediction = req(render_frame.data_view(selected=True).to_dict(orient='records')).pop()
-            with open(f'{predictions}/{prediction.get('prediction_name')}/pae_{prediction.get('model_id')}.json') as fin:
-                pae = json.load(fin)[0].get('predicted_aligned_error')
-            return px.imshow(pae, labels={'color': 'PAE'}, color_continuous_scale=cmaps.get(input.cmap()))
-
-    # display button to terminate shiny server process
-    with ui.card():
-        ui.input_action_button("terminate", "Shutdown", class_="btn-danger")
-        @reactive.effect
-        @reactive.event(input.terminate)
-        def _():
-            return os.kill(os.getpid(), signal.SIGUSR1)
+        with ui.card_header(class_='text-center'):
+            with ui.tooltip(placement="bottom", id="structure_tip"):
+                "Predicted Structure"
+                "Select row to display corresponding 3D structure"
+        @render_widget
+        def render_structure():
+            return PDBeMolstar(
+                custom_data = _get_model(selection()),
+                alphafold_view = input.colorscheme(),
+                sequence_panel = True,
+                hide_animation_icon = True
+            )
+        with ui.card_footer(class_='text-center'):
+            with ui.popover(id="settings_popover", title="Settings"):
+                ui.span(
+                    ui.HTML(
+                        '''
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+                        </svg>
+                        '''
+                    )
+                )
+                ui.input_switch("colorscheme", "pLDDT colorscheme", True)

@@ -1,0 +1,18 @@
+[project]
+authors = ["Patrick Hüther <huether@imb-mainz.de>"]
+channels = ["conda-forge"]
+description = "Add a short description here"
+name = "boltz"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[system-requirements]
+cuda = "12"
+
+[tasks]
+
+[dependencies]
+python = "3.12.*"
+
+[pypi-dependencies]
+boltz = { git = "https://github.com/phue/boltz", rev = "9b58b4edc73114703c9db7e25d4cc118e56e3ae3" }

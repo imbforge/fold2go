@@ -1,0 +1,4 @@
+alphafold3:
+  tags:
+    - imbforge  # shared runners have insufficient memory
+  extends: .build

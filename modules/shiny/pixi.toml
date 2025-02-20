@@ -9,8 +9,12 @@ platforms = ["linux-64"]
 [tasks]
 
 [dependencies]
-pandas = ">=2.2.2,<2.3"
-plotly_express = ">=0.4.1,<0.5"
-py3dmol = ">=2.4.0,<3"
-shinywidgets = ">=0.3.3,<0.4"
-shiny = ">=1.1.0,<2"
+python = "3.12.*"
+shiny = ">=1.2.1,<2"
+shinywidgets = ">=0.5.1,<0.6"
+plotly = ">=6.0.0,<7"
+polars = ">=1.21.0,<2"
+
+[pypi-dependencies]
+ipymolstar = { git = "https://github.com/Jhsmit/ipymolstar", rev = "157d6cb888984470a0f6d7668df9a0d241e6eb03" }
+

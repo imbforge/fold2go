@@ -1,0 +1,18 @@
+IN:
+  "${projectDir}/assets/alphafold2/*.fasta"
+OUT:
+  "${projectDir}/results"
+EMAIL:
+  ""
+
+ALPHAFOLD2:
+  DATABASE_DIR:
+    "/mnt/storage/alphafold"
+  MODEL_PRESET:
+    "multimer"
+  PREDICTIONS_PER_MODEL:
+    1
+
+SHINY:
+  enabled:
+    false

@@ -4,125 +4,212 @@
     "title": "fold2go",
     "description": "Configure pipeline parameters",
     "type": "object",
-    "defs": {
-        "pipeline_options": {
-            "title": "Pipeline options",
+    "$defs": {
+        "General": {
+            "title": "General options",
             "type": "object",
             "description": "Define fold2go pipeline parameters.",
             "properties": {
                 "IN": {
                     "type": "string",
-                    "format": "path",
-                    "pattern": ".(fasta|fa)$",
-                    "description": "Path to input fasta file(s)",
-                    "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.fasta",
-                    "errorMessage": "File glob must match '*.fasta' or '*.fa'"
+                    "format": "file-path-pattern",
+                    "description": "Path to input file(s)",
+                    "help_text": "Supported formats: fasta for <a href=https://github.com/google-deepmind/alphafold#examples>AlphaFold2</a>, json for <a href=https://github.com/google-deepmind/alphafold3/blob/main/docs/input.md>AlphaFold3</a> or yaml for <a href=https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#yaml-format>Boltz</a>",
+                    "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json",
+                    "exists": true
                 },
                 "OUT": {
                     "type": "string",
-                    "format": "path",
+                    "format": "directory-path",
                     "default": "${launchDir}/results",
                     "description": "Path to output directory",
                     "hidden": true
-                },
-                "DATABASE": {
-                    "type": "string",
-                    "format": "path",
-                    "description": "Path to AlphaFold database",
-                    "default": "/mnt/storage/alphafold/v232",
-                    "hidden": true
-                },
-                "MODEL_PRESET": {
-                    "type": "string",
-                    "description": "AlphaFold model preset",
-                    "default": "multimer",
-                    "enum": [
-                        "multimer",
-                        "monomer_ptm",
-                        "monomer",
-                        "monomer_casp14"
-                    ]
-                },
-                "PREDICTIONS_PER_MODEL": {
-                    "type": "integer",
-                    "description": "Number of multimer predictions per model",
-                    "default": 1
                 },
                 "EMAIL": {
                     "type": "string",
 		            "format": "email",
                     "description": "Email address for notifications",
-                    "default": "huether@imb-mainz.de",
+                    "default": "",
                     "hidden": true
                 },
-                "PORT": {
-                    "type": "integer",
-                    "description": "HTTP port to run shiny application on",
-                    "default": 9988,
+                "SOCKET": {
+                    "type": "string",
+                    "description": "Unix Domain Socket for shiny application to bind to.",
+                    "default": "",
                     "hidden": true
                 }
             }
         },
-        "alphafold_options": {
+        "Processes": {
+            "title": "Process options",
             "type": "object",
+            "description": "Define fold2go pipeline parameters.",
             "properties": {
-                "title": "ALPHAFOLD",
-                "type": "object",
-                "description": "Parameter options for AlphaFold.",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean",
-                        "description": "Enable ALPHAFOLD process",
-                        "default": true,
-                        "hidden": true
+                "SHINY": {
+                    "type": "object",
+                    "description": "Options for SHINY process",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Run SHINY",
+                            "default": true,
+                            "hidden": true
+                        }
+                    }
+                },
+                "MSA": {
+                    "type": "object",
+                    "description": "Options for MSA process",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Run MSA",
+                            "default": true,
+                            "hidden": true
+                        }
+                    }
+                },
+                "INFERENCE": {
+                    "type": "object",
+                    "description": "Options for INFERENCE process",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Run INFERENCE",
+                            "default": true,
+                            "hidden": true
+                        }
+                    }
+                },
+                "METRICS": {
+                    "type": "object",
+                    "description": "Options for METRICS process",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Run METRICS",
+                            "default": true,
+                            "hidden": true
+                        }
                     }
                 }
             }
         },
-        "msa_options": {
+        "AlphaFold2": {
+            "title": "AlphaFold2 options",
             "type": "object",
             "properties": {
-                "title": "MSA",
-                "type": "object",
-                "description": "Parameter options for multiple sequence alignment.",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean",
-                        "description": "Enable MSA process",
-                        "default": true,
-                        "hidden": true
+                "ALPHAFOLD2" : {
+                    "type": "object",
+                    "description": "Define AlphaFold2 parameters",
+                    "properties": {
+                        "DATABASE_DIR": {
+                            "type": "string",
+                            "format": "directory-path",
+                            "description": "Path to AlphaFold2 database",
+                            "default": "/mnt/storage/alphafold/v232",
+                            "hidden": true,
+                            "exists": true
+                        },
+                        "MODEL_PRESET": {
+                            "type": "string",
+                            "description": "Model preset",
+                            "default": "multimer",
+                            "enum": [
+                                "multimer",
+                                "monomer_ptm",
+                                "monomer",
+                                "monomer_casp14"
+                            ]
+                        },
+                        "PREDICTIONS_PER_MODEL": {
+                            "type": "integer",
+                            "description": "Number of multimer predictions per model",
+                            "default": 1
+                        }
                     }
                 }
             }
         },
-        "pymol_options": {
+        "AlphaFold3": {
+            "title": "AlphaFold3 options",
             "type": "object",
             "properties": {
-                "title": "PYMOL",
-                "type": "object",
-                "description": "Parameter options for pymol metrics.",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean",
-                        "description": "Enable PYMOL process",
-                        "default": true,
-                        "hidden": true
+                "ALPHAFOLD3": {
+                    "type": "object",
+                    "description": "Define AlphaFold3 parameters",
+                    "properties": {
+                        "DATABASE_DIR": {
+                            "type": "string",
+                            "format": "directory-path",
+                            "description": "Path to AlphaFold3 database",
+                            "default": "/mnt/storage/alphafold/v300",
+                            "hidden": true,
+                            "exists": true
+                        },
+                        "MODEL_DIR": {
+                            "type": "string",
+                            "format": "directory-path",
+                            "description": "Path to AlphaFold3 model weights",
+                            "default": "/mnt/storage/alphafold/v300/.model",
+                            "hidden": true
+                        },
+                        "DIFFUSION_SAMPLES": {
+                            "type": "integer",
+                            "description": "Number of diffusion samples to generate",
+                            "default": 1
+                        },
+                        "GROUP_MSA": {
+                            "type": "boolean",
+                            "description": "Run multiple sequence alignments as single job. Avoids redundant computation if sequences are shared between inputs.",
+                            "default": true,
+                            "hidden": true
+                        }
                     }
                 }
             }
         },
-        "shiny_options": {
+        "Boltz": {
+            "title": "Boltz-1 options",
             "type": "object",
             "properties": {
-                "title": "SHINY",
-                "type": "object",
-                "description": "Parameter options for shiny app.",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean",
-                        "description": "Enable SHINY process",
-                        "default": true,
-                        "hidden": true
+                "BOLTZ": {
+                    "type": "object",
+                    "description": "Define Boltz-1 parameters",
+                    "properties": {
+                        "MSA_PAIRING_STRATEGY": {
+                            "type": "string",
+                            "description": "Pairing strategy to use",
+                            "default": "greedy",
+                            "enum": [
+                                "greedy",
+                                "complete"
+                            ],
+                            "hidden": true
+                        },
+                        "MSA_SERVER_URL": {
+                            "type": "string",
+                            "description": "Server URL for MMseqs2 API",
+                            "default": "https://api.colabfold.com",
+                            "hidden": true
+                        },
+                        "RECYCLING_STEPS": {
+                            "type": "integer",
+                            "description": "Number of recycling steps to use for prediction",
+                            "default": 3,
+                            "hidden": true
+                        },
+                        "SAMPLING_STEPS": {
+                            "type": "integer",
+                            "description": "Number of sampling steps to use for prediction",
+                            "default": 200,
+                            "hidden": true
+                        },
+                        "DIFFUSION_SAMPLES": {
+                            "type": "integer",
+                            "description": "Number of diffusion samples to use for prediction",
+                            "default": 1
+                        }
                     }
                 }
             }
@@ -130,7 +217,19 @@
     },
     "allOf": [
         {
-            "$ref": "#/defs/pipeline_options"
+            "$ref": "#/$defs/General"
+        },
+        {
+            "$ref": "#/$defs/AlphaFold2"
+        },
+        {
+            "$ref": "#/$defs/AlphaFold3"
+        },
+        {
+            "$ref": "#/$defs/Boltz"
+        },
+        {
+            "$ref": "#/$defs/Processes"
         }
     ]
 }

@@ -1,75 +1,75 @@
-switch ( params.MODEL_PRESET ) {
-    case { it.startsWith('monomer') }:
-        include { MONOMER as ALPHAFOLD } from '../../modules/alphafold'
-        databases = ['uniref90', 'mgnify', 'bfd']
-        break
-    case "multimer":
-        include { MULTIMER as ALPHAFOLD } from '../../modules/alphafold'
-        databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']
-        break
-}
-
-include { MSA   } from '../../modules/alphafold'
-include { PYMOL } from '../../modules/pymol'
-include { SHINY } from '../../modules/shiny'
+include { ALPHAFOLD2 } from '../../subworkflows/alphafold2'
+include { ALPHAFOLD3 } from '../../subworkflows/alphafold3'
+include { BOLTZ      } from '../../subworkflows/boltz'
+include { SHINY      } from '../../modules/shiny'
+include { METRICS    } from '../../modules/metrics'
 
 workflow FOLD2GO {
 
     Channel
         .fromPath( params.IN )
-        .map { fasta -> [ fasta, fasta ] }
-        .splitFasta ( record: [ id: true ] )
-        .groupTuple ( by: ( params.MODEL_PRESET == 'multimer' ? 1 : [ 0, 1 ] ) )
-        .map { record, fasta ->
-            params.MODEL_PRESET == 'multimer'
-            ? [ [ ('A'..'H'), record.id ].transpose().collectEntries(), fasta ]
-            : [ [ 'A': record.id ], fasta ]
+        .branch {
+            fasta: it =~ /.(fasta|fa)$/
+            json : it =~ /.json$/
+            yaml : it =~ /.(yaml|yml)$/
         }
-        .unique { meta, fasta -> meta }
-        .set { fasta }
+        .set { input }
+
+    input.fasta | ALPHAFOLD2
+    input.json  | ALPHAFOLD3
+    input.yaml  | BOLTZ
+
+    ALPHAFOLD2.out.jobcount.mix(ALPHAFOLD3.out.jobcount).mix(BOLTZ.out.jobcount).sum().set { jobcount }
 
     SHINY(
-        fasta.count(),
-        params.OUT,
-        workflow.runName,
-        workflow.launchDir
-    )
-
-    MSA(
-        fasta.splitFasta ( record: [ id: true, seqString: true ] ).filter { meta, record -> ( record.id in meta*.value ) }.unique { meta, record -> record },
-        databases
-    )
-
-    fasta
-        .combine ( MSA.out.msa )
-        .filter { meta, fasta, record, msa -> ( record in meta*.value ) }
-        .map { meta, fasta, record, msa -> [ groupKey( meta, meta*.value.unique().size() * databases.size() ), fasta, msa ] }
-        .groupTuple( by: 0 )
-        .map { meta, fasta, msa ->
-            [ meta.getGroupTarget(), fasta.first() ] + ( params.MODEL_PRESET == 'multimer' ? ('A'..'H').collect { chain -> msa.findAll { it.parent.name == meta[chain] } } : [ msa.unique() ] )
+        params.SOCKET ?: "${workflow.workDir}/shiny.sock",
+        jobcount.collectFile { njobs ->
+            [
+            "shiny_config.json",
+            """
+            {
+                "njobs": ${njobs},
+                "data": "${params.OUT}/${workflow.runName}",
+                "log": "${workflow.launchDir}/.nextflow.log"
+            }
+            """
+            ]
         }
-        .set { msa }
+    )
 
-    ALPHAFOLD(msa) | PYMOL
+    METRICS(
+        ALPHAFOLD2.out.prediction.mix(ALPHAFOLD3.out.prediction).mix(BOLTZ.out.prediction)
+    )
+    
+    METRICS.out.metrics
+        .collectFile ( storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true ) {
+            model, metrics -> [ "${model}_metrics.tsv", metrics ]
+        }
+        .collect()
+        .map { metrics ->
+            if( params.EMAIL ) {
+                try {
+                    sendMail {
+                        to "${params.EMAIL}"
+                        from "fold2go@imb-mainz.de"
+                        subject "fold2go (${workflow.runName})"
+                        attach metrics
 
-    PYMOL.out.metrics
-        .collectFile(name: "template_indep_info.tsv", storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true)
-        .subscribe onComplete: {
-            sendMail{
-                to "${params.EMAIL}"
-                from "alphafold@imb-mainz.de"
-                subject "AlphaFold (${workflow.runName})"
-                attach "${params.OUT}/${workflow.runName}/template_indep_info.tsv"
+                        """
+                        Dear ${workflow.userName},
 
-                """
-                Dear ${workflow.userName},
+                        fold2go predictions are complete, please find some useful metrics attached.
+                        Results of this run have all been stored at ${params.OUT}/${workflow.runName}.
 
-                AlphaFold predictions are complete, please find a table with useful metrics attached.
-                Results of this run have all been stored at ${params.OUT}/${workflow.runName}.
-
-                ---
-                Deet-doot-dot, I am a bot.
-                """.stripIndent()
+                        ---
+                        Deet-doot-dot, I am a bot.
+                        """.stripIndent()
+                    }
+                }
+                catch( Exception e ) {
+                    log.warn "Failed to send notification email to ${params.EMAIL}"
+                    log.error e
+                }
             }
         }
 }

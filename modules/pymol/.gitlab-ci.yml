@@ -1,2 +1,0 @@
-pymol:
-  extends: .build

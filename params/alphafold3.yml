@@ -1,0 +1,20 @@
+IN:
+  "${projectDir}/assets/alphafold3/*.json"
+OUT:
+  "${projectDir}/results"
+EMAIL:
+  ""
+
+ALPHAFOLD3:
+  DATABASE_DIR:
+    "/mnt/storage/alphafold"
+  MODEL_DIR:
+    "/mnt/storage/alphafold/v300/.model"
+  DIFFUSION_SAMPLES:
+    1
+  GROUP_MSA:
+    true
+
+SHINY:
+  enabled:
+    false

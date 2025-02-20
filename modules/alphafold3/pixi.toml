@@ -1,0 +1,31 @@
+[project]
+authors = ["Patrick Hüther <huether@imb-mainz.de>"]
+channels = ["conda-forge", "bioconda"]
+description = "Add a short description here"
+name = "alphafold"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[system-requirements]
+cuda = "12"
+
+[tasks]
+
+[dependencies]
+python = "3.12.*"
+cuda-version = "12.6.*"
+chex = "==0.1.87"
+dm-haiku = "==0.0.13"
+dm-tree = "==0.1.8"
+hmmer = "==3.4"
+jax = "==0.4.34"
+jaxlib = { version = "==0.4.34", build = "*cuda*" }
+jaxtyping = "==0.2.34"
+rdkit = "==2024.03.5"
+tqdm = "==4.67.0"
+triton = "==3.1.0"
+zstandard = "==0.23.0"
+zstd = "==1.5.6"
+
+[pypi-dependencies]
+alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "dc7bb0d8b5ce2d694e5c70a8a94827f1be60c3fd" }
