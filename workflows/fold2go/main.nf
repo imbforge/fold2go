@@ -51,7 +51,6 @@ workflow FOLD2GO {
                 try {
                     sendMail {
                         to "${params.EMAIL}"
-                        from "fold2go@imb-mainz.de"
                         subject "fold2go (${workflow.runName})"
                         attach metrics
 
