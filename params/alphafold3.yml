@@ -1,5 +1,5 @@
 IN:
-  "${projectDir}/assets/alphafold3/*.json"
+  "${projectDir}/assets/*.json"
 OUT:
   "${projectDir}/results"
 EMAIL:
