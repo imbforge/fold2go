@@ -28,4 +28,4 @@ zstandard = "==0.23.0"
 
 [pypi-dependencies]
 jax-triton = "==0.2.0"
-alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "792e61e099ae011ab9d8f55768adbb95e08343b9" }
+alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "e825aea7382d6f2640df933286f4d091e8b5d5d4" }

@@ -206,7 +206,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.21.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py312hef9b889_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
-      - pypi: git+https://github.com/google-deepmind/alphafold3?rev=792e61e099ae011ab9d8f55768adbb95e08343b9#792e61e099ae011ab9d8f55768adbb95e08343b9
+      - pypi: git+https://github.com/google-deepmind/alphafold3?rev=e825aea7382d6f2640df933286f4d091e8b5d5d4#e825aea7382d6f2640df933286f4d091e8b5d5d4
       - pypi: https://files.pythonhosted.org/packages/f6/eb/44b69fb10a97d921c4312d7222b0757b5879cf1b6ca0d64815661ed1a533/jax_triton-0.2.0-py3-none-any.whl
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -245,9 +245,9 @@ packages:
   - pkg:pypi/absl-py?source=hash-mapping
   size: 107138
   timestamp: 1733730665177
-- pypi: git+https://github.com/google-deepmind/alphafold3?rev=792e61e099ae011ab9d8f55768adbb95e08343b9#792e61e099ae011ab9d8f55768adbb95e08343b9
+- pypi: git+https://github.com/google-deepmind/alphafold3?rev=e825aea7382d6f2640df933286f4d091e8b5d5d4#e825aea7382d6f2640df933286f4d091e8b5d5d4
   name: alphafold3
-  version: 3.0.1
+  version: 3.0.0
   requires_dist:
   - absl-py
   - chex
