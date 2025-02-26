@@ -44,5 +44,4 @@ process INFERENCE {
             --jax_compilation_cache_dir=${workDir} \\
             --output_dir=predictions
         """
-
 }
