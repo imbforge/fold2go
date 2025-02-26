@@ -9,6 +9,7 @@
             "title": "General options",
             "type": "object",
             "description": "Define fold2go pipeline parameters.",
+            "required": ["IN", "OUT"],
             "properties": {
                 "IN": {
                     "type": "string",
@@ -101,6 +102,7 @@
             "properties": {
                 "ALPHAFOLD2" : {
                     "type": "object",
+                    "required": ["DATABASE_DIR", "MODEL_PRESET", "PREDICTIONS_PER_MODEL"],
                     "description": "Define AlphaFold2 parameters",
                     "properties": {
                         "DATABASE_DIR": {
@@ -137,6 +139,7 @@
             "properties": {
                 "ALPHAFOLD3": {
                     "type": "object",
+                    "required": ["DATABASE_DIR", "MODEL_DIR", "DIFFUSION_SAMPLES"],
                     "description": "Define AlphaFold3 parameters",
                     "properties": {
                         "DATABASE_DIR": {
@@ -175,6 +178,7 @@
             "properties": {
                 "BOLTZ": {
                     "type": "object",
+                    "required": ["MSA_PAIRING_STRATEGY", "MSA_SERVER_URL", "RECYCLING_STEPS", "SAMPLING_STEPS", "DIFFUSION_SAMPLES"],
                     "description": "Define Boltz-1 parameters",
                     "properties": {
                         "MSA_PAIRING_STRATEGY": {

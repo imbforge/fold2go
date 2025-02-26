@@ -1,5 +1,5 @@
 IN:
-  "${projectDir}/assets/alphafold3/*.json"
+  "${projectDir}/assets/*.json"
 OUT:
   "${projectDir}/results"
 EMAIL:
@@ -7,7 +7,7 @@ EMAIL:
 
 ALPHAFOLD3:
   DATABASE_DIR:
-    "/mnt/storage/alphafold"
+    "/mnt/storage/alphafold/v300"
   MODEL_DIR:
     "/mnt/storage/alphafold/v300/.model"
   DIFFUSION_SAMPLES:

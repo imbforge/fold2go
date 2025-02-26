@@ -1,5 +1,5 @@
 IN:
-  "${projectDir}/assets/alphafold2/*.fasta"
+  "${projectDir}/assets/*.fasta"
 OUT:
   "${projectDir}/results"
 EMAIL:
@@ -7,7 +7,7 @@ EMAIL:
 
 ALPHAFOLD2:
   DATABASE_DIR:
-    "/mnt/storage/alphafold"
+    "/mnt/storage/alphafold/v232"
   MODEL_PRESET:
     "multimer"
   PREDICTIONS_PER_MODEL:
