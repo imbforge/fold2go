@@ -13,6 +13,7 @@ cuda = "12.6"
 
 [dependencies]
 python = "3.12.*"
+hmmer = "==3.4"
 
 [pypi-dependencies]
 alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "792e61e099ae011ab9d8f55768adbb95e08343b9" }
