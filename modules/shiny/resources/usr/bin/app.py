@@ -30,7 +30,7 @@ def _get_pae(record: dict) -> dict:
             with (data / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
                 return np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
         case 'alphafold3':
-            with (data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'confidences.json').open('r') as fin:
+            with (data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / f"{record.get('prediction_name')}_{record.get('model_id')}_confidences.json").open('r') as fin:
                 return np.array(json.load(fin).get('pae'), dtype=np.float16)
         case 'boltz':
             with np.load(data / 'predictions' / 'boltz' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
@@ -42,7 +42,7 @@ def _get_model(record: dict) -> dict:
         case 'alphafold2':
             model = data / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"{record.get('model_rank')}.cif"
         case 'alphafold3':
-            model = data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / 'model.cif'
+            model = data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / f"{record.get('prediction_name')}_{record.get('model_id')}_model.cif"
         case 'boltz':
             model = data / 'predictions' / 'boltz' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
     return {
