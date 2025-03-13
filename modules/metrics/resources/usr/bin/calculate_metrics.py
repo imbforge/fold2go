@@ -317,15 +317,15 @@ def calculate_af3_metrics(predictions_dir: Path) -> dict:
         }
 
         if chains.size == 2:
-            with (model.parent / f"{model.parent.parent.name}_{model.parent.name}_model.cif").open('r') as fin:
+            with (model.parent / f"{model.parent.parent.name}_{model.parent.name}_confidences.json").open('r') as fin:
                 pae = np.array(json.load(fin)['pae'], dtype=np.float16)
             
             metrics[model.parent.name] = {
-                    **common_metrics,
-                    **get_interface_plddt(coor, chains),
-                    **get_interface_residues(coor, chains),
-                    **get_interface_pae(coor, chains, pae),
-                    **get_pdockq(coor, chains)
+                **common_metrics,
+                **get_interface_plddt(coor, chains),
+                **get_interface_residues(coor, chains),
+                **get_interface_pae(coor, chains, pae),
+                **get_pdockq(coor, chains)
             }
         else:
             metrics[model.parent.name] = common_metrics
