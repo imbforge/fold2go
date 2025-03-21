@@ -33,7 +33,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_h4845f30_101.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2025a-h78e105d_0.conda
       - pypi: https://files.pythonhosted.org/packages/a2/ad/e0d3c824784ff121c03cc031f944bc7e139a8f1870ffd2845cc2dd76f6c4/absl_py-2.1.0-py3-none-any.whl
-      - pypi: git+https://github.com/google-deepmind/alphafold3?rev=b641827717dcf7a6765a0ec3c1ef7a9ac2fd6ed0#b641827717dcf7a6765a0ec3c1ef7a9ac2fd6ed0
+      - pypi: git+https://github.com/google-deepmind/alphafold3?rev=8151373a6bdcd6d6f1ff8664d3e5b878c0648863#8151373a6bdcd6d6f1ff8664d3e5b878c0648863
       - pypi: https://files.pythonhosted.org/packages/46/dd/c1ff2eb8fbf95a8ca804abb1cc3ce70b283ee7b4bc653c3abac245670400/chex-0.1.87-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/22/34/7a071f78f4c9336f3cfcff22557441cef15782ae9704bf7383af6df0d7a1/dm_haiku-0.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c9/d4/8cbb857612ca69763ee4f4f97c7b91659df1d373d62237cb9c772e55ae97/dm_tree-0.1.8-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
@@ -96,7 +96,7 @@ packages:
   version: 2.1.0
   sha256: 526a04eadab8b4ee719ce68f204172ead1027549089702d99b9059f129ff1308
   requires_python: '>=3.7'
-- pypi: git+https://github.com/google-deepmind/alphafold3?rev=b641827717dcf7a6765a0ec3c1ef7a9ac2fd6ed0#b641827717dcf7a6765a0ec3c1ef7a9ac2fd6ed0
+- pypi: git+https://github.com/google-deepmind/alphafold3?rev=8151373a6bdcd6d6f1ff8664d3e5b878c0648863#8151373a6bdcd6d6f1ff8664d3e5b878c0648863
   name: alphafold3
   version: 3.0.1
   requires_dist:
