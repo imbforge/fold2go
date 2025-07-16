@@ -24,7 +24,7 @@ WORKDIR /app/alphafold
 
 COPY --from=build /app/alphafold/99-pixi.sh /.singularity.d/env/99-pixi.sh
 
-ADD --chmod=0755 https://raw.githubusercontent.com/google-deepmind/alphafold3/refs/tags/v3.0.1/run_alphafold.py .
+ADD --chmod=0755 https://raw.githubusercontent.com/google-deepmind/alphafold3/b641827717dcf7a6765a0ec3c1ef7a9ac2fd6ed0/run_alphafold.py .
 
 ENTRYPOINT ["/.singularity.d/env/99-pixi.sh"]
 

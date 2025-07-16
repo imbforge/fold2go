@@ -28,12 +28,12 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libzlib-1.3.1-hb9d3cd8_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ncurses-6.5-h2d0b736_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.4.1-h7b32b05_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.12.9-h9e4cc4f_0_cpython.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.12.9-h9e4cc4f_1_cpython.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/readline-8.2-h8c095d6_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_h4845f30_101.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2025a-h78e105d_0.conda
       - pypi: https://files.pythonhosted.org/packages/a2/ad/e0d3c824784ff121c03cc031f944bc7e139a8f1870ffd2845cc2dd76f6c4/absl_py-2.1.0-py3-none-any.whl
-      - pypi: git+https://github.com/google-deepmind/alphafold3?rev=792e61e099ae011ab9d8f55768adbb95e08343b9#792e61e099ae011ab9d8f55768adbb95e08343b9
+      - pypi: git+https://github.com/google-deepmind/alphafold3?rev=8151373a6bdcd6d6f1ff8664d3e5b878c0648863#8151373a6bdcd6d6f1ff8664d3e5b878c0648863
       - pypi: https://files.pythonhosted.org/packages/46/dd/c1ff2eb8fbf95a8ca804abb1cc3ce70b283ee7b4bc653c3abac245670400/chex-0.1.87-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/22/34/7a071f78f4c9336f3cfcff22557441cef15782ae9704bf7383af6df0d7a1/dm_haiku-0.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c9/d4/8cbb857612ca69763ee4f4f97c7b91659df1d373d62237cb9c772e55ae97/dm_tree-0.1.8-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
@@ -61,7 +61,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/7f/42/6e0f2c2d5c60f499aa29be14f860dd4539de322cd8fb84ee01553493fb4d/pillow-11.0.0-cp312-cp312-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/fa/03/94388eda859d357612553c3bfbaa04d699b7cbcb373f52ac090b1f62fc39/rdkit-2024.3.5-cp312-cp312-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/8e/ee/8a26858ca517e9c64f84b4c7734b89bda8e63bec85c3d2f432d225bb1886/scipy-1.14.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/da/bd/ac215d31c2904e47ec5332897442bdc19fd6b21a82068d057152f4e9c1cf/setuptools-75.8.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/37/66/d2d7e6ad554f3a7c7297c3f8ef6e22643ad3d35ef5c63bf488bc89f32f31/setuptools-76.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/40/44/4a5f08c96eb108af5cb50b41f76142f0afa346dfa99d5296fe7202a11854/tabulate-0.9.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/03/98/eb27cc78ad3af8e302c9d8ff4977f5026676e130d28dd7578132a457170c/toolz-1.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2b/78/57043611a16c655c8350b4c01b8d6abfb38cc2acb475238b62c2146186d7/tqdm-4.67.0-py3-none-any.whl
@@ -96,7 +96,7 @@ packages:
   version: 2.1.0
   sha256: 526a04eadab8b4ee719ce68f204172ead1027549089702d99b9059f129ff1308
   requires_python: '>=3.7'
-- pypi: git+https://github.com/google-deepmind/alphafold3?rev=792e61e099ae011ab9d8f55768adbb95e08343b9#792e61e099ae011ab9d8f55768adbb95e08343b9
+- pypi: git+https://github.com/google-deepmind/alphafold3?rev=8151373a6bdcd6d6f1ff8664d3e5b878c0648863#8151373a6bdcd6d6f1ff8664d3e5b878c0648863
   name: alphafold3
   version: 3.0.1
   requires_dist:
@@ -188,8 +188,6 @@ packages:
   depends:
   - libgcc >=13
   - libstdcxx >=13
-  arch: x86_64
-  platform: linux
   license: BSD
   size: 11627027
   timestamp: 1733932139092
@@ -384,8 +382,6 @@ packages:
   depends:
   - __glibc >=2.17,<3.0.a0
   - libgcc 14.2.0 h767d61c_2
-  arch: x86_64
-  platform: linux
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
   purls: []
@@ -557,9 +553,10 @@ packages:
   - typing-extensions ; python_full_version < '3.10' and extra == 'typing'
   - defusedxml ; extra == 'xmp'
   requires_python: '>=3.9'
-- conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.12.9-h9e4cc4f_0_cpython.conda
-  sha256: 64fed5178f1e9c8ac0f572ac0ce37955f5dee7b2bcac665202bc14f1f7dd618a
-  md5: 5665f0079432f8848079c811cdb537d5
+- conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.12.9-h9e4cc4f_1_cpython.conda
+  build_number: 1
+  sha256: 77f2073889d4c91a57bc0da73a0466d9164dbcf6191ea9c3a7be6872f784d625
+  md5: d82342192dfc9145185190e651065aa9
   depends:
   - __glibc >=2.17,<3.0.a0
   - bzip2 >=1.0.8,<2.0a0
@@ -569,7 +566,7 @@ packages:
   - libgcc >=13
   - liblzma >=5.6.4,<6.0a0
   - libnsl >=2.0.1,<2.1.0a0
-  - libsqlite >=3.48.0,<4.0a0
+  - libsqlite >=3.49.1,<4.0a0
   - libuuid >=2.38.1,<3.0a0
   - libxcrypt >=4.4.36
   - libzlib >=1.3.1,<2.0a0
@@ -582,8 +579,8 @@ packages:
   - python_abi 3.12.* *_cp312
   license: Python-2.0
   purls: []
-  size: 31581682
-  timestamp: 1739521496324
+  size: 31670716
+  timestamp: 1741130026152
 - pypi: https://files.pythonhosted.org/packages/fa/03/94388eda859d357612553c3bfbaa04d699b7cbcb373f52ac090b1f62fc39/rdkit-2024.3.5-cp312-cp312-manylinux_2_28_x86_64.whl
   name: rdkit
   version: 2024.3.5
@@ -643,10 +640,10 @@ packages:
   - doit>=0.36.0 ; extra == 'dev'
   - pydevtool ; extra == 'dev'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/da/bd/ac215d31c2904e47ec5332897442bdc19fd6b21a82068d057152f4e9c1cf/setuptools-75.8.1-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/37/66/d2d7e6ad554f3a7c7297c3f8ef6e22643ad3d35ef5c63bf488bc89f32f31/setuptools-76.0.0-py3-none-any.whl
   name: setuptools
-  version: 75.8.1
-  sha256: 3bc32c0b84c643299ca94e77f834730f126efd621de0cc1de64119e0e17dab1f
+  version: 76.0.0
+  sha256: 199466a166ff664970d0ee145839f5582cb9bca7a0a3a2e795b6a9cb2308e9c6
   requires_dist:
   - pytest>=6,!=8.1.* ; extra == 'test'
   - virtualenv>=13.0.0 ; extra == 'test'

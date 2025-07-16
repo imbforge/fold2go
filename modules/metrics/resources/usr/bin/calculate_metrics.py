@@ -301,9 +301,9 @@ def calculate_af3_metrics(predictions_dir: Path) -> dict:
 
     metrics = {}
     
-    for model in predictions_dir.glob('**/seed-*/summary_confidences.json'):
+    for model in predictions_dir.glob('**/seed-*/*_summary_confidences.json'):
 
-        coor = Coor(model.parent / 'model.cif')
+        coor = Coor(model.parent / f"{model.parent.parent.name}_{model.parent.name}_model.cif")
 
         chains, lengths = np.unique(coor.select_atoms('protein and name CA').chain, return_counts=True)
 
@@ -317,15 +317,15 @@ def calculate_af3_metrics(predictions_dir: Path) -> dict:
         }
 
         if chains.size == 2:
-            with (model.parent / 'confidences.json').open('r') as fin:
+            with (model.parent / f"{model.parent.parent.name}_{model.parent.name}_confidences.json").open('r') as fin:
                 pae = np.array(json.load(fin)['pae'], dtype=np.float16)
             
             metrics[model.parent.name] = {
-                    **common_metrics,
-                    **get_interface_plddt(coor, chains),
-                    **get_interface_residues(coor, chains),
-                    **get_interface_pae(coor, chains, pae),
-                    **get_pdockq(coor, chains)
+                **common_metrics,
+                **get_interface_plddt(coor, chains),
+                **get_interface_residues(coor, chains),
+                **get_interface_pae(coor, chains, pae),
+                **get_pdockq(coor, chains)
             }
         else:
             metrics[model.parent.name] = common_metrics

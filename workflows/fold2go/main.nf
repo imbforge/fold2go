@@ -67,7 +67,7 @@ workflow FOLD2GO {
                 }
                 catch( Exception e ) {
                     log.warn "Failed to send notification email to ${params.EMAIL}"
-                    log.error e
+                    log.warn e.message
                 }
             }
         }

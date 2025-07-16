@@ -16,7 +16,7 @@ python = "3.12.*"
 hmmer = "==3.4"
 
 [pypi-dependencies]
-alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "792e61e099ae011ab9d8f55768adbb95e08343b9" }
+alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "8151373a6bdcd6d6f1ff8664d3e5b878c0648863" }
 absl-py = "==2.1.0"
 chex = "==0.1.87"
 dm-haiku = "==0.0.13"
