@@ -65,11 +65,12 @@ process INFERENCE {
         """
         boltz predict ${yaml} \\
             --write_full_pae \\
+            --model ${params.BOLTZ.MODEL_PRESET} \\
             --recycling_steps=${params.BOLTZ.RECYCLING_STEPS} \\
             --sampling_steps=${params.BOLTZ.SAMPLING_STEPS} \\
             --diffusion_samples=${params.BOLTZ.DIFFUSION_SAMPLES} \\
             --cache=${workDir} \\
+            ${params.BOLTZ.USE_KERNELS ? '' : '--no_kernels'} \\
             --out_dir=.
         """
-
 }
