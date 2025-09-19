@@ -173,13 +173,13 @@
             }
         },
         "Boltz": {
-            "title": "Boltz-1 options",
+            "title": "Boltz options",
             "type": "object",
             "properties": {
                 "BOLTZ": {
                     "type": "object",
                     "required": ["MSA_PAIRING_STRATEGY", "MSA_SERVER_URL", "RECYCLING_STEPS", "SAMPLING_STEPS", "DIFFUSION_SAMPLES"],
-                    "description": "Define Boltz-1 parameters",
+                    "description": "Define Boltz parameters",
                     "properties": {
                         "MODEL_PRESET": {
                             "type": "string",
