@@ -1,12 +1,12 @@
 process SHINY {
     tag "${workflow.userName}@localhost:${socket}"
 
-    when:
-        params.SHINY.enabled
-
     input:
         val(socket)
         path(json)
+
+    when:
+        params.SHINY.enabled
 
     script:
         """

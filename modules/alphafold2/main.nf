@@ -2,14 +2,15 @@ process INFERENCE_MONOMER {
     tag "${meta}"
     label "gpu"
 
-    when:
-        params.INFERENCE.enabled
 
     input:
         tuple val(meta), path(fasta), path(chain, stageAs: "chain/msas/*")
 
     output:
         tuple val(meta), path("chain/*.{pdb,pkl,cif,json}"), emit: prediction
+
+    when:
+        params.INFERENCE.enabled
 
     script:
         template 'run_alphafold_monomer.sh'
@@ -18,9 +19,6 @@ process INFERENCE_MONOMER {
 process INFERENCE_MULTIMER {
     tag "${meta}"
     label "gpu"
-
-    when:
-        params.INFERENCE.enabled
 
     input:
         tuple val(meta),
@@ -37,6 +35,9 @@ process INFERENCE_MULTIMER {
     output:
         tuple val(meta), path("chains/*.{pdb,pkl,cif,json}"), emit: prediction
 
+    when:
+        params.INFERENCE.enabled
+
     script:
         template 'run_alphafold_multimer.sh'
 }
@@ -45,9 +46,6 @@ process MSA {
     tag "${record.id}:${database}"
     label "ssd"
 
-    when:
-        params.MSA.enabled
-
     input:
         tuple val(meta), val(record)
         each(database)
@@ -55,8 +53,11 @@ process MSA {
     output:
         tuple val(record.id), path("msas/*/*.{a3m,sto}"), emit: msa
 
+    when:
+        params.MSA.enabled
+
     script:
-        def chain = meta.find { it.value == record.id }.key
+        def chain = meta.find { m -> m.value == record.id }.key
         """
         cat << EOF > '${record.id}.fasta'
         >chain_${chain}

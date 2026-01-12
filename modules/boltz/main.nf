@@ -1,14 +1,14 @@
 process MSA {
     tag "${meta}"
 
-    when:
-        params.MSA.enabled
-
     input:
         tuple val(meta), path(yaml, stageAs: 'input/*')
 
     output:
         tuple val(meta), path("*.yaml"), path("*.csv"), emit: msa
+
+    when:
+        params.MSA.enabled
 
     script:
         """
@@ -52,14 +52,15 @@ process INFERENCE {
     tag "${meta}"
     label "gpu"
 
-    when:
-        params.INFERENCE.enabled
-
     input:
         tuple val(meta), path(yaml), path(msa)
+        path(cache)
 
     output:
         tuple val(meta), path("boltz_results_*/predictions/${meta.id}", type: 'dir'), emit: prediction
+
+    when:
+        params.INFERENCE.enabled
 
     script:
         """
@@ -69,7 +70,7 @@ process INFERENCE {
             --recycling_steps=${params.BOLTZ.RECYCLING_STEPS} \\
             --sampling_steps=${params.BOLTZ.SAMPLING_STEPS} \\
             --diffusion_samples=${params.BOLTZ.DIFFUSION_SAMPLES} \\
-            --cache=${workDir} \\
+            --cache=${cache} \\
             ${params.BOLTZ.USE_KERNELS ? '' : '--no_kernels'} \\
             --out_dir=.
         """

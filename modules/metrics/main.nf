@@ -1,14 +1,14 @@
 process METRICS {
     tag "${meta}"
  
-    when:
-        params.METRICS.enabled
-
     input:
         tuple val(meta), path(prediction)
 
     output:
         tuple val(meta.model), path("*_metrics.tsv"), emit: metrics
+
+    when:
+        params.METRICS.enabled
 
     script:
         """
