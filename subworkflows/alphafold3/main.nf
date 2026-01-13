@@ -3,7 +3,7 @@ include { MSA; INFERENCE } from '../../modules/alphafold3'
 workflow ALPHAFOLD3 {
 
     take:
-        input
+        input: Channel<Path>
 
     main:
 
@@ -15,7 +15,7 @@ workflow ALPHAFOLD3 {
             }
             .groupTuple( by: params.ALPHAFOLD3.GROUP_MSA ? 1 : [0, 1] )
             .map { id, dialect, json ->
-                [ [ id: id, jobsize: ( dialect == 'alphafold3' ? json.size() : id.flatten().size() ) ], json ]
+                [ [ id: id, jobsize: ( dialect == 'alphafold3' ? json.size() : id.flatten().size() ) ], json as Set<Path> ]
             }
 
         MSA( jobdef )
@@ -26,6 +26,6 @@ workflow ALPHAFOLD3 {
         )
 
     emit:
-        prediction = INFERENCE.out.prediction
-        jobcount   = jobdef.sum { meta, _json -> meta.jobsize }
+        prediction: Channel<Tuple<Map, Path>> = INFERENCE.out.prediction
+        jobcount: Channel<Integer> = jobdef.sum { meta, _json -> meta.jobsize }
 }

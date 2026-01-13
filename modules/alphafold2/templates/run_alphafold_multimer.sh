@@ -17,3 +17,5 @@ python /app/alphafold/run_alphafold.py \\
     --uniprot_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniprot/uniprot.fasta \\
     --uniref30_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniref30/UniRef30_2023_02 \\
     --uniref90_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniref90/uniref90.fasta
+
+rm -rf chains/msas

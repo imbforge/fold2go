@@ -1,21 +1,23 @@
+nextflow.preview.types = true
+
 process METRICS {
     tag "${meta}"
- 
+
     input:
-        tuple val(meta), path(prediction)
+    (meta, prediction): Tuple<Map, Path>
 
     output:
-        tuple val(meta.model), path("*_metrics.tsv"), emit: metrics
+    metrics: Tuple<String, Path> = tuple(meta.model, file("*_metrics.tsv"))
 
     when:
-        params.METRICS.enabled
+    params.METRICS.enabled
 
     script:
-        """
-        python ${moduleDir}/resources/usr/bin/calculate_metrics.py \\
-            --run_name=${workflow.runName} \\
-            --predictions=${prediction instanceof List ? '.' : prediction} \\
-            --id=${meta.id} \\
-            --model_preset=${meta.model}
-        """
+    """
+    python ${moduleDir}/resources/usr/bin/calculate_metrics.py \\
+        --run_name=${workflow.runName} \\
+        --predictions=${prediction instanceof List ? '.' : prediction} \\
+        --id=${meta.id} \\
+        --model_preset=${meta.model}
+    """
 }

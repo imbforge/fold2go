@@ -3,16 +3,17 @@ include { MSA; INFERENCE } from '../../modules/boltz'
 workflow BOLTZ {
 
     take:
-        input
+        input: Channel<Path>
 
     main:
 
-        MSA(
+        jobdef =
             input
             .map { yaml ->
                 [ [ id: yaml.simpleName, model: "${params.BOLTZ.MODEL_PRESET}" ], yaml ]
             }
-        )
+
+        MSA(jobdef)
 
         INFERENCE(
             MSA.out.msa,
@@ -20,6 +21,6 @@ workflow BOLTZ {
         )
 
     emit:
-        prediction = INFERENCE.out.prediction
-        jobcount   = input.count()
+        prediction: Channel<Tuple<Map, Path>> = INFERENCE.out.prediction
+        jobcount: Channel<Integer> = input.count()
 }

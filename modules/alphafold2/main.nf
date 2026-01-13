@@ -1,19 +1,23 @@
+nextflow.preview.types = true
+
 process INFERENCE_MONOMER {
     tag "${meta}"
     label "gpu"
 
-
     input:
-        tuple val(meta), path(fasta), path(chain, stageAs: "chain/msas/*")
+    (meta, _fasta, chain): Tuple<Map, Path, List<Path>>
+
+    stage:
+    stageAs "chain/msas/*", chain
 
     output:
-        tuple val(meta), path("chain/*.{pdb,pkl,cif,json}"), emit: prediction
+    prediction: Tuple<Map, Path> = tuple(meta, file("chain", type: 'dir'))
 
     when:
-        params.INFERENCE.enabled
+    params.INFERENCE.enabled
 
     script:
-        template 'run_alphafold_monomer.sh'
+    template('run_alphafold_monomer.sh')
 }
 
 process INFERENCE_MULTIMER {
@@ -21,25 +25,27 @@ process INFERENCE_MULTIMER {
     label "gpu"
 
     input:
-        tuple val(meta),
-              path(fasta,  stageAs: "chains.fasta"   ),
-              path(chainA, stageAs: "chains/msas/A/*"),
-              path(chainB, stageAs: "chains/msas/B/*"),
-              path(chainC, stageAs: "chains/msas/C/*"),
-              path(chainD, stageAs: "chains/msas/D/*"),
-              path(chainE, stageAs: "chains/msas/E/*"),
-              path(chainF, stageAs: "chains/msas/F/*"),
-              path(chainG, stageAs: "chains/msas/G/*"),
-              path(chainH, stageAs: "chains/msas/H/*")
+    (meta, fasta, chainA, chainB, chainC, chainD, chainE, chainF, chainG, chainH): Tuple<Map, Path, List<Path>, List<Path>, List<Path?>, List<Path?>, List<Path?>, List<Path?>, List<Path?>, List<Path?>>
+
+    stage:
+    stageAs "chains.fasta", fasta
+    stageAs "chains/msas/A/*", chainA
+    stageAs "chains/msas/B/*", chainB
+    stageAs "chains/msas/C/*", chainC
+    stageAs "chains/msas/D/*", chainD
+    stageAs "chains/msas/E/*", chainE
+    stageAs "chains/msas/F/*", chainF
+    stageAs "chains/msas/G/*", chainG
+    stageAs "chains/msas/H/*", chainH
 
     output:
-        tuple val(meta), path("chains/*.{pdb,pkl,cif,json}"), emit: prediction
+    prediction: Tuple<Map, Path>  = tuple(meta, file("chains", type: 'dir'))
 
     when:
-        params.INFERENCE.enabled
+    params.INFERENCE.enabled
 
     script:
-        template 'run_alphafold_multimer.sh'
+    template('run_alphafold_multimer.sh')
 }
 
 process MSA {
@@ -47,18 +53,17 @@ process MSA {
     label "ssd"
 
     input:
-        tuple val(meta), val(record)
-        each(database)
+    (meta, record, database): Tuple<Map, Map, String>
 
     output:
-        tuple val(record.id), path("msas/*/*.{a3m,sto}"), emit: msa
+    msa: Tuple<Map, Path> = tuple(record.id, file("msas/*/*.{a3m,sto}"))
 
     when:
-        params.MSA.enabled
+    params.MSA.enabled
 
     script:
-        def chain = meta.find { m -> m.value == record.id }.key
-        """
+    def chain = meta.find { m -> m.value == record.id }.key
+    """
         cat << EOF > '${record.id}.fasta'
         >chain_${chain}
         ${record.seqString}

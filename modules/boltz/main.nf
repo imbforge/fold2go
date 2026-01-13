@@ -1,51 +1,56 @@
+nextflow.preview.types = true
+
 process MSA {
     tag "${meta}"
 
     input:
-        tuple val(meta), path(yaml, stageAs: 'input/*')
+    (meta, yaml): Tuple<Map, Path>
+
+    stage:
+    stageAs 'input/*', yaml
 
     output:
-        tuple val(meta), path("*.yaml"), path("*.csv"), emit: msa
+    msa: Tuple<Map, Path, Path>  = tuple(meta, file("*.yaml"), file("*.csv"))
 
     when:
-        params.MSA.enabled
+    params.MSA.enabled
 
     script:
-        """
-        #!/usr/bin/env python
+    """
+    #!/usr/bin/env python
 
-        # prefetch msas, so we don't waste gpu time on http requests
+    # prefetch msas, so we don't waste gpu time on http requests
 
-        import yaml
-        from boltz.main import compute_msa
-        from pathlib import Path
+    import yaml
+    from boltz.main import compute_msa
+    from pathlib import Path
 
-        with Path("${yaml}").open('r') as fin:
-            targets = yaml.safe_load(fin)
+    with Path("${yaml}").open('r') as fin:
+        targets = yaml.safe_load(fin)
 
-        sequences = {}
+    sequences = {}
 
-        for entity in targets['sequences']:
-            if 'protein' in entity and entity['protein'].get('msa') is None:
-                chain_id, seq = entity['protein']['id'], entity['protein']['sequence']
-                if isinstance(chain_id, list):
-                    msa_id = f"${meta.id}_{'_'.join(chain_id)}"
-                else :
-                    msa_id = f"${meta.id}_{chain_id}"
-                sequences[msa_id] = seq
-                entity['protein']['msa'] = f"{msa_id}.csv"
+    for entity in targets['sequences']:
+        if 'protein' in entity and entity['protein'].get('msa') is None:
+            chain_id, seq = entity['protein']['id'], entity['protein']['sequence']
+            if isinstance(chain_id, list):
+                msa_id = f"${meta.id}_{'_'.join(chain_id)}"
+            else :
+                msa_id = f"${meta.id}_{chain_id}"
+            sequences[msa_id] = seq
+            entity['protein']['msa'] = f"{msa_id}.csv"
 
-        compute_msa(
-            data=sequences,
-            target_id="${meta.id}",
-            msa_dir=Path.cwd(),
-            msa_server_url="${params.BOLTZ.MSA_SERVER_URL}",
-            msa_pairing_strategy="${params.BOLTZ.MSA_PAIRING_STRATEGY}"
-        )
+    compute_msa(
+        data=sequences,
+        target_id="${meta.id}",
+        msa_dir=Path.cwd(),
+        msa_server_url="${params.BOLTZ.MSA_SERVER_URL}",
+        msa_pairing_strategy="${params.BOLTZ.MSA_PAIRING_STRATEGY}"
+    )
 
-        with Path("${meta.id}.yaml").open("w") as fout:
-            yaml.dump(targets, fout)
-        """
+    with Path("${meta.id}.yaml").open("w") as fout:
+        yaml.dump(targets, fout)
+    """
 }
 
 process INFERENCE {
@@ -53,17 +58,17 @@ process INFERENCE {
     label "gpu"
 
     input:
-        tuple val(meta), path(yaml), path(msa)
-        path(cache)
+    (meta, yaml, _msa): Tuple<Map, Path, Path>
+    cache: Path
 
     output:
-        tuple val(meta), path("boltz_results_*/predictions/${meta.id}", type: 'dir'), emit: prediction
+    prediction: Tuple<Map, Path> = tuple(meta, file("boltz_results_*/predictions/${meta.id}", type: 'dir'))
 
     when:
-        params.INFERENCE.enabled
+    params.INFERENCE.enabled
 
     script:
-        """
+    """
         boltz predict ${yaml} \\
             --write_full_pae \\
             --model ${params.BOLTZ.MODEL_PRESET} \\
