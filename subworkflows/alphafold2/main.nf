@@ -35,7 +35,7 @@ workflow ALPHAFOLD2 {
             .map { meta, fasta, _record, msa -> [ groupKey( meta, meta*.value.unique().size() * databases.size() ), fasta, msa ] }
             .groupTuple( by: 0 )
             .map { meta, fasta, msa ->
-                [ [ id: meta.getGroupTarget()*.value.join('.'), model: "alphafold2_${params.ALPHAFOLD2.MODEL_PRESET}" ], fasta.first() ] + ( multimer ? ('A'..'H').collect { chain -> msa.findAll { it -> it.parent.name == meta[chain] } } : [ msa.unique() ] )
+                [ [ id: meta.getGroupTarget()*.value.join('.'), model: "alphafold2_${params.ALPHAFOLD2.MODEL_PRESET}" ], fasta.first() ] + ( multimer ? ('A'..'H').collect { chain -> msa.sort().findAll { it -> it.parent.name == meta[chain] } } : [ msa.unique().sort() ] )
             }
         
         multimer

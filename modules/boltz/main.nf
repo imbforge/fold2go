@@ -59,24 +59,23 @@ process INFERENCE {
 
     input:
     (meta, yaml, _msa): Tuple<Map, Path, Path>
-    cache: Path
 
     output:
-    prediction: Tuple<Map, Path> = tuple(meta, file("boltz_results_*/predictions/${meta.id}", type: 'dir'))
+    prediction: Tuple<Map, Set<Path>> = tuple(meta, files("boltz_results_*/predictions/${meta.id}", type: 'dir'))
 
     when:
     params.INFERENCE.enabled
 
     script:
     """
-        boltz predict ${yaml} \\
-            --write_full_pae \\
-            --model ${params.BOLTZ.MODEL_PRESET} \\
-            --recycling_steps=${params.BOLTZ.RECYCLING_STEPS} \\
-            --sampling_steps=${params.BOLTZ.SAMPLING_STEPS} \\
-            --diffusion_samples=${params.BOLTZ.DIFFUSION_SAMPLES} \\
-            --cache=${cache} \\
-            ${params.BOLTZ.USE_KERNELS ? '' : '--no_kernels'} \\
-            --out_dir=.
-        """
+    boltz predict ${yaml} \\
+        --write_full_pae \\
+        --model ${params.BOLTZ.MODEL_PRESET} \\
+        --recycling_steps=${params.BOLTZ.RECYCLING_STEPS} \\
+        --sampling_steps=${params.BOLTZ.SAMPLING_STEPS} \\
+        --diffusion_samples=${params.BOLTZ.DIFFUSION_SAMPLES} \\
+        --cache=${workflow.workDir} \\
+        ${params.BOLTZ.USE_KERNELS ? '' : '--no_kernels'} \\
+        --out_dir=.
+    """
 }

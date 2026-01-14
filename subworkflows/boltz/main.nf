@@ -7,20 +7,14 @@ workflow BOLTZ {
 
     main:
 
-        jobdef =
-            input
-            .map { yaml ->
-                [ [ id: yaml.simpleName, model: "${params.BOLTZ.MODEL_PRESET}" ], yaml ]
-            }
-
-        MSA(jobdef)
-
-        INFERENCE(
-            MSA.out.msa,
-            workDir
-        )
+        input
+        .map { yaml ->
+            [ [ id: yaml.simpleName, model: "${params.BOLTZ.MODEL_PRESET}" ], yaml ]
+        }
+        | MSA
+        | INFERENCE
 
     emit:
-        prediction: Channel<Tuple<Map, Path>> = INFERENCE.out.prediction
+        prediction: Channel<Tuple<Map, Set<Path>>> = INFERENCE.out.prediction
         jobcount: Channel<Integer> = input.count()
 }

@@ -20,7 +20,7 @@ process MSA {
     """
     python /app/alphafold/run_alphafold.py \\
         --run_inference=false \\
-        --${input instanceof List ? "input_dir=input" : "json_path=" << input} \\
+        --${input.size() > 1 ? "input_dir=input" : "json_path=" << input.pop()} \\
         --db_dir=${params.ALPHAFOLD3.DATABASE_DIR} \\
         --output_dir=msa
     """
@@ -32,10 +32,9 @@ process INFERENCE {
 
     input:
     (meta, json): Tuple<Map, Path>
-    cache: Path
 
     output:
-    prediction: Tuple<Map, Path> = tuple(meta, file("predictions/*", type: 'dir'))
+    prediction: Tuple<Map, Set<Path>> = tuple(meta, files("predictions/${meta.id}", type: 'dir'))
 
     when:
     params.INFERENCE.enabled
@@ -47,7 +46,7 @@ process INFERENCE {
         --json_path=${json} \\
         --model_dir=${params.ALPHAFOLD3.MODEL_DIR} \\
         --num_diffusion_samples=${params.ALPHAFOLD3.DIFFUSION_SAMPLES} \\
-        --jax_compilation_cache_dir=${cache} \\
+        --jax_compilation_cache_dir=${workflow.workDir} \\
         --output_dir=predictions
     """
 }

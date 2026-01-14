@@ -4,7 +4,7 @@ process METRICS {
     tag "${meta}"
 
     input:
-    (meta, prediction): Tuple<Map, Path>
+    (meta, prediction): Tuple<Map, Set<Path>>
 
     output:
     metrics: Tuple<String, Path> = tuple(meta.model, file("*_metrics.tsv"))
@@ -16,7 +16,7 @@ process METRICS {
     """
     python ${moduleDir}/resources/usr/bin/calculate_metrics.py \\
         --run_name=${workflow.runName} \\
-        --predictions=${prediction instanceof List ? '.' : prediction} \\
+        --predictions=${prediction.size() > 1 ? '.' : prediction.pop()} \\
         --id=${meta.id} \\
         --model_preset=${meta.model}
     """
