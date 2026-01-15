@@ -31,7 +31,7 @@ workflow ALPHAFOLD2 {
         chains = 
             sequences
             .combine ( MSA.out.msa )
-            .filter { meta, _fasta, record, _msa -> ( record in meta*.value ) }
+            .filter { meta, _fasta, record, _msa -> ( record.id in meta*.value ) }
             .map { meta, fasta, _record, msa -> [ groupKey( meta, meta*.value.unique().size() * databases.size() ), fasta, msa ] }
             .groupTuple( by: 0 )
             .map { meta, fasta, msa ->
@@ -43,6 +43,7 @@ workflow ALPHAFOLD2 {
             : INFERENCE_MONOMER(chains)
 
     emit:
-        prediction: Channel<Tuple<Map, Set<Path>>> = ( multimer ? INFERENCE_MULTIMER : INFERENCE_MONOMER ).out.prediction
+        msa: Channel<Tuple<Map, Path>> = MSA.out.msa
+        prediction: Channel<Tuple<Map, Path>> = ( multimer ? INFERENCE_MULTIMER : INFERENCE_MONOMER ).out.prediction
         jobcount: Channel<Integer> = input.count()
 }

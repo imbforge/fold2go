@@ -12,9 +12,13 @@ workflow BOLTZ {
             [ [ id: yaml.simpleName, model: "${params.BOLTZ.MODEL_PRESET}" ], yaml ]
         }
         | MSA
-        | INFERENCE
+        
+        INFERENCE(
+            MSA.out.yaml.join(MSA.out.msa, by: 0)
+        )
 
     emit:
-        prediction: Channel<Tuple<Map, Set<Path>>> = INFERENCE.out.prediction
+        msa: Channel<Tuple<Map, Path>> = MSA.out.yaml.mix(MSA.out.msa)
+        prediction: Channel<Tuple<Map, Path>> = INFERENCE.out.prediction
         jobcount: Channel<Integer> = input.count()
 }

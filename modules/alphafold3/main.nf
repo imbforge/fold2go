@@ -11,7 +11,7 @@ process MSA {
     stageAs 'input/*', input
 
     output:
-    json: Path = file("msa/**/*_data.json")
+    msa: Tuple<Map, Path> = tuple([ id: meta.id, model: 'alphafold3' ], file("**/**/*_data.json"))
 
     when:
     params.MSA.enabled
@@ -34,7 +34,7 @@ process INFERENCE {
     (meta, json): Tuple<Map, Path>
 
     output:
-    prediction: Tuple<Map, Set<Path>> = tuple(meta, files("predictions/${meta.id}", type: 'dir'))
+    prediction: Tuple<Map, Path> = tuple(meta, file("predictions/${meta.id}", type: 'dir'))
 
     when:
     params.INFERENCE.enabled

@@ -21,10 +21,11 @@ workflow ALPHAFOLD3 {
         MSA( jobdef )
 
         INFERENCE(
-            MSA.out.json.flatten().map { it -> [ [ id: it.name.minus('_data.json'), model: 'alphafold3' ], it ] }
+            MSA.out.msa.transpose().map { _meta, json -> [ [ id: json.name.minus('_data.json'), model: 'alphafold3' ], json ] }
         )
 
     emit:
-        prediction: Channel<Tuple<Map, Set<Path>>> = INFERENCE.out.prediction
+        msa: Channel<Tuple<Map, Path>> = MSA.out.msa.transpose().map { _meta, json -> [ [ id: json.name.minus('_data.json').toUpperCase(), model: 'alphafold3' ], json ] }
+        prediction: Channel<Tuple<Map, Path>> = INFERENCE.out.prediction
         jobcount: Channel<Integer> = jobdef.sum { meta, _json -> meta.jobsize }
 }

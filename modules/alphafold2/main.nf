@@ -11,7 +11,7 @@ process INFERENCE_MONOMER {
     stageAs "chain/msas/*", chain
 
     output:
-    prediction: Tuple<Map, Set<Path>> = tuple(meta, files("chain/*.{pdb,pkl,cif,json}"))
+    prediction: Tuple<Map, Path> = tuple(meta, file("chain", type: 'dir'))
 
     when:
     params.INFERENCE.enabled
@@ -35,6 +35,8 @@ process INFERENCE_MONOMER {
         --template_mmcif_dir=${params.ALPHAFOLD2.DATABASE_DIR}/pdb_mmcif/mmcif_files \\
         --uniref30_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniref30/UniRef30_2023_02 \\
         --uniref90_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniref90/uniref90.fasta
+
+    rm -rf chain/msas
     """
 }
 
@@ -57,7 +59,7 @@ process INFERENCE_MULTIMER {
     stageAs "chains/msas/H/*", chainH
 
     output:
-    prediction: Tuple<Map, Set<Path>> = tuple(meta, files("chains/*.{pdb,pkl,cif,json}"))
+    prediction: Tuple<Map, Path> = tuple(meta, file("chains", type: 'dir'))
 
     when:
     params.INFERENCE.enabled
@@ -81,6 +83,8 @@ process INFERENCE_MULTIMER {
         --uniprot_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniprot/uniprot.fasta \\
         --uniref30_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniref30/UniRef30_2023_02 \\
         --uniref90_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniref90/uniref90.fasta
+
+    rm -rf chains/msas
     """
 }
 
@@ -92,7 +96,7 @@ process MSA {
     (meta, record, database): Tuple<Map, Map, String>
 
     output:
-    msa: Tuple<Map, Path> = tuple(record.id, file("msas/*/*.{a3m,sto}"))
+    msa: Tuple<Map, Set<Path>> = tuple([id: record.id, model: 'alphafold2'], file("**/**/*.{a3m,sto}"))
 
     when:
     params.MSA.enabled

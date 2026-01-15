@@ -27,24 +27,24 @@ njobs, data, log = config.get('njobs'), Path(config.get('data')), Path(config.ge
 def _get_pae(record: dict) -> dict:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
-            with (data / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
+            with (data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
                 return np.array(json.load(fin)[0].get('predicted_aligned_error'), dtype=np.float16)
         case 'alphafold3':
-            with (data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / f"{record.get('prediction_name')}_{record.get('model_id')}_confidences.json").open('r') as fin:
+            with (data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / record.get('model_id') / f"{record.get('prediction_name')}_{record.get('model_id')}_confidences.json").open('r') as fin:
                 return np.array(json.load(fin).get('pae'), dtype=np.float16)
         case 'boltz1' | 'boltz2':
-            with np.load(data / 'predictions' / 'boltz' / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
+            with np.load(data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
                 return np.array(fin.get('pae'), dtype=np.float16)
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
-            model = data / 'predictions' / 'alphafold2' / record.get('prediction_name') / f"{record.get('model_rank')}.cif"
+            model = data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / f"{record.get('model_rank')}.cif"
         case 'alphafold3':
-            model = data / 'predictions' / 'alphafold3' / record.get('prediction_name') / record.get('model_id') / f"{record.get('prediction_name')}_{record.get('model_id')}_model.cif"
+            model = data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / record.get('model_id') / f"{record.get('prediction_name')}_{record.get('model_id')}_model.cif"
         case 'boltz1' | 'boltz2':
-            model = data / 'predictions' / 'boltz' / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
+            model = data / 'predictions' / record.get('model_preset') / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
     return {
         'data'  : model.read_text(),
         'format': 'cif',

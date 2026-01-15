@@ -10,7 +10,8 @@ process MSA {
     stageAs 'input/*', yaml
 
     output:
-    msa: Tuple<Map, Path, Path>  = tuple(meta, file("*.yaml"), file("*.csv"))
+    yaml: Tuple<Map, Path> = tuple(meta, file("${meta.id}.yaml"))
+    msa: Tuple<Map, Path> = tuple(meta, file("${meta.id}_*.csv"))
 
     when:
     params.MSA.enabled
@@ -61,7 +62,7 @@ process INFERENCE {
     (meta, yaml, _msa): Tuple<Map, Path, Path>
 
     output:
-    prediction: Tuple<Map, Set<Path>> = tuple(meta, files("boltz_results_*/predictions/${meta.id}", type: 'dir'))
+    prediction: Tuple<Map, Path> = tuple(meta, file("boltz_results_*/predictions/${meta.id}", type: 'dir'))
 
     when:
     params.INFERENCE.enabled
