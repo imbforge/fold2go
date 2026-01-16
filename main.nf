@@ -29,6 +29,7 @@ output {
       msa >> "${workflow.runName}/msa/${meta.id}/${meta.model}/${msa.name}"
     }
     mode 'copy'
+    enabled params.SAVE_MSA
   }
   predictions: Channel<Tuple<Map, Path>> {
     path { meta, prediction ->

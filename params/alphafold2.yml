@@ -2,6 +2,8 @@ IN:
   "${projectDir}/assets/*.fasta"
 EMAIL:
   ""
+SAVE_MSA:
+  false
 
 ALPHAFOLD2:
   DATABASE_DIR:

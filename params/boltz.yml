@@ -2,6 +2,8 @@ IN:
   "${projectDir}/assets/*.yaml"
 EMAIL:
   ""
+SAVE_MSA:
+  false
 
 ALPHAFOLD3:
   MSA_SERVER_URL:

@@ -2,6 +2,8 @@ IN:
   "${projectDir}/assets/*.json"
 EMAIL:
   ""
+SAVE_MSA:
+  false
 
 ALPHAFOLD3:
   DATABASE_DIR:

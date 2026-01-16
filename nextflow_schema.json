@@ -31,6 +31,12 @@
                     "description": "Unix Domain Socket for shiny application to bind to.",
                     "default": "",
                     "hidden": true
+                },
+                "SAVE_MSA": {
+                    "type": "boolean",
+                    "description": "Save multiple sequence alignments to output directory.",
+                    "default": false,
+                    "hidden": true
                 }
             }
         },
