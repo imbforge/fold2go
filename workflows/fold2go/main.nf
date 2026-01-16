@@ -31,7 +31,7 @@ workflow FOLD2GO {
                 """
                 {
                     "njobs": ${njobs},
-                    "data": "${params.OUT}/${workflow.runName}",
+                    "data": "${workflow.outputDir}/${workflow.runName}",
                     "log": "${workflow.launchDir}/.nextflow.log"
                 }
                 """
@@ -48,7 +48,7 @@ workflow FOLD2GO {
         )
         
         METRICS.out.metrics
-        .collectFile ( storeDir: "${params.OUT}/${workflow.runName}", keepHeader: true ) {
+        .collectFile ( storeDir: "${workflow.outputDir}/${workflow.runName}", keepHeader: true ) {
             meta, metrics -> [ "${meta.model}_metrics.tsv", metrics ]
         }
         .collect()
@@ -63,7 +63,7 @@ workflow FOLD2GO {
                         Dear ${workflow.userName},
 
                         fold2go predictions are complete, please find some useful metrics attached.
-                        Results of this run have all been stored at ${params.OUT}/${workflow.runName}.
+                        Results of this run have all been stored at ${workflow.outputDir}/${workflow.runName}.
 
                         ---
                         Deet-doot-dot, I am a bot.

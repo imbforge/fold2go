@@ -9,7 +9,7 @@
             "title": "General options",
             "type": "object",
             "description": "Define fold2go pipeline parameters.",
-            "required": ["IN", "OUT"],
+            "required": ["IN"],
             "properties": {
                 "IN": {
                     "type": "string",
@@ -18,13 +18,6 @@
                     "help_text": "Supported formats: fasta for <a href=https://github.com/google-deepmind/alphafold#examples>AlphaFold2</a>, json for <a href=https://github.com/google-deepmind/alphafold3/blob/main/docs/input.md>AlphaFold3</a> or yaml for <a href=https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#yaml-format>Boltz</a>",
                     "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json",
                     "exists": true
-                },
-                "OUT": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "default": "${launchDir}/results",
-                    "description": "Path to output directory",
-                    "hidden": true
                 },
                 "EMAIL": {
                     "type": "string",
