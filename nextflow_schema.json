@@ -33,7 +33,7 @@
                     "hidden": true
                 },
                 "SAVE_MSA": {
-                    "type": "boolean",
+                    "type": ["boolean", "string"],
                     "description": "Save multiple sequence alignments to output directory.",
                     "default": false,
                     "hidden": true
@@ -50,7 +50,7 @@
                     "description": "Options for SHINY process",
                     "properties": {
                         "enabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "string"],
                             "description": "Run SHINY",
                             "default": true,
                             "hidden": true
@@ -62,7 +62,7 @@
                     "description": "Options for MSA process",
                     "properties": {
                         "enabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "string"],
                             "description": "Run MSA",
                             "default": true,
                             "hidden": true
@@ -74,7 +74,7 @@
                     "description": "Options for INFERENCE process",
                     "properties": {
                         "enabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "string"],
                             "description": "Run INFERENCE",
                             "default": true,
                             "hidden": true
@@ -86,7 +86,7 @@
                     "description": "Options for METRICS process",
                     "properties": {
                         "enabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "string"],
                             "description": "Run METRICS",
                             "default": true,
                             "hidden": true
@@ -162,7 +162,7 @@
                             "default": 1
                         },
                         "GROUP_MSA": {
-                            "type": "boolean",
+                            "type": ["boolean", "string"],
                             "description": "Run multiple sequence alignments as single job. Avoids redundant computation if sequences are shared between inputs.",
                             "default": true,
                             "hidden": true
@@ -223,7 +223,7 @@
                             "default": 1
                         },
                         "USE_KERNELS": {
-                            "type": "boolean",
+                            "type": ["boolean", "string"],
                             "description": "Use NVIDIA cuEquivariance kernels. Saves memory and speeds up inference but only works on newer GPU models.",
                             "default": false,
                             "hidden": true
