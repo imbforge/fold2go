@@ -24,7 +24,7 @@ njobs, data, log = config.get('njobs'), Path(config.get('data')), Path(config.ge
 ## define helper functions
 
 # load pae metric for selected prediction
-def _get_pae(record: dict) -> dict:
+def _get_pae(record: dict) -> np.array:
     match record.get('model_preset').split('_')[0]:
         case 'alphafold2':
             with (data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / f"pae_{record.get('model_id')}.json").open('r') as fin:
