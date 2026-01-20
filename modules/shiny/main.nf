@@ -16,6 +16,6 @@ process SHINY {
 
     from shiny import run_app
 
-    run_app("${moduleDir}/resources/usr/bin/app.py:app", uds="${socket}")
+    run_app("${moduleDir}/resources/usr/bin/app.py:app", uds="${socket}", ws="websockets-sansio")
     """
 }
