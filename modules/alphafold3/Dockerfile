@@ -25,13 +25,13 @@ RUN tar xzf hmmer-3.4.tar.gz && patch -p0 < jackhmmer_seq_limit.patch
 
 WORKDIR /tmp/hmmer-3.4
 
-RUN ./configure --prefix=/app/alphafold/hmmer && make install && cd easel && make install
+RUN ./configure --prefix=/app/alphafold/.pixi/envs/default && make install && cd easel && make install
 
 FROM docker.io/nvidia/cuda:12.6.3-base-ubuntu22.04 AS alphafold
 
 LABEL org.opencontainers.image.authors="huether@imb-mainz.de"
 
-ENV PATH="/app/alphafold:/app/alphafold/hmmer/bin:$PATH" NVIDIA_VISIBLE_DEVICES="all" NVIDIA_DRIVER_CAPABILITIES="compute" XLA_FLAGS="--xla_gpu_enable_triton_gemm=false" XLA_PYTHON_CLIENT_PREALLOCATE=false TF_FORCE_UNIFIED_MEMORY=true XLA_PYTHON_CLIENT_MEM_FRACTION=3.2
+ENV PATH="/app/alphafold:$PATH" NVIDIA_VISIBLE_DEVICES="all" NVIDIA_DRIVER_CAPABILITIES="compute" XLA_FLAGS="--xla_gpu_enable_triton_gemm=false" XLA_PYTHON_CLIENT_PREALLOCATE=false TF_FORCE_UNIFIED_MEMORY=true XLA_PYTHON_CLIENT_MEM_FRACTION=3.2
 
 COPY --from=build /app/alphafold /app/alphafold
 
