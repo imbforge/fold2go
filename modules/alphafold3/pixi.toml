@@ -1,10 +1,10 @@
 [workspace]
 authors = ["Patrick Hüther <huether@imb-mainz.de>"]
-channels = ["conda-forge", "bioconda"]
+channels = ["conda-forge"]
 description = "Add a short description here"
 name = "alphafold"
 platforms = ["linux-64"]
-version = "0.1.0"
+version = "3.0.2"
 
 [system-requirements]
 cuda = "12.6.3"
@@ -15,4 +15,4 @@ cuda = "12.6.3"
 python = "3.12.*"
 
 [pypi-dependencies]
-alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", rev = "87bd9e678d9acacc4aa9baa05e820f32b80e1b49" }
+alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", tag = "v3.0.2" }
