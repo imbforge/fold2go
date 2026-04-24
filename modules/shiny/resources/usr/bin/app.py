@@ -79,7 +79,7 @@ def _():
     if completed:
         metrics = polars.concat(
             [polars.read_csv(tsv, separator='\t') for tsv in completed],
-            how="diagonal"
+            how="diagonal_relaxed"
         )
         df.set(metrics)
 
