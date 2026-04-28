@@ -35,6 +35,9 @@ def _get_pae(record: dict) -> np.array:
         case 'boltz1' | 'boltz2':
             with np.load(data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / f"pae_{record.get('prediction_name')}_{record.get('model_id')}.npz") as fin:
                 return np.array(fin.get('pae'), dtype=np.float16)
+        case 'colabfold':
+            with (data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / f"{record.get('model_id').replace('_unrelaxed_', '_scores_')}.json").open('r') as fin:
+                return np.array(json.load(fin).get('pae'), dtype=np.float16)
 
 # load 3D model for selected prediction
 def _get_model(record: dict) -> dict:
@@ -45,9 +48,11 @@ def _get_model(record: dict) -> dict:
             model = data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / record.get('model_id') / f"{record.get('prediction_name')}_{record.get('model_id')}_model.cif"
         case 'boltz1' | 'boltz2':
             model = data / 'predictions' / record.get('model_preset') / record.get('prediction_name') /  f"{record.get('prediction_name')}_{record.get('model_id')}.cif"
+        case 'colabfold':
+            model = data / 'predictions' / record.get('model_preset') / record.get('prediction_name') / f"{record.get('model_id')}.pdb"
     return {
         'data'  : model.read_text(),
-        'format': 'cif',
+        'format': model.suffix.lstrip('.'),
         'binary': False
     }
 
