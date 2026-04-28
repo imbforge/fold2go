@@ -332,6 +332,57 @@ def calculate_af3_metrics(predictions_dir: Path) -> dict:
     
     return metrics
 
+def calculate_colabfold_metrics(predictions_dir: Path) -> dict:
+    """
+    Calculate template independent metrics for ColabFold predictions.
+
+    Parameters:
+    -----------
+    predictions_dir: Path
+        The directory containing the predictions
+
+    Returns:
+    --------
+    dict
+        A dictionary containing the calculated metrics for each prediction
+    """
+
+    metrics = {}
+
+    for model in predictions_dir.glob('*.pdb'):
+
+        model_scores = f"{model.stem.replace('_unrelaxed_', '_scores_')}.json"
+
+        coor = Coor(model)
+
+        chains, lengths = np.unique(coor.select_atoms('protein and name CA').chain, return_counts=True)
+
+        with (predictions_dir / model_scores).open('r') as fin:
+            scores = { score: value for score, value in json.load(fin).items() if not isinstance(value, dict | list) }
+
+        common_metrics = {
+            'model_id': model.stem,
+            **{f"chain{chain}_length":length for chain, length in zip(chains, lengths)},
+            **scores
+        }
+
+        if chains.size == 2:
+            with (predictions_dir / model_scores).open('r') as fin:
+                pae = np.array(json.load(fin)['pae'], dtype=np.float16)
+
+            metrics[model] = {
+                **common_metrics,
+                **get_interface_plddt(coor, chains),
+                **get_interface_residues(coor, chains),
+                **get_interface_pae(coor, chains, pae),
+                **get_pdockq(coor, chains)
+            }
+        else:
+            metrics[model] = common_metrics
+
+    return metrics
+
+
 if __name__ == '__main__':
 
     import argparse
@@ -339,7 +390,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--predictions', type=Path, dest='predictions')
     parser.add_argument('--id', type=Path, dest='id')
-    parser.add_argument('--model_preset', type=str, choices=['alphafold3', 'alphafold2_multimer', 'alphafold2_monomer_ptm', 'alphafold2_monomer', 'alphafold2_monomer_casp14', 'boltz1', 'boltz2'], dest='model_preset')
+    parser.add_argument('--model_preset', type=str, choices=['alphafold3', 'alphafold2_multimer', 'alphafold2_monomer_ptm', 'alphafold2_monomer', 'alphafold2_monomer_casp14', 'boltz1', 'boltz2', 'colabfold'], dest='model_preset')
     parser.add_argument('--run_name', type=str, dest='run_name')
 
     args = parser.parse_args()
@@ -357,5 +408,7 @@ if __name__ == '__main__':
             metrics = calculate_af2_metrics(args.predictions)
         case 'boltz1' | 'boltz2':
             metrics = calculate_boltz_metrics(args.predictions)
+        case 'colabfold':
+            metrics = calculate_colabfold_metrics(args.predictions)
 
     DataFrame.from_dict(metrics, orient='index').assign(**meta).round(2).to_csv(f"{args.model_preset}_metrics.tsv", sep='\t', index=False)
