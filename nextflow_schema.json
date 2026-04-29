@@ -21,7 +21,6 @@
                 },
                 "EMAIL": {
                     "type": "string",
-		            "format": "email",
                     "description": "Email address for notifications",
                     "default": "",
                     "hidden": true
@@ -33,8 +32,14 @@
                     "hidden": true
                 },
                 "SAVE_MSA": {
-                    "type": ["boolean", "string"],
+                    "type": "boolean",
                     "description": "Save multiple sequence alignments to output directory.",
+                    "default": false,
+                    "hidden": true
+                },
+                "BATCH_MODE": {
+                    "type": "boolean",
+                    "description": "Build cartesian product of two fasta inputs and predict all the combinations via colabfold & mmseqs2.",
                     "default": false,
                     "hidden": true
                 }
@@ -50,7 +55,7 @@
                     "description": "Options for SHINY process",
                     "properties": {
                         "enabled": {
-                            "type": ["boolean", "string"],
+                            "type": "boolean",
                             "description": "Run SHINY",
                             "default": true,
                             "hidden": true
@@ -62,7 +67,7 @@
                     "description": "Options for MSA process",
                     "properties": {
                         "enabled": {
-                            "type": ["boolean", "string"],
+                            "type": "boolean",
                             "description": "Run MSA",
                             "default": true,
                             "hidden": true
@@ -74,7 +79,7 @@
                     "description": "Options for INFERENCE process",
                     "properties": {
                         "enabled": {
-                            "type": ["boolean", "string"],
+                            "type": "boolean",
                             "description": "Run INFERENCE",
                             "default": true,
                             "hidden": true
@@ -86,7 +91,7 @@
                     "description": "Options for METRICS process",
                     "properties": {
                         "enabled": {
-                            "type": ["boolean", "string"],
+                            "type": "boolean",
                             "description": "Run METRICS",
                             "default": true,
                             "hidden": true
@@ -162,7 +167,7 @@
                             "default": 1
                         },
                         "GROUP_MSA": {
-                            "type": ["boolean", "string"],
+                            "type": "boolean",
                             "description": "Run multiple sequence alignments as single job. Avoids redundant computation if sequences are shared between inputs.",
                             "default": true,
                             "hidden": true
@@ -223,10 +228,42 @@
                             "default": 1
                         },
                         "USE_KERNELS": {
-                            "type": ["boolean", "string"],
+                            "type": "boolean",
                             "description": "Use NVIDIA cuEquivariance kernels. Saves memory and speeds up inference but only works on newer GPU models.",
                             "default": false,
                             "hidden": true
+                        }
+                    }
+                }
+            }
+        },
+        "ColabFold": {
+            "title": "Colabfold options",
+            "type": "object",
+            "properties": {
+                "COLABFOLD": {
+                    "type": "object",
+                    "required": ["DATABASE_DIR", "MODEL_DIR", "RECYCLING_STEPS"],
+                    "description": "Define ColabFold parameters",
+                    "properties": {
+                        "DATABASE_DIR": {
+                            "type": "string",
+                            "format": "directory-path",
+                            "description": "Path to mmseqs2 database",
+                            "default": "/mnt/storage/mmseqs2",
+                            "hidden": true
+                        },
+                        "MODEL_DIR": {
+                            "type": "string",
+                            "format": "directory-path",
+                            "description": "Path to ColabFold model weights",
+                            "default": "/mnt/storage/colabfold",
+                            "hidden": true
+                        },
+                        "RECYCLING_STEPS": {
+                            "type": "integer",
+                            "description": "Number of recycle steps to use for prediction",
+                            "default": 3
                         }
                     }
                 }
@@ -245,6 +282,9 @@
         },
         {
             "$ref": "#/$defs/Boltz"
+        },
+        {
+            "$ref": "#/$defs/ColabFold"
         },
         {
             "$ref": "#/$defs/Processes"

@@ -1,23 +1,24 @@
-include { COLABFOLD_SEARCH; COLABFOLD_BATCH } from '../../modules/colabfold'
+include { MSA; INFERENCE } from '../../modules/colabfold'
 
 workflow COLABFOLD {
 
     take:
-        input1: Channel<Path>
-        input2: Channel<Path>
+        input: Channel<Path>
 
     main:
 
-        COLABFOLD_SEARCH(input1, input2)
+        MSA(
+            input.collect()
+        )
         
-        msa = COLABFOLD_SEARCH.out.msa.flatMap().map { it -> tuple([ id: it.simpleName, model: 'colabfold' ], it) }.view()
+        msa = MSA.out.msa.flatMap().map { it -> tuple([ id: it.simpleName, model: 'colabfold' ], it) }
 
-        COLABFOLD_BATCH(
+        INFERENCE(
             msa
         )
 
     emit:
         msa: Channel<Tuple<Map, Path>> = msa
-        prediction: Channel<Tuple<Map, Path>> = COLABFOLD_BATCH.out.prediction
+        prediction: Channel<Tuple<Map, Path>> = INFERENCE.out.prediction
         jobcount: Value<Integer> = msa.count()
 }

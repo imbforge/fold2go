@@ -1,11 +1,10 @@
 nextflow.preview.types = true
 
-process COLABFOLD_SEARCH {
+process MSA {
     label "ssd"
 
     input:
-    fasta1: Path
-    fasta2: Path
+    query: List<Path>
 
     output:
     msa: Path = files("a3m/*.a3m")
@@ -15,7 +14,7 @@ process COLABFOLD_SEARCH {
 
     script:
     """
-    python ${moduleDir}/resources/usr/bin/combinations.py ${fasta1} ${fasta2}
+    python ${moduleDir}/resources/usr/bin/combinations.py ${query.join(' ')}
 
     colabfold_search \\
         --threads ${task.cpus} \\
@@ -25,7 +24,7 @@ process COLABFOLD_SEARCH {
     """
 }
 
-process COLABFOLD_BATCH {
+process INFERENCE {
     maxForks 1
     tag "${meta}"
     label "gpu"
@@ -44,7 +43,7 @@ process COLABFOLD_BATCH {
     colabfold_batch \\
         ${msa} \\
         predictions \\
-        --num-recycle ${params.COLABFOLD.NUM_RECYCLE} \\
+        --num-recycle ${params.COLABFOLD.RECYCLING_STEPS} \\
         --data ${params.COLABFOLD.MODEL_DIR}
     """
 }

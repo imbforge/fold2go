@@ -1,29 +1,34 @@
 include { ALPHAFOLD2 } from '../../subworkflows/alphafold2'
 include { ALPHAFOLD3 } from '../../subworkflows/alphafold3'
 include { BOLTZ      } from '../../subworkflows/boltz'
+include { COLABFOLD  } from '../../subworkflows/colabfold'
 include { SHINY      } from '../../modules/shiny'
 include { METRICS    } from '../../modules/metrics'
 
 workflow FOLD2GO {
 
     main:
-        input =
-            channel
-            .fromPath( params.IN )
-            .branch { fname ->
-                fasta: fname =~ /.(fasta|fa)$/
-                json : fname =~ /.json$/
-                yaml : fname =~ /.(yaml|yml)$/
-            }
+        input = channel.fromPath(params.IN)
 
-        input.fasta | ALPHAFOLD2
-        input.json  | ALPHAFOLD3
-        input.yaml  | BOLTZ
+        COLABFOLD(
+            input.filter { it -> params.BATCH_MODE && it =~ /.(fasta|fa)$/ }
+        )
+
+        ALPHAFOLD2(
+            input.filter { it -> !params.BATCH_MODE && it =~ /.(fasta|fa)$/ }
+        )
+
+        ALPHAFOLD3(
+            input.filter { it -> it =~ /.json$/ }
+        )
+
+        BOLTZ(
+            input.filter { it -> it =~ /.(yaml|yml)$/ }
+        )
 
         jobcount =
-            ALPHAFOLD2.out.jobcount
-            .mix(ALPHAFOLD3.out.jobcount)
-            .mix(BOLTZ.out.jobcount)
+            channel.empty()
+            .mix(ALPHAFOLD2.out.jobcount, ALPHAFOLD3.out.jobcount, BOLTZ.out.jobcount, COLABFOLD.out.jobcount)
             .sum()
             .collectFile { njobs ->
                 [
@@ -44,7 +49,7 @@ workflow FOLD2GO {
         )
 
         METRICS(
-            ALPHAFOLD2.out.prediction.mix(ALPHAFOLD3.out.prediction).mix(BOLTZ.out.prediction)
+            ALPHAFOLD2.out.prediction.mix(ALPHAFOLD3.out.prediction).mix(BOLTZ.out.prediction).mix(COLABFOLD.out.prediction)
         )
         
         METRICS.out.metrics
@@ -78,7 +83,7 @@ workflow FOLD2GO {
         }
 
     emit:
-        msa: Channel<Tuple<Map, Set<Path>>> = ALPHAFOLD2.out.msa.mix(ALPHAFOLD3.out.msa).mix(BOLTZ.out.msa)
-        predictions: Channel<Tuple<Map, Set<Path>>> = ALPHAFOLD2.out.prediction.mix(ALPHAFOLD3.out.prediction).mix(BOLTZ.out.prediction)
+        msa: Channel<Tuple<Map, Set<Path>>> = ALPHAFOLD2.out.msa.mix(ALPHAFOLD3.out.msa).mix(BOLTZ.out.msa).mix(COLABFOLD.out.msa)
+        predictions: Channel<Tuple<Map, Set<Path>>> = ALPHAFOLD2.out.prediction.mix(ALPHAFOLD3.out.prediction).mix(BOLTZ.out.prediction).mix(COLABFOLD.out.prediction)
         metrics: Channel<Tuple<Map, Path>> = METRICS.out.metrics
 }
