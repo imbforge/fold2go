@@ -16,7 +16,7 @@ workflow ALPHAFOLD3 {
             .map { model, json -> 
                 record(
                     model: model,
-                    queries: json.toSet()
+                    query: json.toSet()
                 )
             }
 

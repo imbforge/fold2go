@@ -16,7 +16,7 @@ workflow COLABFOLD {
             .map { model, fasta -> 
                 record(
                     model: model,
-                    queries: fasta.toSet()
+                    query: fasta.toSet()
                 )
             }
         
