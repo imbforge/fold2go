@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 include { ALPHAFOLD2 } from '../../subworkflows/alphafold2'
 include { ALPHAFOLD3 } from '../../subworkflows/alphafold3'
 include { BOLTZ      } from '../../subworkflows/boltz'
@@ -7,63 +9,64 @@ include { METRICS    } from '../../modules/metrics'
 
 workflow FOLD2GO {
 
+    take:
+        input: Channel<Record>
+
     main:
-        input = channel.fromPath(params.IN)
 
-        COLABFOLD(
-            input.filter { it -> params.BATCH_MODE && it =~ /.(fasta|fa)$/ }
-        )
-
-        ALPHAFOLD2(
-            input.filter { it -> !params.BATCH_MODE && it =~ /.(fasta|fa)$/ }
-        )
-
-        ALPHAFOLD3(
-            input.filter { it -> it =~ /.json$/ }
-        )
-
-        BOLTZ(
-            input.filter { it -> it =~ /.(yaml|yml)$/ }
-        )
-
-        jobcount =
-            channel.empty()
-            .mix(ALPHAFOLD2.out.jobcount, ALPHAFOLD3.out.jobcount, BOLTZ.out.jobcount, COLABFOLD.out.jobcount)
-            .sum()
-            .collectFile { njobs ->
-                [
-                "shiny_config.json",
-                """
-                {
-                    "njobs": ${njobs},
-                    "data": "${workflow.outputDir}/${workflow.runName}",
-                    "log": "${workflow.launchDir}/.nextflow.log"
-                }
-                """
-                ]
+        alphafold2 = ALPHAFOLD2(
+            input.filter { record ->
+                (record.model == 'alphafold2_multimer')
             }
+        )
+
+        alphafold3 = ALPHAFOLD3(
+            input.filter { record ->
+                (record.model == 'alphafold3')
+            }
+        )
+
+        boltz = BOLTZ(
+            input.filter { record ->
+                (record.model in ['boltz1', 'boltz2'])
+            }
+        )
+
+        colabfold = COLABFOLD(
+            input.filter { record ->
+                (record.model == 'colabfold')
+            }
+        )
 
         SHINY(
-            params.SOCKET ?: "${workflow.workDir}/shiny.sock",
-            jobcount
+            channel.empty()
+                .mix(alphafold2.jobcount).mix(alphafold3.jobcount).mix(boltz.jobcount).mix(colabfold.jobcount)
+                .collect()
+                .map { counts ->
+                    record(
+                        njobs: "${counts.sum()}",
+                        data: "${workflow.outputDir}/${workflow.runName}",
+                        logfile: "${workflow.launchDir}/.nextflow.log"
+                    )
+                }
         )
 
-        METRICS(
-            ALPHAFOLD2.out.prediction.mix(ALPHAFOLD3.out.prediction).mix(BOLTZ.out.prediction).mix(COLABFOLD.out.prediction)
+        metrics = METRICS(
+            alphafold2.prediction.mix(alphafold3.prediction).mix(boltz.prediction).mix(colabfold.prediction)
         )
         
-        METRICS.out.metrics
+        metrics
         .collectFile ( storeDir: "${workflow.outputDir}/${workflow.runName}", keepHeader: true ) {
-            meta, metrics -> [ "${meta.model}_metrics.tsv", metrics ]
+            record -> [ "${record.model}_${record.id}_metrics.tsv", record.metrics ]
         }
         .collect()
-        .map { metrics ->
+        .map { tsv ->
             if( params.EMAIL ) {
                 try {
                     sendMail (
                         to: "${params.EMAIL}",
                         subject: "fold2go (${workflow.runName})",
-                        attach: metrics,
+                        attach: tsv,
                         body: """
                         Dear ${workflow.userName},
 
@@ -77,13 +80,13 @@ workflow FOLD2GO {
                 }
                 catch( Exception e ) {
                     log.warn "Failed to send notification email to ${params.EMAIL}"
-                    log.warn e.message
+                    log.warn e.getMessage()
                 }
             }
         }
 
     emit:
-        msa: Channel<Tuple<Map, Set<Path>>> = ALPHAFOLD2.out.msa.mix(ALPHAFOLD3.out.msa).mix(BOLTZ.out.msa).mix(COLABFOLD.out.msa)
-        predictions: Channel<Tuple<Map, Set<Path>>> = ALPHAFOLD2.out.prediction.mix(ALPHAFOLD3.out.prediction).mix(BOLTZ.out.prediction).mix(COLABFOLD.out.prediction)
-        metrics: Channel<Tuple<Map, Path>> = METRICS.out.metrics
+        msa: Channel<Tuple<Map, Set<Path>>> = alphafold2.msa.mix(alphafold3.msa).mix(boltz.msa).mix(colabfold.msa)
+        predictions: Channel<Record> = alphafold2.prediction.mix(alphafold3.prediction).mix(boltz.prediction).mix(colabfold.prediction)
+        metrics: Channel<Record> = metrics
 }

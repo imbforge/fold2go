@@ -1,49 +1,79 @@
-include { MSA; INFERENCE_MONOMER; INFERENCE_MULTIMER } from '../../modules/alphafold2'
+nextflow.enable.types = true
+
+include { MSA; INFERENCE } from '../../modules/alphafold2'
 
 workflow ALPHAFOLD2 {
 
     take:
-        input: Channel<Path>
+        input: Channel<Record>
 
     main:
-        Boolean multimer = ( params.ALPHAFOLD2.MODEL_PRESET == 'multimer' )
-        List databases = multimer ? ['uniref90', 'mgnify', 'bfd', 'uniprot'] : ['uniref90', 'mgnify', 'bfd']
+        List databases = ['uniref90', 'mgnify', 'bfd', 'uniprot']        
 
-        sequences = 
+        sequences =
             input
-            .map { fasta -> [ fasta, fasta ] }
-            .splitFasta ( record: [ id: true ] )
-            .groupTuple ( by: ( multimer ? 1 : [ 0, 1 ] ) )
-            .map { record, fasta ->
-                multimer ? [ [ ('A'..'H'), record.id ].transpose().collectEntries(), fasta ] : [ [ 'A': record.id ], fasta ]
+            .map { job ->
+                def letters = ('A'..'H')
+                record(
+                    chains: job.input.splitFasta ( record: [ id: true ] ).withIndex().collectEntries { it, idx -> [(letters[idx]): (it.id)] },
+                    fasta:  job.input,
+                    model:  job.model
+                )
             }
-            .unique { meta, _fasta -> meta }
 
         jobdef =
             sequences
-            .splitFasta ( record: [ id: true, seqString: true ] )
-            .filter { meta, record -> ( record.id in meta*.value ) }
-            .unique { _meta, record -> record }
-            .combine ( databases )
-
-        MSA(jobdef)
-
-        chains = 
-            sequences
-            .combine ( MSA.out.msa )
-            .filter { meta, _fasta, record, _msa -> ( record.id in meta*.value ) }
-            .map { meta, fasta, _record, msa -> [ groupKey( meta, meta*.value.unique().size() * databases.size() ), fasta, msa ] }
-            .groupTuple( by: 0 )
-            .map { meta, fasta, msa ->
-                [ [ id: meta.getGroupTarget()*.value.join('.'), model: "alphafold2_${params.ALPHAFOLD2.MODEL_PRESET}" ], fasta.first() ] + ( multimer ? ('A'..'H').collect { chain -> msa.sort().findAll { it -> it.parent.name == meta[chain] } } : [ msa.unique().sort() ] )
+            .combine (
+                channel.fromList(databases)
+            )
+            .flatMap { complex, db ->
+                complex.fasta
+                .splitFasta ( file: true )
+                .collect { chunk ->
+                    tuple( complex.chains, chunk.splitFasta ( record: [ id: true] ).id.pop(), chunk, complex.model, db )
+                }
             }
+            // FIXME
+            // this whole tuple detour seems wrong but the typechecker complains if the record is constructed in that .flatMap() above :(
+            // same goes for the List unpacking below, not sure why 'map { chains, id, chunk, model, db -> ... }' isn't allowed
+            .map { R ->
+                def (chains, id, chunk, model, db) = R
+                record(
+                    chains: chains,
+                    id:     id,
+                    fasta:  chunk,
+                    db:     db,
+                    model:  model
+                )
+            }
+            .unique { it -> it.id + it.db }
         
-        multimer
-            ? INFERENCE_MULTIMER(chains)
-            : INFERENCE_MONOMER(chains)
+        msa = MSA(jobdef)
+        
+        prediction = INFERENCE(
+            msa
+            .flatMap { record ->
+                [ tuple(record.chains, databases.size(), record.msa) ]
+            }
+            .groupBy()
+            .map { chains, msas -> 
+                record(
+                    chains: chains,
+                    A: msas.findAll { it -> it.parent.name == (chains['A'] as String) }.toSet(),
+                    B: msas.findAll { it -> it.parent.name == (chains['B'] as String) }.toSet(),
+                    C: msas.findAll { it -> it.parent.name == (chains['C'] as String) }.toSet(),
+                    D: msas.findAll { it -> it.parent.name == (chains['D'] as String) }.toSet(),
+                    E: msas.findAll { it -> it.parent.name == (chains['E'] as String) }.toSet(),
+                    F: msas.findAll { it -> it.parent.name == (chains['F'] as String) }.toSet(),
+                    G: msas.findAll { it -> it.parent.name == (chains['G'] as String) }.toSet(),
+                    H: msas.findAll { it -> it.parent.name == (chains['H'] as String) }.toSet()
+                )
+            }
+            .join(sequences, by: 'chains')
+        )
 
     emit:
-        msa: Channel<Tuple<Map, Path>> = MSA.out.msa
-        prediction: Channel<Tuple<Map, Path>> = ( multimer ? INFERENCE_MULTIMER : INFERENCE_MONOMER ).out.prediction
-        jobcount: Channel<Integer> = input.count()
+        msa: Channel<Record> = msa
+        prediction: Channel<Record> = prediction
+        jobcount: Value<Integer> = input.collect().map { it -> it.size() }
 }

@@ -15,11 +15,10 @@ from shinywidgets import render_plotly, render_widget
 ui.busy_indicators.use(pulse=False)
 ui.page_opts(full_width=True)
 
-# load app config from file
-with ( Path.cwd() / 'shiny_config.json' ).open('r') as fin:
-    config = json.load(fin)
-
-njobs, data, log = config.get('njobs'), Path(config.get('data')), Path(config.get('log'))
+# load app config from environment
+njobs: int = int(os.environ.get('FOLD2GO_NJOBS'))
+data: Path = Path(os.environ.get('FOLD2GO_DATA'))
+log: Path = Path(os.environ.get('FOLD2GO_LOG'))
 
 ## define helper functions
 

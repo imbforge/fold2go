@@ -1,49 +1,56 @@
-nextflow.preview.types = true
+nextflow.enable.types = true
 
 process MSA {
-    tag "${meta}"
     label "ssd"
 
     input:
-    (meta, input): Tuple<Map, Set<Path>>
+    record(
+        model: String,
+        query: Set<Path>
+    )
 
     stage:
-    stageAs 'input/*', input
+    stageAs query, 'input/*'
 
     output:
-    msa: Tuple<Map, Path> = tuple([ id: meta.id, model: 'alphafold3' ], file("**/**/*_data.json"))
-
-    when:
-    params.MSA.enabled
+    record(
+        model: model,
+        msa  : files("**/*_data.json")
+    )
 
     script:
     """
     python /app/alphafold/run_alphafold.py \\
         --run_inference=false \\
-        --${input.size() > 1 ? "input_dir=input" : "json_path=" << input.pop()} \\
+        --input_dir=input \\
         --db_dir=${params.ALPHAFOLD3.DATABASE_DIR} \\
         --output_dir=msa
     """
 }
 
 process INFERENCE {
-    tag "${meta}"
+    tag "${id}"
     label "gpu"
 
     input:
-    (meta, json): Tuple<Map, Path>
+    record(
+        id   : String,
+        msa  : Path,
+        model: String
+    )
 
     output:
-    prediction: Tuple<Map, Path> = tuple(meta, file("predictions/${meta.id}", type: 'dir'))
-
-    when:
-    params.INFERENCE.enabled
+    record(
+        id        : id,
+        prediction: file("predictions/${id}", type: 'dir'),
+        model     : model
+    )
 
     script:
     """
     python /app/alphafold/run_alphafold.py \\
         --run_data_pipeline=false \\
-        --json_path=${json} \\
+        --json_path=${msa} \\
         --model_dir=${params.ALPHAFOLD3.MODEL_DIR} \\
         --num_diffusion_samples=${params.ALPHAFOLD3.DIFFUSION_SAMPLES} \\
         --jax_compilation_cache_dir=${workflow.workDir} \\

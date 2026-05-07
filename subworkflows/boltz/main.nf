@@ -1,24 +1,20 @@
+nextflow.enable.types = true
+
 include { MSA; INFERENCE } from '../../modules/boltz'
 
 workflow BOLTZ {
 
     take:
-        input: Channel<Path>
+        input: Channel<Record>
 
     main:
 
-        input
-        .map { yaml ->
-            [ [ id: yaml.simpleName, model: "${params.BOLTZ.MODEL_PRESET}" ], yaml ]
-        }
-        | MSA
-        
-        INFERENCE(
-            MSA.out.yaml.join(MSA.out.msa, by: 0)
-        )
+        msa = MSA( input )
+
+        prediction = INFERENCE( msa )
 
     emit:
-        msa: Channel<Tuple<Map, Path>> = MSA.out.yaml.mix(MSA.out.msa)
-        prediction: Channel<Tuple<Map, Path>> = INFERENCE.out.prediction
-        jobcount: Channel<Integer> = input.count()
+        msa: Channel<Record> = msa
+        prediction: Channel<Record> = prediction
+        jobcount: Value<Integer> = input.collect().map { it -> it.size() }
 }

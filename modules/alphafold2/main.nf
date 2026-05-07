@@ -1,73 +1,47 @@
-nextflow.preview.types = true
+nextflow.enable.types = true
 
-process INFERENCE_MONOMER {
-    tag "${meta}"
+process INFERENCE {
+    tag "${fasta.baseName}"
     label "gpu"
 
     input:
-    (meta, fasta, chain): Tuple<Map, Path, List<Path>>
+    record(
+        chains: Map,
+        A     : Set<Path>,
+        B     : Set<Path>,
+        C     : Set<Path?>,
+        D     : Set<Path?>,
+        E     : Set<Path?>,
+        F     : Set<Path?>,
+        G     : Set<Path?>,
+        H     : Set<Path?>,
+        fasta : Path,
+        model : String
+    )
 
     stage:
-    stageAs "chain/msas/*", chain
+    stageAs A, "chains/msas/A/*"
+    stageAs B, "chains/msas/B/*"
+    stageAs C, "chains/msas/C/*"
+    stageAs D, "chains/msas/D/*"
+    stageAs E, "chains/msas/E/*"
+    stageAs F, "chains/msas/F/*"
+    stageAs G, "chains/msas/G/*"
+    stageAs H, "chains/msas/H/*"
 
     output:
-    prediction: Tuple<Map, Path> = tuple(meta, file("chain", type: 'dir'))
-
-    when:
-    params.INFERENCE.enabled
+    record(
+        id        : fasta.baseName,
+        prediction: file("chains", type: 'dir'),
+        model     : model
+    )
 
     script:
     """
-    grep -A1 ${meta['A']} ${fasta} > chain.fasta
+    mv ${fasta} chains/chains.fasta
 
     python /app/alphafold/run_alphafold.py \\
-        --fasta_paths=chain.fasta \\
-        --output_dir=. \\
-        --use_precomputed_msas=true \\
-        --use_gpu_relax=false \\
-        --max_template_date=2020-05-14 \\
-        --model_preset=${params.ALPHAFOLD2.MODEL_PRESET} \\
-        --data_dir=${params.ALPHAFOLD2.DATABASE_DIR} \\
-        --bfd_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt \\
-        --mgnify_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/mgnify/mgy_clusters_2022_05.fa \\
-        --pdb70_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/pdb70/pdb70 \\
-        --obsolete_pdbs_path=${params.ALPHAFOLD2.DATABASE_DIR}/pdb_mmcif/obsolete.dat \\
-        --template_mmcif_dir=${params.ALPHAFOLD2.DATABASE_DIR}/pdb_mmcif/mmcif_files \\
-        --uniref30_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniref30/UniRef30_2023_02 \\
-        --uniref90_database_path=${params.ALPHAFOLD2.DATABASE_DIR}/uniref90/uniref90.fasta
-
-    rm -rf chain/msas
-    """
-}
-
-process INFERENCE_MULTIMER {
-    tag "${meta}"
-    label "gpu"
-
-    input:
-    (meta, fasta, chainA, chainB, chainC, chainD, chainE, chainF, chainG, chainH): Tuple<Map, Path, List<Path>, List<Path>, List<Path?>, List<Path?>, List<Path?>, List<Path?>, List<Path?>, List<Path?>>
-
-    stage:
-    stageAs "chains.fasta", fasta
-    stageAs "chains/msas/A/*", chainA
-    stageAs "chains/msas/B/*", chainB
-    stageAs "chains/msas/C/*", chainC
-    stageAs "chains/msas/D/*", chainD
-    stageAs "chains/msas/E/*", chainE
-    stageAs "chains/msas/F/*", chainF
-    stageAs "chains/msas/G/*", chainG
-    stageAs "chains/msas/H/*", chainH
-
-    output:
-    prediction: Tuple<Map, Path> = tuple(meta, file("chains", type: 'dir'))
-
-    when:
-    params.INFERENCE.enabled
-
-    script:
-    """
-    python /app/alphafold/run_alphafold.py \\
-        --fasta_paths=${fasta} \\
+        --fasta_paths=chains/chains.fasta \\
         --output_dir=. \\
         --use_precomputed_msas=true \\
         --use_gpu_relax=false \\
@@ -89,31 +63,33 @@ process INFERENCE_MULTIMER {
 }
 
 process MSA {
-    tag "${record.id}:${database}"
+    tag "${id}:${db}"
     label "ssd"
 
     input:
-    (meta, record, database): Tuple<Map, Map, String>
+    record(
+        chains: Map,
+        id    : String,
+        fasta : Path,
+        db    : String,
+        model : String
+    )
 
     output:
-    msa: Tuple<Map, Set<Path>> = tuple([id: record.id, model: 'alphafold2'], file("**/**/*.{a3m,sto}"))
-
-    when:
-    params.MSA.enabled
+    record(
+        chains: chains,
+        id    : id,
+        msa   : file("msas/${id}/*.{a3m,sto}"),
+        model : model
+    )
 
     script:
-    def chain = meta.find { m -> m.value == record.id }.key
     """
-        cat << EOF > '${record.id}.fasta'
-        >chain_${chain}
-        ${record.seqString}
-        EOF
-
-        python ${moduleDir}/resources/usr/bin/run_msa.py \\
-            --cores=${task.cpus} \\
-            --database=${database} \\
-            --fasta_path=${record.id}.fasta \\
-            --data_dir=${params.ALPHAFOLD2.DATABASE_DIR} \\
-            --out_path=msas/${record.id}
-        """
+    python ${moduleDir}/resources/usr/bin/run_msa.py \\
+        --cores=${task.cpus} \\
+        --database=${db} \\
+        --fasta_path=${fasta} \\
+        --data_dir=${params.ALPHAFOLD2.DATABASE_DIR} \\
+        --out_path=msas/${id}
+    """
 }

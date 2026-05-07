@@ -1,16 +1,19 @@
-nextflow.preview.types = true
+nextflow.enable.types = true
 
 process MSA {
     label "ssd"
 
     input:
-    query: List<Path>
+    record(
+        model: String,
+        query: Set<Path>
+    )
 
     output:
-    msa: Path = files("a3m/*.a3m")
-
-    when:
-    params.MSA.enabled
+    record(
+        model: model,
+        msa  : files("a3m/*.a3m")
+    )
 
     script:
     """
@@ -25,18 +28,22 @@ process MSA {
 }
 
 process INFERENCE {
-    maxForks 1
-    tag "${meta}"
+    tag "${id}"
     label "gpu"
 
     input:
-    (meta, msa): Tuple<Map, Path>
+    record(
+        id   : String,
+        msa  : Path,
+        model: String
+    )
 
     output:
-    prediction: Tuple<Map, Path> = tuple(meta, file("predictions", type: 'dir'))
-    
-    when:
-    params.INFERENCE.enabled
+    record(
+        id        : id,
+        prediction: file("predictions", type: 'dir'),
+        model     : model
+    )
 
     script:
     """

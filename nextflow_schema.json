@@ -9,7 +9,7 @@
             "title": "General options",
             "type": "object",
             "description": "Define fold2go pipeline parameters.",
-            "required": ["IN"],
+            "required": ["IN", "MODEL_PRESET"],
             "properties": {
                 "IN": {
                     "type": "string",
@@ -19,15 +19,21 @@
                     "default": "/fsimb/common/cicd/test-data/alphafold/chains/*.json",
                     "exists": true
                 },
+                "MODEL_PRESET": {
+                    "type": "string",
+                    "description": "Model preset to use for prediction",
+                    "default": "alphafold3",
+                    "enum": [
+                        "alphafold3",
+                        "alphafold2_multimer",
+                        "boltz1",
+                        "boltz2",
+                        "colabfold"
+                    ]
+                },
                 "EMAIL": {
                     "type": "string",
                     "description": "Email address for notifications",
-                    "default": "",
-                    "hidden": true
-                },
-                "SOCKET": {
-                    "type": "string",
-                    "description": "Unix Domain Socket for shiny application to bind to.",
                     "default": "",
                     "hidden": true
                 },
@@ -36,67 +42,6 @@
                     "description": "Save multiple sequence alignments to output directory.",
                     "default": false,
                     "hidden": true
-                },
-                "BATCH_MODE": {
-                    "type": "boolean",
-                    "description": "Build cartesian product of two fasta inputs and predict all the combinations via colabfold & mmseqs2.",
-                    "default": false,
-                    "hidden": true
-                }
-            }
-        },
-        "Processes": {
-            "title": "Process options",
-            "type": "object",
-            "description": "Define fold2go pipeline parameters.",
-            "properties": {
-                "SHINY": {
-                    "type": "object",
-                    "description": "Options for SHINY process",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Run SHINY",
-                            "default": true,
-                            "hidden": true
-                        }
-                    }
-                },
-                "MSA": {
-                    "type": "object",
-                    "description": "Options for MSA process",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Run MSA",
-                            "default": true,
-                            "hidden": true
-                        }
-                    }
-                },
-                "INFERENCE": {
-                    "type": "object",
-                    "description": "Options for INFERENCE process",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Run INFERENCE",
-                            "default": true,
-                            "hidden": true
-                        }
-                    }
-                },
-                "METRICS": {
-                    "type": "object",
-                    "description": "Options for METRICS process",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Run METRICS",
-                            "default": true,
-                            "hidden": true
-                        }
-                    }
                 }
             }
         },
@@ -106,7 +51,7 @@
             "properties": {
                 "ALPHAFOLD2" : {
                     "type": "object",
-                    "required": ["DATABASE_DIR", "MODEL_PRESET", "PREDICTIONS_PER_MODEL"],
+                    "required": ["DATABASE_DIR", "PREDICTIONS_PER_MODEL"],
                     "description": "Define AlphaFold2 parameters",
                     "properties": {
                         "DATABASE_DIR": {
@@ -116,17 +61,6 @@
                             "default": "/mnt/storage/alphafold/v232",
                             "hidden": true,
                             "exists": true
-                        },
-                        "MODEL_PRESET": {
-                            "type": "string",
-                            "description": "Model preset",
-                            "default": "multimer",
-                            "enum": [
-                                "multimer",
-                                "monomer_ptm",
-                                "monomer",
-                                "monomer_casp14"
-                            ]
                         },
                         "PREDICTIONS_PER_MODEL": {
                             "type": "integer",
@@ -165,12 +99,6 @@
                             "type": "integer",
                             "description": "Number of diffusion samples to generate",
                             "default": 1
-                        },
-                        "GROUP_MSA": {
-                            "type": "boolean",
-                            "description": "Run multiple sequence alignments as single job. Avoids redundant computation if sequences are shared between inputs.",
-                            "default": true,
-                            "hidden": true
                         }
                     }
                 }
@@ -185,15 +113,6 @@
                     "required": ["MSA_PAIRING_STRATEGY", "MSA_SERVER_URL", "RECYCLING_STEPS", "SAMPLING_STEPS", "DIFFUSION_SAMPLES"],
                     "description": "Define Boltz parameters",
                     "properties": {
-                        "MODEL_PRESET": {
-                            "type": "string",
-                            "description": "Model preset",
-                            "default": "boltz1",
-                            "enum": [
-                                "boltz1",
-                                "boltz2"
-                            ]
-                        },
                         "MSA_PAIRING_STRATEGY": {
                             "type": "string",
                             "description": "Pairing strategy to use",
@@ -285,9 +204,6 @@
         },
         {
             "$ref": "#/$defs/ColabFold"
-        },
-        {
-            "$ref": "#/$defs/Processes"
         }
     ]
 }

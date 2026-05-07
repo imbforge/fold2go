@@ -1,23 +1,20 @@
-nextflow.preview.types = true
+nextflow.enable.types = true
 
 process METRICS {
-    tag "${meta}"
+    tag "${id}"
 
     input:
-    (meta, prediction): Tuple<Map, Path>
+    record(id: String, prediction: Path, model: String)
 
     output:
-    metrics: Tuple<String, Path> = tuple(meta, file("*_metrics.tsv"))
-
-    when:
-    params.METRICS.enabled
+    record(id: id, metrics: file("*_metrics.tsv"), model: model)
 
     script:
     """
     python ${moduleDir}/resources/usr/bin/calculate_metrics.py \\
         --run_name=${workflow.runName} \\
         --predictions=${prediction} \\
-        --id=${meta.id} \\
-        --model_preset=${meta.model}
+        --id=${id} \\
+        --model_preset=${model}
     """
 }

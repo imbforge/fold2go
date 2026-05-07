@@ -1,20 +1,23 @@
-nextflow.preview.types = true
+nextflow.enable.types = true
 
 process MSA {
-    tag "${meta}"
+    tag "${input.simpleName}"
 
     input:
-    (meta, yaml): Tuple<Map, Path>
+    record(
+        model: String,
+        input: Path
+    )
 
     stage:
-    stageAs 'input/*', yaml
+    stageAs input, 'input/*'
 
     output:
-    yaml: Tuple<Map, Path> = tuple(meta, file("${meta.id}.yaml"))
-    msa: Tuple<Map, Path> = tuple(meta, file("${meta.id}_*.csv"))
-
-    when:
-    params.MSA.enabled
+    record(
+        id   : input.simpleName,
+        msa  : files("${input.simpleName}*.{yaml,csv}"),
+        model: model
+    )
 
     script:
     """
@@ -26,7 +29,7 @@ process MSA {
     from boltz.main import compute_msa
     from pathlib import Path
 
-    with Path("${yaml}").open('r') as fin:
+    with Path("${input}").open('r') as fin:
         targets = yaml.safe_load(fin)
 
     sequences = {}
@@ -35,43 +38,48 @@ process MSA {
         if 'protein' in entity and entity['protein'].get('msa') is None:
             chain_id, seq = entity['protein']['id'], entity['protein']['sequence']
             if isinstance(chain_id, list):
-                msa_id = f"${meta.id}_{'_'.join(chain_id)}"
+                msa_id = f"${input.simpleName}_{'_'.join(chain_id)}"
             else :
-                msa_id = f"${meta.id}_{chain_id}"
+                msa_id = f"${input.simpleName}_{chain_id}"
             sequences[msa_id] = seq
             entity['protein']['msa'] = f"{msa_id}.csv"
 
     compute_msa(
         data=sequences,
-        target_id="${meta.id}",
+        target_id="${input.simpleName}",
         msa_dir=Path.cwd(),
         msa_server_url="${params.BOLTZ.MSA_SERVER_URL}",
         msa_pairing_strategy="${params.BOLTZ.MSA_PAIRING_STRATEGY}"
     )
 
-    with Path("${meta.id}.yaml").open("w") as fout:
+    with Path("${input.simpleName}.yaml").open("w") as fout:
         yaml.dump(targets, fout)
     """
 }
 
 process INFERENCE {
-    tag "${meta}"
+    tag "${id}"
     label "gpu"
 
     input:
-    (meta, yaml, _msa): Tuple<Map, Path, Path>
+    record(
+        id   : String,
+        msa  : Set<Path>,
+        model: String
+    )
 
     output:
-    prediction: Tuple<Map, Path> = tuple(meta, file("boltz_results_*/predictions/${meta.id}", type: 'dir'))
-
-    when:
-    params.INFERENCE.enabled
+    record(
+        id        : id,
+        prediction: file("boltz_results_*/predictions/${id}", type: 'dir'),
+        model     : model
+    )
 
     script:
     """
-    boltz predict ${yaml} \\
+    boltz predict ${id}.yaml \\
         --write_full_pae \\
-        --model ${params.BOLTZ.MODEL_PRESET} \\
+        --model=${model} \\
         --recycling_steps=${params.BOLTZ.RECYCLING_STEPS} \\
         --sampling_steps=${params.BOLTZ.SAMPLING_STEPS} \\
         --diffusion_samples=${params.BOLTZ.DIFFUSION_SAMPLES} \\

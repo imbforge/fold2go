@@ -1,24 +1,39 @@
+nextflow.enable.types = true
+
 include { MSA; INFERENCE } from '../../modules/colabfold'
 
 workflow COLABFOLD {
 
     take:
-        input: Channel<Path>
+        input: Channel<Record>
 
     main:
 
-        MSA(
-            input.collect()
-        )
+        jobdef =
+            input
+            .map { it -> tuple(it.model, it.input) }
+            .groupBy()
+            .map { model, fasta -> 
+                record(
+                    model: model,
+                    queries: fasta.toSet()
+                )
+            }
         
-        msa = MSA.out.msa.flatMap().map { it -> tuple([ id: it.simpleName, model: 'colabfold' ], it) }
+        msa = 
+            MSA(
+                jobdef
+            )
+            .flatMap { rec ->
+                rec.msa.collect { it ->
+                    record(id: it.simpleName, msa: it, model: rec.model)
+                }
+            }
 
-        INFERENCE(
-            msa
-        )
+        prediction = INFERENCE(msa)
 
     emit:
-        msa: Channel<Tuple<Map, Path>> = msa
-        prediction: Channel<Tuple<Map, Path>> = INFERENCE.out.prediction
-        jobcount: Value<Integer> = msa.count()
+        msa: Channel<Record> = msa
+        prediction: Channel<Record> = prediction
+        jobcount: Value<Integer> = msa.collect().map { it -> it.size() }
 }
