@@ -19,8 +19,8 @@ workflow COLABFOLD {
                     query: fasta.toSet()
                 )
             }
-        
-        msa = 
+
+        msa =
             MSA(
                 jobdef
             )

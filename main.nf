@@ -14,7 +14,10 @@ workflow {
     input =
       channel.fromPath(params.IN)
       .map { input ->
-        record(model: params.MODEL_PRESET, input: input)
+        record(
+          model: (params.MODEL_PRESET as String),
+          input: input
+        )
       }
 
     result = FOLD2GO(input)

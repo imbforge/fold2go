@@ -15,7 +15,7 @@ process MSA {
     output:
     record(
         model: model,
-        msa  : files("**/*_data.json")
+        json : files("**/*_data.json")
     )
 
     script:
@@ -35,7 +35,7 @@ process INFERENCE {
     input:
     record(
         id   : String,
-        msa  : Path,
+        json : Path,
         model: String
     )
 
@@ -50,7 +50,7 @@ process INFERENCE {
     """
     python /app/alphafold/run_alphafold.py \\
         --run_data_pipeline=false \\
-        --json_path=${msa} \\
+        --json_path=${json} \\
         --model_dir=${params.ALPHAFOLD3.MODEL_DIR} \\
         --num_diffusion_samples=${params.ALPHAFOLD3.DIFFUSION_SAMPLES} \\
         --jax_compilation_cache_dir=${workflow.workDir} \\

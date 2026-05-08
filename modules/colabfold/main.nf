@@ -12,7 +12,8 @@ process MSA {
     output:
     record(
         model: model,
-        msa  : files("a3m/*.a3m")
+        msa  : files("msa/*.a3m"),
+        json : files("msa/*.json", optional: true)
     )
 
     script:
@@ -23,7 +24,8 @@ process MSA {
         --threads ${task.cpus} \\
         combinations.fasta \\
         ${params.COLABFOLD.DATABASE_DIR} \\
-        a3m
+        ${model == 'alphafold3' ? '--af3-json' : ''} \\
+        msa
     """
 }
 

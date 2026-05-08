@@ -1,6 +1,9 @@
 nextflow.enable.types = true
 
-include { MSA; INFERENCE } from '../../modules/alphafold3'
+include { MSA as HMMER  } from '../../modules/alphafold3'
+include { MSA as MMSEQS } from '../../modules/colabfold'
+include { INFERENCE     } from '../../modules/alphafold3'
+
 
 workflow ALPHAFOLD3 {
 
@@ -13,25 +16,25 @@ workflow ALPHAFOLD3 {
             input
             .map { it -> tuple(it.model, it.input) }
             .groupBy()
-            .map { model, json -> 
+            .map { model, query -> 
                 record(
                     model: model,
-                    query: json.toSet()
+                    query: query.toSet()
                 )
             }
 
-        msa = 
-            MSA(
-                jobdef
-            )
+        msa =
+            ( params.ALPHAFOLD3.USE_MMSEQS? MMSEQS( jobdef ) : HMMER( jobdef ) )
             .flatMap { rec ->
-                rec.msa.collect { it ->
-                    // extract id from filename in a convoluted way (.minus() is not something the language server accepts)
-                    def id = it.name.tokenize('_data.json').first()
-                    record(id: id, msa: it, model: rec.model)
+                rec.json.collect { it ->
+                    record(
+                        id: it.simpleName.minus('_data'),
+                        json: it,
+                        model: rec.model
+                    )
                 }
             }
-        
+
         prediction = INFERENCE( msa )
 
     emit:

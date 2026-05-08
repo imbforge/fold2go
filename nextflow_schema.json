@@ -99,6 +99,11 @@
                             "type": "integer",
                             "description": "Number of diffusion samples to generate",
                             "default": 1
+                        },
+                        "USE_MMSEQS": {
+                            "type": "boolean",
+                            "description": "Use MMseqs2 for sequence search",
+                            "default": false
                         }
                     }
                 }
