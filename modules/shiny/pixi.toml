@@ -11,10 +11,10 @@ platforms = ["linux-64"]
 [dependencies]
 python = ">=3.14.4,<3.15"
 plotly = ">=6.6.0,<7"
-polars = ">=1.40.0,<2"
-numpy = ">=2.4.3,<3"
+polars = ">=1.40.1,<2"
+numpy = ">=2.4.6,<3"
 
 [pypi-dependencies]
-shiny = ">=1.6.0, <2"
-shinywidgets = ">=0.8.0, <0.9"
+shiny = ">=1.6.1, <2"
+shinywidgets = ">=0.8.1, <0.9"
 ipymolstar = ">=0.1.0, <0.2"
