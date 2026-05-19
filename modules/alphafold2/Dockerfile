@@ -1,6 +1,6 @@
 FROM ghcr.io/prefix-dev/pixi:jammy as build
 
-ENV DEBIAN_FRONTEND="noninteractive"
+ENV DEBIAN_FRONTEND="noninteractive" CONDA_OVERRIDE_CUDA="12.2.2"
 
 WORKDIR /app/alphafold
 
