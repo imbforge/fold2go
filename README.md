@@ -4,7 +4,7 @@
 
 `fold2go` is a Nextflow pipeline for *in silico* prediction of three-dimensional protein structures through various machine learning models.
 
-It currently supports `AlphaFold-Multimer`[^1], `ColabFold`[^2][^1], `AlphaFold3`[^3], `Boltz1` [^4][^2] and `Boltz2` [^5][^2] predictions and is fully containerised.
+It currently supports `AlphaFold-Multimer`[^1], `ColabFold`[^2] [^1], `AlphaFold3`[^3], `Boltz1` [^4] [^2] and `Boltz2` [^5] [^2] predictions and is fully containerised.
 
 Moreover, it accumulates and computes various metrics and contains a `py-shiny` application that allows to track pipeline progress and explore results interactively using `Mol* Viewer`[^6].
 
