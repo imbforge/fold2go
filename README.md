@@ -4,9 +4,9 @@
 
 `fold2go` is a Nextflow pipeline for *in silico* prediction of three-dimensional protein structures through various machine learning models.
 
-It currently supports `AlphaFold2`[^1], `AlphaFold-Multimer`[^2], `AlphaFold3`[^3], `Boltz1` [^4] and `Boltz2` [^4] predictions and is fully containerised.
+It currently supports `AlphaFold-Multimer`[^1], `ColabFold`[^2][^1], `AlphaFold3`[^3], `Boltz1` [^4][^2] and `Boltz2` [^5][^2] predictions and is fully containerised.
 
-Moreover, it accumulates and computes various metrics and contains a `py-shiny` application that allows to track pipeline progress and explore results interactively. Three-dimensional visualization of predicted structures therein is implemented via `Mol* Viewer`[^5].
+Moreover, it accumulates and computes various metrics and contains a `py-shiny` application that allows to track pipeline progress and explore results interactively using `Mol* Viewer`[^6].
 
 > :warning: 
 AlphaFold3 has a restrictive license and the model weights have to be requested from Google DeepMind. Usage is subject to their [Terms of Use](https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_TERMS_OF_USE.md).
@@ -71,20 +71,6 @@ This pipeline can be launched through a Jupyterhub-based graphical frontend. If 
 
 [^1]:
     ```
-    @Article{AlphaFold2021,
-    author  = {Jumper, John and Evans, Richard and Pritzel, Alexander and Green, Tim and Figurnov, Michael and Ronneberger, Olaf and Tunyasuvunakool, Kathryn and Bates, Russ and {\v{Z}}{\'\i}dek, Augustin and Potapenko, Anna and Bridgland, Alex and Meyer, Clemens and Kohl, Simon A A and Ballard, Andrew J and Cowie, Andrew and Romera-Paredes, Bernardino and Nikolov, Stanislav and Jain, Rishub and Adler, Jonas and Back, Trevor and Petersen, Stig and Reiman, David and Clancy, Ellen and Zielinski, Michal and Steinegger, Martin and Pacholska, Michalina and Berghammer, Tamas and Bodenstein, Sebastian and Silver, David and Vinyals, Oriol and Senior, Andrew W and Kavukcuoglu, Koray and Kohli, Pushmeet and Hassabis, Demis},
-    journal = {Nature},
-    title   = {Highly accurate protein structure prediction with {AlphaFold}},
-    year    = {2021},
-    volume  = {596},
-    number  = {7873},
-    pages   = {583--589},
-    doi     = {10.1038/s41586-021-03819-2}
-    }
-    ```
-
-[^2]:
-    ```
     @article {AlphaFold-Multimer2021,
     author       = {Evans, Richard and O{\textquoteright}Neill, Michael and Pritzel, Alexander and Antropova, Natasha and Senior, Andrew and Green, Tim and {\v{Z}}{\'\i}dek, Augustin and Bates, Russ and Blackwell, Sam and Yim, Jason and Ronneberger, Olaf and Bodenstein, Sebastian and Zielinski, Michal and Bridgland, Alex and Potapenko, Anna and Cowie, Andrew and Tunyasuvunakool, Kathryn and Jain, Rishub and Clancy, Ellen and Kohli, Pushmeet and Jumper, John and Hassabis, Demis},
     journal      = {bioRxiv},
@@ -94,6 +80,16 @@ This pipeline can be launched through a Jupyterhub-based graphical frontend. If 
     doi          = {10.1101/2021.10.04.463034},
     URL          = {https://www.biorxiv.org/content/early/2021/10/04/2021.10.04.463034},
     eprint       = {https://www.biorxiv.org/content/early/2021/10/04/2021.10.04.463034.full.pdf},
+    }
+    ```
+
+[^2]:
+    ```
+    @article{mirdita2022colabfold,
+    title={ColabFold: making protein folding accessible to all},
+    author={Mirdita, Milot and Sch{\"u}tze, Konstantin and Moriwaki, Yoshitaka and Heo, Lim and Ovchinnikov, Sergey and Steinegger, Martin},
+    journal={Nature methods},
+    year={2022},
     }
     ```
 
@@ -120,7 +116,10 @@ This pipeline can be launched through a Jupyterhub-based graphical frontend. If 
     doi = {10.1101/2024.11.19.624167},
     journal = {bioRxiv}
     }
+    ```
 
+[^5]:
+    ```
     @article{passaro2025boltz2,
     author = {Passaro, Saro and Corso, Gabriele and Wohlwend, Jeremy and Reveiz, Mateo and Thaler, Stephan and Somnath, Vignesh Ram and Getz, Noah and Portnoi, Tally and Roy, Julien and Stark, Hannes and Kwabi-Addo, David and Beaini, Dominique and Jaakkola, Tommi and Barzilay, Regina},
     title = {Boltz-2: Towards Accurate and Efficient Binding Affinity Prediction},
@@ -128,16 +127,9 @@ This pipeline can be launched through a Jupyterhub-based graphical frontend. If 
     doi = {10.1101/2025.06.14.659707},
     journal = {bioRxiv}
     }
-
-    @article{mirdita2022colabfold,
-    title={ColabFold: making protein folding accessible to all},
-    author={Mirdita, Milot and Sch{\"u}tze, Konstantin and Moriwaki, Yoshitaka and Heo, Lim and Ovchinnikov, Sergey and Steinegger, Martin},
-    journal={Nature methods},
-    year={2022},
-    }
     ```
 
-[^5]:
+[^6]:
 
     ```
     @article{sehnal2021mol,
