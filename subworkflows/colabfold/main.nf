@@ -24,5 +24,5 @@ workflow COLABFOLD {
     emit:
         msa: Channel<Record> = msa
         prediction: Channel<Record> = prediction
-        jobcount: Value<Integer> = input.map { it -> it.input.countFasta() }.collect().map { it -> it.sum() }
+        jobcount: Value<Integer> = input.map { it -> it.input.splitFasta( record: [id: true] ) }.collect().map { it -> it.size() }
 }

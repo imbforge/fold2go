@@ -23,7 +23,7 @@ workflow ALPHAFOLD3 {
             }
 
         msa =
-            ( params.ALPHAFOLD3.USE_MMSEQS? MMSEQS( jobdef ) : HMMER( jobdef ) )
+            ( params.ALPHAFOLD3.USE_MMSEQS ? MMSEQS( input ) : HMMER( jobdef ) )
             .flatMap { rec ->
                 rec.json.collect { it ->
                     record(
@@ -39,5 +39,5 @@ workflow ALPHAFOLD3 {
     emit:
         msa: Channel<Record> = msa
         prediction: Channel<Record> = prediction
-        jobcount: Value<Integer> = input.collect().map { it -> it.size() }
+        jobcount: Value<Integer> = ( params.ALPHAFOLD3.USE_MMSEQS ? input.map { it -> it.input.splitFasta( record: [id: true] ) } : input ).collect().map { it -> it.size() }
 }
