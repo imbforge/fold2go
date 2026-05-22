@@ -85,7 +85,7 @@ def main():
 					json.dump(payload, handle, indent=4)
 					handle.write("\n")
 		case 'fasta':
-			output_file = args.output_dir / "combinations.fasta"
+			output_file = args.output_dir / f"{list(records1.keys())[0]}_vs_many.fasta"
 			with output_file.open("w", encoding="utf-8") as handle: 
 				for id, seqs in combinations.items():
 					handle.write(f">{id}\n{seqs['seq1']}:{seqs['seq2']}\n")

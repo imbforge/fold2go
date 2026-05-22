@@ -1,0 +1,24 @@
+IN:
+  "${projectDir}/assets/testdata/*.yaml"
+MODEL_PRESET:
+  "boltz1"
+EMAIL:
+  ""
+SAVE_MSA:
+  false
+
+BOLTZ:
+  MSA_SERVER_URL:
+    "https://api.colabfold.com"
+  MSA_PAIRING_STRATEGY:
+    "greedy"
+  RECYCLING_STEPS:
+    3
+  SAMPLING_STEPS:
+    200
+  DIFFUSION_SAMPLES:
+    1
+
+SHINY:
+  enabled:
+    false

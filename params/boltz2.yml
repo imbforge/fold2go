@@ -1,11 +1,13 @@
 IN:
-  "${projectDir}/assets/*.yaml"
+  "${projectDir}/assets/testdata/*.yaml"
+MODEL_PRESET:
+  "boltz2"
 EMAIL:
   ""
 SAVE_MSA:
   false
 
-ALPHAFOLD3:
+BOLTZ:
   MSA_SERVER_URL:
     "https://api.colabfold.com"
   MSA_PAIRING_STRATEGY:

@@ -1,5 +1,7 @@
 IN:
-  "${projectDir}/assets/*.fasta"
+  "${projectDir}/assets/testdata/alphafold2*.fasta"
+MODEL_PRESET:
+  "alphafold2_multimer"
 EMAIL:
   ""
 SAVE_MSA:

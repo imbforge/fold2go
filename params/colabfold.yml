@@ -1,0 +1,20 @@
+IN:
+  "${projectDir}/assets/testdata/colabfold*.fasta"
+MODEL_PRESET:
+  "colabfold"
+EMAIL:
+  ""
+SAVE_MSA:
+  false
+
+COLABFOLD:
+  DATABASE_DIR:
+    "/mnt/storage/mmseqs2"
+  MODEL_DIR:
+    "/mnt/storage/colabfold"
+  RECYCLING_STEPS:
+    1
+
+SHINY:
+  enabled:
+    false

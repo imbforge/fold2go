@@ -9,20 +9,9 @@ workflow COLABFOLD {
 
     main:
 
-        jobdef =
-            input
-            .map { it -> tuple(it.model, it.input) }
-            .groupBy()
-            .map { model, fasta -> 
-                record(
-                    model: model,
-                    query: fasta.toSet()
-                )
-            }
-
         msa =
             MSA(
-                jobdef
+                input
             )
             .flatMap { rec ->
                 rec.msa.collect { it ->
@@ -35,5 +24,5 @@ workflow COLABFOLD {
     emit:
         msa: Channel<Record> = msa
         prediction: Channel<Record> = prediction
-        jobcount: Value<Integer> = msa.collect().map { it -> it.size() }
+        jobcount: Value<Integer> = input.map { it -> it.input.countFasta() }.collect().map { it -> it.sum() }
 }

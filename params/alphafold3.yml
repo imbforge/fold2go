@@ -1,5 +1,7 @@
 IN:
-  "${projectDir}/assets/*.json"
+  "${projectDir}/assets/testdata/*.json"
+MODEL_PRESET:
+  "alphafold3"
 EMAIL:
   ""
 SAVE_MSA:
@@ -14,6 +16,8 @@ ALPHAFOLD3:
     1
   GROUP_MSA:
     true
+  USE_MMSEQS:
+    false
 
 SHINY:
   enabled:

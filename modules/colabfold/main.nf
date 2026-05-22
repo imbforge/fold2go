@@ -6,7 +6,7 @@ process MSA {
     input:
     record(
         model: String,
-        query: Set<Path>
+        input: Path
     )
 
     output:
@@ -18,11 +18,9 @@ process MSA {
 
     script:
     """
-    python ${moduleDir}/resources/usr/bin/combinations.py ${query.join(' ')}
-
     colabfold_search \\
         --threads ${task.cpus} \\
-        combinations.fasta \\
+        ${input} \\
         ${params.COLABFOLD.DATABASE_DIR} \\
         ${model == 'alphafold3' ? '--af3-json' : ''} \\
         msa

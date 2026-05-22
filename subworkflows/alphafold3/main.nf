@@ -4,7 +4,6 @@ include { MSA as HMMER  } from '../../modules/alphafold3'
 include { MSA as MMSEQS } from '../../modules/colabfold'
 include { INFERENCE     } from '../../modules/alphafold3'
 
-
 workflow ALPHAFOLD3 {
 
     take:
