@@ -2,13 +2,25 @@
 
 nextflow.enable.types = true
 
-include { validateParameters } from 'plugin/nf-schema'
+include { paramsHelp; validateParameters } from 'plugin/nf-schema'
 
 include { FOLD2GO } from './workflows/fold2go'
+
+params {
+  help: Boolean = false
+}
 
 workflow {
 
   main:
+
+    if (params.help) {
+        log.info paramsHelp(
+          command: 'nextflow run imbforge/fold2go --IN *.{fasta,json,yaml} --MODEL_PRESET <alphafold2_multimer|alphafold3|boltz1|boltz2|colabfold>',
+        )
+        exit(0, 'If you encounter any issues with fold2go, please report them at https://gitlab.rlp.net/imbforge/fold2go/-/issues')
+    }
+
     validateParameters()
 
     input =
