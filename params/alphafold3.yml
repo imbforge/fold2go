@@ -19,6 +19,3 @@ ALPHAFOLD3:
   USE_MMSEQS:
     false
 
-SHINY:
-  enabled:
-    false

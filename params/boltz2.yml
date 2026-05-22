@@ -18,7 +18,3 @@ BOLTZ:
     200
   DIFFUSION_SAMPLES:
     1
-
-SHINY:
-  enabled:
-    false

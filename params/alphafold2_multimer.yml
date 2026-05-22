@@ -15,6 +15,3 @@ ALPHAFOLD2:
   PREDICTIONS_PER_MODEL:
     1
 
-SHINY:
-  enabled:
-    false

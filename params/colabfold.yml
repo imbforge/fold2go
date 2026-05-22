@@ -14,7 +14,3 @@ COLABFOLD:
     "/mnt/storage/colabfold"
   RECYCLING_STEPS:
     1
-
-SHINY:
-  enabled:
-    false

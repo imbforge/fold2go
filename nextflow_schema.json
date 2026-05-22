@@ -101,7 +101,7 @@
                             "default": 1
                         },
                         "USE_MMSEQS": {
-                            "type": "boolean",
+                            "type": ["boolean", "string"],
                             "description": "Use MMseqs2 for sequence search",
                             "default": false
                         }
