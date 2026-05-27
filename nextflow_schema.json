@@ -100,10 +100,14 @@
                             "description": "Number of diffusion samples to generate",
                             "default": 1
                         },
-                        "USE_MMSEQS": {
-                            "type": ["boolean", "string"],
-                            "description": "Use MMseqs2 for sequence search",
-                            "default": false
+                        "MSA_METHOD": {
+                            "type": ["string"],
+                            "description": "Method to use for multiple sequence alignments",
+                            "enum": [
+                                "hmmer",
+                                "mmseqs2"
+                            ],
+                            "default": "hmmer"
                         }
                     }
                 }
