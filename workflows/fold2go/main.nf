@@ -57,7 +57,7 @@ workflow FOLD2GO {
         
         metrics
         .collectFile ( storeDir: "${workflow.outputDir}/${workflow.runName}", keepHeader: true ) {
-            record -> [ "${record.model}_${record.id}_metrics.tsv", record.metrics ]
+            record -> [ "${record.model}_metrics.tsv", record.metrics ]
         }
         .collect()
         .map { tsv ->
