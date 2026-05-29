@@ -39,5 +39,5 @@ workflow ALPHAFOLD3 {
     emit:
         msa: Channel<Record> = msa
         prediction: Channel<Record> = prediction
-        jobcount: Value<Integer> = ( params.ALPHAFOLD3.MSA_METHOD == 'mmseqs2' ? input.map { it -> it.input.splitFasta( record: [id: true] ) } : input ).collect().map { it -> it.size() }
+        jobcount: Value<Integer> = ( params.ALPHAFOLD3.MSA_METHOD == 'mmseqs2' ? input.map { it -> it.input.countFasta() }.collect().map { it -> it.max() ?: 0 } : input.collect().map { it -> it.size() } )
 }
