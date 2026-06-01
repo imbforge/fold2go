@@ -27,7 +27,7 @@ workflow ALPHAFOLD3 {
             .flatMap { rec ->
                 rec.json.collect { it ->
                     record(
-                        id: it.simpleName.minus('_data'),
+                        id: it.name.replace('_data.json', ''),
                         json: it,
                         model: rec.model
                     )
