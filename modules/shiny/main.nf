@@ -4,16 +4,12 @@ process SHINY {
     tag "${workflow.userName}@localhost:${workflow.workDir}/shiny.sock"
 
     input:
-    record(
-        njobs: String,
-        data: String,
-        logfile: String
-    )
+    njobs: Integer
 
     stage:
-    env 'FOLD2GO_NJOBS', njobs
-    env 'FOLD2GO_DATA', data
-    env 'FOLD2GO_LOG', logfile
+    env 'FOLD2GO_NJOBS', "${njobs}"
+    env 'FOLD2GO_DATA', "${workflow.outputDir}/${workflow.runName}"
+    env 'FOLD2GO_LOG', "${workflow.launchDir}/.nextflow.log"
 
     script:
     """

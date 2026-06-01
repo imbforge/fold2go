@@ -75,5 +75,4 @@ workflow ALPHAFOLD2 {
     emit:
         msa: Channel<Record> = msa
         prediction: Channel<Record> = prediction
-        jobcount: Value<Integer> = input.collect().map { it -> it.size() }
 }

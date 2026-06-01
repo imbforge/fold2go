@@ -4,7 +4,11 @@ process METRICS {
     tag "${id}"
 
     input:
-    record(id: String, prediction: Path, model: String)
+    record(
+        id: String,
+        prediction: Path,
+        model: String
+    )
 
     output:
     record(id: id, metrics: file("*_metrics.tsv"), model: model)

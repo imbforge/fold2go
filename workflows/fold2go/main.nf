@@ -39,51 +39,62 @@ workflow FOLD2GO {
         )
 
         SHINY(
-            channel.empty()
-                .mix(alphafold2.jobcount).mix(alphafold3.jobcount).mix(boltz.jobcount).mix(colabfold.jobcount)
-                .collect()
-                .map { counts ->
-                    record(
-                        njobs: "${counts.sum()}",
-                        data: "${workflow.outputDir}/${workflow.runName}",
-                        logfile: "${workflow.launchDir}/.nextflow.log"
-                    )
-                }
+            // get the number of expected predictions in order to render the progress bar in the shiny app
+            (
+                params.MODEL_PRESET == 'colabfold' || ( params.MODEL_PRESET == 'alphafold3' && params.ALPHAFOLD3.MSA_METHOD == 'mmseqs2' )
+                ? input.map { it -> it.input.splitFasta( record: [id: true] ) }.flatMap()
+                : input
+            )
+            .collect()
+            .map { it -> it.size() }
         )
 
         metrics = METRICS(
             alphafold2.prediction.mix(alphafold3.prediction).mix(boltz.prediction).mix(colabfold.prediction)
         )
-        
+
         metrics
-        .collectFile ( storeDir: "${workflow.outputDir}/${workflow.runName}", keepHeader: true ) {
-            record -> [ "${record.model}_metrics.tsv", record.metrics ]
-        }
-        .collect()
-        .map { tsv ->
-            if( params.EMAIL ) {
-                try {
-                    sendMail (
-                        to: "${params.EMAIL}",
-                        subject: "fold2go (${workflow.runName})",
-                        attach: tsv,
-                        body: """
-                        Dear ${workflow.userName},
-
-                        fold2go predictions are complete, please find some useful metrics attached.
-                        Results of this run have all been stored at ${workflow.outputDir}/${workflow.runName}.
-
-                        ---
-                        Deet-doot-dot, I am a bot.
-                        """.stripIndent()
-                    )
+        .subscribe (
+            onNext: { it ->
+                def handle = file("${workflow.outputDir}/${workflow.runName}").resolve("${workflow.runName}_metrics.tsv")
+                if ( !handle.exists() ) {
+                    handle.parent.mkdirs()
+                    handle << it.metrics.text
                 }
-                catch( Exception e ) {
-                    log.warn "Failed to send notification email to ${params.EMAIL}"
-                    log.warn e.getMessage()
+                else { // if the file already exists, so does the header line; drop the header when appending new data
+                    it.metrics
+                    .readLines()
+                    .drop(1)
+                    .each { line ->
+                        handle << line + '\n'
+                    }
+                }
+            },
+            onComplete: {
+                if ( params.EMAIL ) {
+                    try {
+                        sendMail (
+                            to: "${params.EMAIL}",
+                            subject: "fold2go (${workflow.runName})",
+                            attach: "${workflow.outputDir}/${workflow.runName}/${workflow.runName}_metrics.tsv",
+                            body: """
+                            Dear ${workflow.userName},
+
+                            fold2go predictions are complete, please find some useful metrics attached.
+                            Results of this run have all been stored at ${workflow.outputDir}/${workflow.runName}.
+
+                            ---
+                            Deet-doot-dot, I am a bot.
+                            """.stripIndent()
+                        )
+                    }
+                    catch( Exception e ) {
+                        log.warn "Failed to send notification email to ${params.EMAIL}"
+                        log.warn e.getMessage()
+                    }
                 }
             }
-        }
+        )
 
     emit:
         msa: Channel<Tuple<Map, Set<Path>>> = alphafold2.msa.mix(alphafold3.msa).mix(boltz.msa).mix(colabfold.msa)
