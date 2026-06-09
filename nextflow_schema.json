@@ -59,8 +59,7 @@
                             "format": "directory-path",
                             "description": "Path to AlphaFold2 database",
                             "default": "/mnt/storage/alphafold/v232",
-                            "hidden": true,
-                            "exists": true
+                            "hidden": true
                         },
                         "PREDICTIONS_PER_MODEL": {
                             "type": "integer",
@@ -85,8 +84,7 @@
                             "format": "directory-path",
                             "description": "Path to AlphaFold3 database",
                             "default": "/mnt/storage/alphafold/v300",
-                            "hidden": true,
-                            "exists": true
+                            "hidden": true
                         },
                         "MODEL_DIR": {
                             "type": "string",
