@@ -33,7 +33,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.2.25-hbd8a1cb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2025c-hc9c84f9_1.conda
-      - pypi: git+https://github.com/google-deepmind/alphafold3?tag=v3.0.2#f6a5aecf6eea2b5de4f846df86921630c5036b0b
+      - pypi: git+https://github.com/google-deepmind/alphafold3?tag=v3.0.3#7b197fe859790fc3e04d03ea70dd0b9ba48881c9
       - pypi: https://files.pythonhosted.org/packages/01/8e/1e35281b8ab6d5d72ebe9911edcdffa3f36b04ed9d51dec6dd140396e220/scipy-1.17.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/08/8a/0861bec20485572fbddf3dfba2910e38fe249796cb73ecdeb74e07eeb8d3/zipp-3.23.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0a/0d/0e3ecece05b7a7e87ab9fb587855548da437a061326fff64a223b6dcb78a/numpy-2.4.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
@@ -393,9 +393,9 @@ packages:
   purls: []
   size: 119135
   timestamp: 1767016325805
-- pypi: git+https://github.com/google-deepmind/alphafold3?tag=v3.0.2#f6a5aecf6eea2b5de4f846df86921630c5036b0b
+- pypi: git+https://github.com/google-deepmind/alphafold3?tag=v3.0.3#7b197fe859790fc3e04d03ea70dd0b9ba48881c9
   name: alphafold3
-  version: 3.0.2
+  version: 3.0.3
   requires_dist:
   - absl-py>=2.3.1
   - dm-haiku==0.0.16

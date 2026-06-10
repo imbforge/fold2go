@@ -1,4 +1,4 @@
-ARG ALPHAFOLD_VERSION=3.0.2
+ARG ALPHAFOLD_VERSION=3.0.3
 
 FROM ghcr.io/prefix-dev/pixi:jammy AS build
 

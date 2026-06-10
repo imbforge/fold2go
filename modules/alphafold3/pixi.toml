@@ -4,7 +4,7 @@ channels = ["conda-forge"]
 description = "Add a short description here"
 name = "alphafold"
 platforms = ["linux-64"]
-version = "3.0.2"
+version = "3.0.3"
 
 [system-requirements]
 cuda = "12.6.3"
@@ -15,4 +15,4 @@ cuda = "12.6.3"
 python = "3.12.*"
 
 [pypi-dependencies]
-alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", tag = "v3.0.2" }
+alphafold3 = { git = "https://github.com/google-deepmind/alphafold3", tag = "v3.0.3" }
