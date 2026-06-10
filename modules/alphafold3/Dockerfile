@@ -9,6 +9,9 @@ ENV DEBIAN_FRONTEND="noninteractive"
 ADD https://github.com/google-deepmind/alphafold3/archive/refs/tags/v${ALPHAFOLD_VERSION}.tar.gz /tmp/
 ADD http://eddylab.org/software/hmmer/hmmer-3.4.tar.gz /tmp/
 
+# add hmmer/easel patch to reduce thread contention (https://github.com/EddyRivasLab/easel/pull/78)
+ADD https://github.com/EddyRivasLab/easel/commit/c0497d24c043c90129aa8f812f4bc8d7aa89e5c5.patch /tmp/
+
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential ca-certificates git zlib1g-dev
 
 # create pixi environment for alphafold3
@@ -21,11 +24,13 @@ RUN printf '#!/bin/sh\n%s\nexec "$@"' "$(pixi shell-hook)" > 99-pixi.sh && chmod
 
 RUN pixi run build_data
 
-# build hmmer with af3 seq_limit patch to reduce peak RAM usage
-
 WORKDIR /tmp
 
-RUN tar xzf v${ALPHAFOLD_VERSION}.tar.gz && tar xzf hmmer-3.4.tar.gz && patch hmmer-3.4/src/jackhmmer.c alphafold3-${ALPHAFOLD_VERSION}/docker/jackhmmer_seq_limit.patch
+# build patched hmmer (jackhmmer seq_limit and easel workqueue patches)
+RUN tar xzf v${ALPHAFOLD_VERSION}.tar.gz \
+    && tar xzf hmmer-3.4.tar.gz \
+    && patch hmmer-3.4/src/jackhmmer.c alphafold3-${ALPHAFOLD_VERSION}/docker/jackhmmer_seq_limit.patch \
+    && patch hmmer-3.4/easel/esl_workqueue.c c0497d24c043c90129aa8f812f4bc8d7aa89e5c5.patch
 
 WORKDIR /tmp/hmmer-3.4
 
