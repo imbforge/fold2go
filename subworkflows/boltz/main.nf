@@ -8,7 +8,7 @@ workflow BOLTZ {
     main:
 
         input.map { yaml ->
-            [ [ id: yaml.simpleName, model: 'boltz' ], yaml ]
+            [ [ id: yaml.simpleName, model: "${params.BOLTZ.MODEL_PRESET}" ], yaml ]
         }
         | MSA
         | INFERENCE

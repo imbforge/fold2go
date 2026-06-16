@@ -339,7 +339,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--predictions', type=Path, dest='predictions')
     parser.add_argument('--id', type=Path, dest='id')
-    parser.add_argument('--model_preset', type=str, choices=['alphafold3', 'boltz', 'alphafold2_multimer', 'alphafold2_monomer_ptm', 'alphafold2_monomer', 'alphafold2_monomer_casp14'], dest='model_preset')
+    parser.add_argument('--model_preset', type=str, choices=['alphafold3', 'alphafold2_multimer', 'alphafold2_monomer_ptm', 'alphafold2_monomer', 'alphafold2_monomer_casp14', 'boltz1', 'boltz2'], dest='model_preset')
     parser.add_argument('--run_name', type=str, dest='run_name')
 
     args = parser.parse_args()
@@ -355,7 +355,7 @@ if __name__ == '__main__':
             metrics = calculate_af3_metrics(args.predictions)
         case 'alphafold2':
             metrics = calculate_af2_metrics(args.predictions)
-        case 'boltz':
+        case 'boltz1' | 'boltz2':
             metrics = calculate_boltz_metrics(args.predictions)
 
     DataFrame.from_dict(metrics, orient='index').assign(**meta).round(2).to_csv(f"{args.model_preset}_metrics.tsv", sep='\t', index=False)

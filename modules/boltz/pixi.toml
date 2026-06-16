@@ -15,4 +15,4 @@ cuda = "12"
 python = "3.12.*"
 
 [pypi-dependencies]
-boltz = { git = "https://github.com/jwohlwend/boltz", rev = "a062087d3a61a479e9eb6e6ce651156fb2ec38a9" }
+boltz = { version = "==2.2.1", extras = ["cuda"] }

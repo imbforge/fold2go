@@ -173,14 +173,23 @@
             }
         },
         "Boltz": {
-            "title": "Boltz-1 options",
+            "title": "Boltz options",
             "type": "object",
             "properties": {
                 "BOLTZ": {
                     "type": "object",
                     "required": ["MSA_PAIRING_STRATEGY", "MSA_SERVER_URL", "RECYCLING_STEPS", "SAMPLING_STEPS", "DIFFUSION_SAMPLES"],
-                    "description": "Define Boltz-1 parameters",
+                    "description": "Define Boltz parameters",
                     "properties": {
+                        "MODEL_PRESET": {
+                            "type": "string",
+                            "description": "Model preset",
+                            "default": "boltz1",
+                            "enum": [
+                                "boltz1",
+                                "boltz2"
+                            ]
+                        },
                         "MSA_PAIRING_STRATEGY": {
                             "type": "string",
                             "description": "Pairing strategy to use",
@@ -213,6 +222,12 @@
                             "type": "integer",
                             "description": "Number of diffusion samples to use for prediction",
                             "default": 1
+                        },
+                        "USE_KERNELS": {
+                            "type": "boolean",
+                            "description": "Use NVIDIA cuEquivariance kernels. Saves memory and speeds up inference but only works on newer GPU models.",
+                            "default": false,
+                            "hidden": true
                         }
                     }
                 }
