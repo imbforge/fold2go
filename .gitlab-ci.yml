@@ -4,7 +4,7 @@ include:
 .build:
   stage: build
   image:
-    name: registry.gitlab.rlp.net/imbforge/imb-cicd/buildah:latest
+    name: quay.io/buildah/stable:v1
   variables:
     STORAGE_DRIVER: vfs
   before_script:
