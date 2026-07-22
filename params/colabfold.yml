@@ -14,3 +14,5 @@ COLABFOLD:
     "/mnt/storage/colabfold"
   RECYCLING_STEPS:
     1
+  USE_PALLAS:
+    true

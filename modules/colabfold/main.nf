@@ -50,6 +50,7 @@ process INFERENCE {
     colabfold_batch \\
         ${msa} \\
         predictions \\
+        ${params.COLABFOLD.USE_PALLAS ? "--use-pallas" : ""} \\
         --num-recycle ${params.COLABFOLD.RECYCLING_STEPS} \\
         --data ${params.COLABFOLD.MODEL_DIR}
     """

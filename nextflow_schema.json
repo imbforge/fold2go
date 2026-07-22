@@ -190,6 +190,12 @@
                             "type": "integer",
                             "description": "Number of recycle steps to use for prediction",
                             "default": 3
+                        },
+                        "USE_PALLAS": {
+                            "type": "boolean",
+                            "description": "Use fast Pallas/Triton Evoformer kernels. Saves memory and speeds up inference but only works on newer GPU models.",
+                            "default": true,
+                            "hidden": true
                         }
                     }
                 }
