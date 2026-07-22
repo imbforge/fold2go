@@ -16,5 +16,5 @@ seqkit = ">=2.13.0,<3"
 
 [pypi-dependencies]
 colabfold = { version = "==1.6.2", extras = ["alphafold", "openmm"] }
-jax = { extras = ["cuda12"] }
+jax = { version = "==0.10.2", extras = ["cuda12"] }
 openmm = { extras = ["cuda12"] }

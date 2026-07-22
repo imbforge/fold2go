@@ -72,6 +72,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/14/91/0f53835d0292a74e6b37e68125b669827e2a75a26e01c34741d6c13cca6c/dm_haiku-0.0.16-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/15/07/284f757f63f8a8d69ed4472bfd85122bd086e637bf4ed09de572d575a693/pandas-2.3.3-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/18/2a/d4cd8506d2044e082f8cd921be57392e6a9b5ccd3ffdf050362430a3d5d5/nvidia_cuda_cccl_cu12-12.9.27-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/18/67/36e9267722cc04a6b9f15c7f3441c2363321a3ea07da7ae0c0707beb2a9c/typing_extensions-4.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1f/d4/1cb999aa70ac2b7196cecea921cb1e66daddaec3adbc3d67c47e6842a095/alphafold_colabfold-2.3.18-py3-none-any.whl
@@ -84,25 +85,26 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/2e/54/647ade08bf0db230bfea292f893923872fd20be6ac6f53b2b936ba839d75/zipp-3.23.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/31/1e/9e366f36efc550f07d6737f199e3f6bffafdf28795d007f10a77dd274f5c/nvidia_nccl_cu12-2.29.7-py3-none-manylinux_2_18_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/33/40/79b0c64d44d6c166c0964ec1d803d067f4a145cca23e23925fd351d0e642/nvidia_cusolver_cu12-11.7.5.82-py3-none-manylinux_2_27_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/34/a2/ffa883b05b8dedf98e513517ab92a79c69ce57233481b6a40c27c2fdcdc9/jax_cuda12_plugin-0.5.3-cp313-cp313-manylinux2014_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/36/ac/4ee28c65861605945223145fbcd3c9362ec2255ddf7d917574e205548c82/jaxlib-0.10.2-cp313-cp313-manylinux_2_27_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3b/00/2344469e2084fb287c2e0b57b72910309874c3245463acd6cf5e3db69324/appdirs-1.4.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3b/52/94aecda69df65ba1079a8b7dbe84632af5614dc0ed2c733185f6431874e3/nvidia_cudnn_cu12-9.20.0.48-py3-none-manylinux_2_27_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/46/0c/c75bbfb967457a0b7670b8ad267bfc4fffdf341c074e0a80db06c24ccfd4/nvidia_nvjitlink_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/4b/32/e0f13a1c5b0f8572d0ec6ae2f6c677b7991fafd95da523159c19eff0696a/contourpy-1.3.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/53/6d/cdf9bdd0d423dabae31411d05e68fba03e8390417ba665743c2be4be0933/openmm-8.3.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/58/c4/a603473feae00cd1b20ba3829413da53fd48977af052491ea7dab16fa618/jax_cuda12_pjrt-0.5.3-py3-none-manylinux2014_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/63/03/cde130e3ff706784f9efd47204f299b15113ea08203e98a556603dac245d/nvidia_nvshmem_cu12-3.7.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6f/3d/46bb04776c465cea2dd8aa2d4b61ab610b707f798f47838ef7e6105b025c/chex-0.1.90-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/71/24/538bff45bde96535d7d998c6fed1a751c75ac7c53c37c90dc2601b243893/pillow-12.1.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/74/27/e5b8f34d02d9995b80abcef563ea1f8b56d20134d8f4e5e81733b1feceb2/pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/75/97/a471f1c3eb1fd6f6c24a31a5858f443891d5127e63a7788678d14e249aea/matplotlib-3.10.8-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/77/00/326facd192b7dc0731e43b30f5ada5ef235e2a3325a151d94ed3db041536/jax_cuda12_pjrt-0.10.2-py3-none-manylinux_2_27_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/7d/f9/97f2ca8bb3ec6e4b1d64f983ebe98b9a192faddff67fac3d6303a537e670/importlib_metadata-8.9.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7e/eb/7daecbea84ec935b7fc732e18f532073064a3816f0932a40a17f3349185f/numpy-2.4.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/86/bb/fdc6513a9aada13fd21e9860e2adee5f6eea2b4f0a145b219288875acb26/jax-0.5.3-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/86/c7/fc0755ebd999c7c66ac4203d99f958d5ffc0a34eb270f57932ca0213bb54/jaxlib-0.5.3-cp313-cp313-manylinux2014_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/89/82/5ab5211079a151b6f661529369c0c8e98ec64cabf5c0cf22a0a05af124d8/jax-0.10.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8c/7e/e7394eeb49a41cc514b3eb49020223666cbf40d86f5721c2f07871e6d84a/legacy_cgi-2.6.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8d/05/473b1efad35ec076303bb94c8df349d7dac0451730c8931a05a79d65b64b/openmm_cuda_12-8.3.1-py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/92/07/3098ae537e68d76bbc98ed61d53e9856f63f4f1bd64f8aeb4d432dad1290/jax_cuda12_plugin-0.10.2-cp313-cp313-manylinux_2_27_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/95/f4/61e6996dd20481ee834f57a8e9dca28b1869366a135e0d42e2aa8493bdd4/nvidia_cufft_cu12-11.4.1.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/99/55/db07de81b5c630da5cbf5c7df646580ca26dfaefa593667fc6f2fe016d2e/tabulate-0.10.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9a/3c/c17fb3ca2d9c3acff52e30b309f538586f9f5b9c9cf454f3845fc9af4881/certifi-2026.2.25-py3-none-any.whl
@@ -875,6 +877,11 @@ packages:
   - requests ; extra == 'telegram'
   - ipywidgets>=6 ; extra == 'notebook'
   requires_python: '>=3.7'
+- pypi: https://files.pythonhosted.org/packages/18/2a/d4cd8506d2044e082f8cd921be57392e6a9b5ccd3ffdf050362430a3d5d5/nvidia_cuda_cccl_cu12-12.9.27-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  name: nvidia-cuda-cccl-cu12
+  version: 12.9.27
+  sha256: 37869e17ce2e1ecec6eddf1927cca0f8c34e64fd848d40453df559091e2d7117
+  requires_python: '>=3'
 - pypi: https://files.pythonhosted.org/packages/18/67/36e9267722cc04a6b9f15c7f3441c2363321a3ea07da7ae0c0707beb2a9c/typing_extensions-4.15.0-py3-none-any.whl
   name: typing-extensions
   version: 4.15.0
@@ -981,23 +988,15 @@ packages:
   - nvidia-nvjitlink-cu12
   - nvidia-cusparse-cu12
   requires_python: '>=3'
-- pypi: https://files.pythonhosted.org/packages/34/a2/ffa883b05b8dedf98e513517ab92a79c69ce57233481b6a40c27c2fdcdc9/jax_cuda12_plugin-0.5.3-cp313-cp313-manylinux2014_x86_64.whl
-  name: jax-cuda12-plugin
-  version: 0.5.3
-  sha256: 1862595b2b6d815679d11e0e889e523185ee54a46d46e022689f70fc4554dd91
+- pypi: https://files.pythonhosted.org/packages/36/ac/4ee28c65861605945223145fbcd3c9362ec2255ddf7d917574e205548c82/jaxlib-0.10.2-cp313-cp313-manylinux_2_27_x86_64.whl
+  name: jaxlib
+  version: 0.10.2
+  sha256: 9e4818b4a8756fd3918766ca2aa5342125809f4f08a6fe46026d4386e7c23644
   requires_dist:
-  - jax-cuda12-pjrt==0.5.3
-  - nvidia-cublas-cu12>=12.1.3.1 ; extra == 'with-cuda'
-  - nvidia-cuda-cupti-cu12>=12.1.105 ; extra == 'with-cuda'
-  - nvidia-cuda-nvcc-cu12>=12.6.85 ; extra == 'with-cuda'
-  - nvidia-cuda-runtime-cu12>=12.1.105 ; extra == 'with-cuda'
-  - nvidia-cudnn-cu12>=9.1,<10.0 ; extra == 'with-cuda'
-  - nvidia-cufft-cu12>=11.0.2.54 ; extra == 'with-cuda'
-  - nvidia-cusolver-cu12>=11.4.5.107 ; extra == 'with-cuda'
-  - nvidia-cusparse-cu12>=12.1.0.106 ; extra == 'with-cuda'
-  - nvidia-nccl-cu12>=2.18.1 ; extra == 'with-cuda'
-  - nvidia-nvjitlink-cu12>=12.1.105 ; extra == 'with-cuda'
-  requires_python: '>=3.10'
+  - scipy>=1.14
+  - numpy>=2.0
+  - ml-dtypes>=0.5.0
+  requires_python: '>=3.11'
 - pypi: https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl
   name: urllib3
   version: 2.6.3
@@ -1058,10 +1057,13 @@ packages:
   - numpy
   - openmm-cuda-12 ; extra == 'cuda12'
   - openmm-hip-6 ; extra == 'hip6'
-- pypi: https://files.pythonhosted.org/packages/58/c4/a603473feae00cd1b20ba3829413da53fd48977af052491ea7dab16fa618/jax_cuda12_pjrt-0.5.3-py3-none-manylinux2014_x86_64.whl
-  name: jax-cuda12-pjrt
-  version: 0.5.3
-  sha256: c5378306568ba0c81b230a779dd3194c9dd10339ab6360ae80928108d37e7f75
+- pypi: https://files.pythonhosted.org/packages/63/03/cde130e3ff706784f9efd47204f299b15113ea08203e98a556603dac245d/nvidia_nvshmem_cu12-3.7.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  name: nvidia-nvshmem-cu12
+  version: 3.7.2
+  sha256: 02b6d3482d90ea8ba214bc400362297f573257763990a98c9846ec5c786a7227
+  requires_dist:
+  - nvidia-cuda-cccl-cu12
+  requires_python: '>=3'
 - pypi: https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl
   name: attrs
   version: 26.1.0
@@ -1136,6 +1138,10 @@ packages:
   - setuptools-scm>=7 ; extra == 'dev'
   - setuptools>=64 ; extra == 'dev'
   requires_python: '>=3.10'
+- pypi: https://files.pythonhosted.org/packages/77/00/326facd192b7dc0731e43b30f5ada5ef235e2a3325a151d94ed3db041536/jax_cuda12_pjrt-0.10.2-py3-none-manylinux_2_27_x86_64.whl
+  name: jax-cuda12-pjrt
+  version: 0.10.2
+  sha256: 806d1fd29038b6acf5a2b289dd62192abea977ee26aef60ea295b1d28a23acf8
 - pypi: https://files.pythonhosted.org/packages/7d/f9/97f2ca8bb3ec6e4b1d64f983ebe98b9a192faddff67fac3d6303a537e670/importlib_metadata-8.9.0-py3-none-any.whl
   name: importlib-metadata
   version: 8.9.0
@@ -1164,43 +1170,36 @@ packages:
   version: 2.4.3
   sha256: d5f51900414fc9204a0e0da158ba2ac52b75656e7dce7e77fb9f84bfa343b4cc
   requires_python: '>=3.11'
-- pypi: https://files.pythonhosted.org/packages/86/bb/fdc6513a9aada13fd21e9860e2adee5f6eea2b4f0a145b219288875acb26/jax-0.5.3-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/89/82/5ab5211079a151b6f661529369c0c8e98ec64cabf5c0cf22a0a05af124d8/jax-0.10.2-py3-none-any.whl
   name: jax
-  version: 0.5.3
-  sha256: 1483dc237b4f47e41755d69429e8c3c138736716147cd43bb2b99b259d4e3c41
+  version: 0.10.2
+  sha256: 724d73c4678d8b06f6a6ab4db1b8a2fea8cd4f1e2c2564f99601634ec7b8d1c6
   requires_dist:
-  - jaxlib<=0.5.3,>=0.5.3
-  - ml-dtypes>=0.4.0
-  - numpy>=1.25
-  - numpy>=1.26.0 ; python_full_version >= '3.12'
+  - jaxlib>=0.10.1,<=0.10.2
+  - ml-dtypes>=0.5.0
+  - numpy>=2.0
   - opt-einsum
-  - scipy>=1.11.1
-  - jaxlib==0.5.3 ; extra == 'minimum-jaxlib'
-  - jaxlib==0.5.1 ; extra == 'ci'
-  - jaxlib<=0.5.3,>=0.5.3 ; extra == 'tpu'
-  - libtpu==0.0.11.* ; extra == 'tpu'
+  - scipy>=1.14
+  - jaxlib==0.10.1 ; extra == 'minimum-jaxlib'
+  - jaxlib==0.10.1 ; extra == 'ci'
+  - jaxlib<=0.10.2,>=0.10.2 ; extra == 'tpu'
+  - libtpu==0.0.42.* ; extra == 'tpu'
   - requests ; extra == 'tpu'
-  - jaxlib==0.5.3 ; extra == 'cuda'
-  - jax-cuda12-plugin[with-cuda]<=0.5.3,>=0.5.3 ; extra == 'cuda'
-  - jaxlib==0.5.3 ; extra == 'cuda12'
-  - jax-cuda12-plugin[with-cuda]<=0.5.3,>=0.5.3 ; extra == 'cuda12'
-  - jaxlib==0.5.3 ; extra == 'cuda12-pip'
-  - jax-cuda12-plugin[with-cuda]<=0.5.3,>=0.5.3 ; extra == 'cuda12-pip'
-  - jaxlib==0.5.3 ; extra == 'cuda12-local'
-  - jax-cuda12-plugin==0.5.3 ; extra == 'cuda12-local'
-  - jaxlib==0.5.3 ; extra == 'rocm'
-  - jax-rocm60-plugin<=0.5.3,>=0.5.3 ; extra == 'rocm'
+  - jaxlib<=0.10.2,>=0.10.2 ; extra == 'cuda'
+  - jax-cuda12-plugin[with-cuda]<=0.10.2,>=0.10.2 ; extra == 'cuda'
+  - jaxlib<=0.10.2,>=0.10.2 ; extra == 'cuda12'
+  - jax-cuda12-plugin[with-cuda]<=0.10.2,>=0.10.2 ; extra == 'cuda12'
+  - jaxlib<=0.10.2,>=0.10.2 ; extra == 'cuda13'
+  - jax-cuda13-plugin[with-cuda]<=0.10.2,>=0.10.2 ; extra == 'cuda13'
+  - jaxlib<=0.10.2,>=0.10.2 ; extra == 'cuda12-local'
+  - jax-cuda12-plugin<=0.10.2,>=0.10.2 ; extra == 'cuda12-local'
+  - jaxlib<=0.10.2,>=0.10.2 ; extra == 'cuda13-local'
+  - jax-cuda13-plugin<=0.10.2,>=0.10.2 ; extra == 'cuda13-local'
+  - jaxlib<=0.10.2,>=0.10.2 ; extra == 'rocm7-local'
+  - jax-rocm7-plugin==0.10.2.* ; extra == 'rocm7-local'
   - kubernetes ; extra == 'k8s'
-  requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/86/c7/fc0755ebd999c7c66ac4203d99f958d5ffc0a34eb270f57932ca0213bb54/jaxlib-0.5.3-cp313-cp313-manylinux2014_x86_64.whl
-  name: jaxlib
-  version: 0.5.3
-  sha256: bb7593cb7fffcb13963f22fa5229ed960b8fb4ae5ec3b0820048cbd67f1e8e31
-  requires_dist:
-  - scipy>=1.11.1
-  - numpy>=1.25
-  - ml-dtypes>=0.2.0
-  requires_python: '>=3.10'
+  - xprof ; extra == 'xprof'
+  requires_python: '>=3.11'
 - pypi: https://files.pythonhosted.org/packages/8c/7e/e7394eeb49a41cc514b3eb49020223666cbf40d86f5721c2f07871e6d84a/legacy_cgi-2.6.4-py3-none-any.whl
   name: legacy-cgi
   version: 2.6.4
@@ -1216,6 +1215,25 @@ packages:
   - nvidia-cuda-nvrtc-cu12
   - nvidia-cuda-cupti-cu12
   - nvidia-cufft-cu12
+- pypi: https://files.pythonhosted.org/packages/92/07/3098ae537e68d76bbc98ed61d53e9856f63f4f1bd64f8aeb4d432dad1290/jax_cuda12_plugin-0.10.2-cp313-cp313-manylinux_2_27_x86_64.whl
+  name: jax-cuda12-plugin
+  version: 0.10.2
+  sha256: 948a988927cb10843b501a215181ccb1daed3fa70531b2f1ae0842fe1c08b05e
+  requires_dist:
+  - jax-cuda12-pjrt==0.10.2
+  - nvidia-cublas-cu12>=12.1.3.1 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-cuda-cupti-cu12>=12.1.105 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-cuda-nvcc-cu12>=12.6.85 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-cuda-runtime-cu12>=12.1.105 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-cudnn-cu12>=9.8,<10.0 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-cufft-cu12>=11.0.2.54 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-cusolver-cu12>=11.4.5.107 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-cusparse-cu12>=12.1.0.106 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-nccl-cu12>=2.18.1 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-nvjitlink-cu12>=12.1.105 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-cuda-nvrtc-cu12>=12.1.55 ; sys_platform == 'linux' and extra == 'with-cuda'
+  - nvidia-nvshmem-cu12>=3.2.5 ; sys_platform == 'linux' and extra == 'with-cuda'
+  requires_python: '>=3.11'
 - pypi: https://files.pythonhosted.org/packages/95/f4/61e6996dd20481ee834f57a8e9dca28b1869366a135e0d42e2aa8493bdd4/nvidia_cufft_cu12-11.4.1.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
   name: nvidia-cufft-cu12
   version: 11.4.1.4
