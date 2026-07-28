@@ -1,0 +1,2 @@
+openfold3:
+  extends: .build
