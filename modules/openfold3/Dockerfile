@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.authors="huether@imb-mainz.de"
 
 ENV NVIDIA_VISIBLE_DEVICES="all" NVIDIA_DRIVER_CAPABILITIES="compute" KMP_AFFINITY="none" TORCH_CUDA_ARCH_LIST="8.0;8.6;9.0"
 
-COPY --from=build /app/openfold/.pixi /app/openfold/pixi.toml /app/openfold/pixi.lock /app/openfold/
+COPY --from=build --parents /app/openfold/.pixi app/openfold/pixi.toml /app/openfold/pixi.lock /
 COPY --from=build /app/openfold/99-pixi.sh /.singularity.d/env/99-pixi.sh
 
 ENTRYPOINT ["/.singularity.d/env/99-pixi.sh"]
