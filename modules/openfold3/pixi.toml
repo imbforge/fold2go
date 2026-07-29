@@ -6,7 +6,7 @@ platforms = [{ platform = "linux-64", cuda = "12.0" }]
 version = "0.1.0"
 
 [tasks]
-fetch_ccd = "aws s3 cp s3://openfold3-data/components.bcif ${CONDA_PREFIX}/lib/python3.13/site-packages/biotite/structure/info/ --no-sign-request"
+fetch_ccd = "aws s3 cp s3://openfold3-data/components.bcif $CONDA_PREFIX/lib/python3.13/site-packages/biotite/structure/info/components.bcif --no-sign-request"
 
 [dependencies]
 cuda-version = "12.*"
