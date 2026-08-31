@@ -10,7 +10,7 @@ fetch_ccd = "aws s3 cp s3://openfold3-data/components.bcif $CONDA_PREFIX/lib/pyt
 
 [dependencies]
 cuda-version = "12.*"
-python = "3.14.*"
+python = "3.13.*"
 pytorch-lightning = "==2.6.1"
 rdkit = "<2026"
 
