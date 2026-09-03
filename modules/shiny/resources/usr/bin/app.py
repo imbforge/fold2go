@@ -169,7 +169,7 @@ with ui.card():
     with ui.card_footer(class_='text-center'):
         # display button to download metrics table
         with ui.tooltip(id="download_tip"):
-            @render.download(label="Download", filename="template_indep_info.csv")
+            @render.download_button(label="Download", filename="template_indep_info.csv")
             def download_metrics():
                 yield df().write_csv()
             "Press this button to download metrics table as csv"
