@@ -13,8 +13,8 @@ python = ">=3.14.7,<3.15"
 plotly = ">=6.9.0,<7"
 polars = ">=1.44.1,<2"
 numpy = ">=2.5.2,<3"
+shiny = ">=1.7.0, <2"
+shinywidgets = ">=0.8.1,<0.9"
 
 [pypi-dependencies]
-shiny = ">=1.7.0, <2"
-shinywidgets = ">=0.8.1, <0.9"
-ipymolstar = ">=0.1.0, <0.2"
+ipymolstar = ">=0.1.0,<0.2"
