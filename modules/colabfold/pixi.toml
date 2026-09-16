@@ -8,13 +8,13 @@ platforms = [{ platform = "linux-64", cuda = "12.0" }]
 
 [dependencies]
 python = "3.13.*"
-kalign2 = "==2.04"
-hhsuite = "==3.3.0"
-mmseqs2 = "==18.8cc5c"
 entrez-direct = ">=24.0,<25"
+hhsuite = "==3.3.0"
+kalign2 = "==2.04"
+mmseqs2 = "==18.8cc5c"
+openmm = ">=8.5,<9"
+pdbfixer = ">=1.12.0,<2"
 seqkit = ">=2.13.0,<3"
 
 [pypi-dependencies]
-colabfold = { version = "==1.6.2", extras = ["alphafold", "openmm"] }
-jax = { version = "==0.10.2", extras = ["cuda12"] }
-openmm = { extras = ["cuda12"] }
+colabfold = { version = "==1.6.3", extras = ["alphafold"] }
