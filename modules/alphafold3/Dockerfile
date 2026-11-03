@@ -1,6 +1,6 @@
-ARG ALPHAFOLD_VERSION=3.0.4
+ARG ALPHAFOLD_VERSION=3.0.5
 
-FROM ghcr.io/prefix-dev/pixi:jammy AS build
+FROM ghcr.io/prefix-dev/pixi:noble AS build
 
 ARG ALPHAFOLD_VERSION
 
@@ -26,17 +26,19 @@ RUN pixi run build_data
 
 WORKDIR /tmp
 
-# build patched hmmer (jackhmmer seq_limit and easel workqueue patches)
+# build patched hmmer (jackhmmer and easel patches)
 RUN tar xzf v${ALPHAFOLD_VERSION}.tar.gz \
     && tar xzf hmmer-3.4.tar.gz \
     && patch hmmer-3.4/src/jackhmmer.c alphafold3-${ALPHAFOLD_VERSION}/docker/jackhmmer_seq_limit.patch \
+    && patch hmmer-3.4/src/jackhmmer.c alphafold3-${ALPHAFOLD_VERSION}/docker/jackhmmer_parallel_fasta.patch \
+    && patch hmmer-3.4/easel/esl_sqio_ascii.c alphafold3-${ALPHAFOLD_VERSION}/docker/easel_fast_fasta_parsing.patch \
     && patch hmmer-3.4/easel/esl_workqueue.c c0497d24c043c90129aa8f812f4bc8d7aa89e5c5.patch
 
 WORKDIR /tmp/hmmer-3.4
 
 RUN ./configure --prefix=/app/alphafold/.pixi/envs/default && make install && cd easel && make install
 
-FROM docker.io/nvidia/cuda:12.6.3-base-ubuntu22.04 AS alphafold
+FROM docker.io/nvidia/cuda:12.9.2-base-ubuntu24.04 AS alphafold
 
 ARG ALPHAFOLD_VERSION
 
