@@ -6,13 +6,11 @@ platforms = [{ platform = "linux-64", cuda = "12.0" }]
 version = "0.1.0"
 
 [tasks]
-fetch_ccd = "aws s3 cp s3://openfold3-data/components.bcif $CONDA_PREFIX/lib/python3.13/site-packages/biotite/structure/info/components.bcif --no-sign-request"
 
 [dependencies]
 cuda-version = "12.*"
 python = "3.13.*"
 pytorch-lightning = "==2.6.1"
-rdkit = "<2026"
 
 [pypi-dependencies]
-openfold3 = { version = "==0.5.0", extras = ["cuequivariance"] }
+openfold3 = { version = "==0.5.1", extras = ["cuequivariance"] }

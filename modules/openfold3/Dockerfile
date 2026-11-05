@@ -8,9 +8,6 @@ COPY pixi.toml pixi.lock .
 
 RUN printf '#!/bin/sh\n%s\nexec "$@"' "$(pixi shell-hook)" > 99-pixi.sh && chmod +x 99-pixi.sh
 
-# predownload the CCD from s3 as this is expected to live in the (read-only) biotite package directory
-RUN pixi run fetch_ccd
-
 FROM ghcr.io/prefix-dev/pixi:jammy AS openfold
 
 LABEL org.opencontainers.image.authors="huether@imb-mainz.de"
